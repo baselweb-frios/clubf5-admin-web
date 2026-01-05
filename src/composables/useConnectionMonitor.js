@@ -1,0 +1,531 @@
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useSignalRAuth } from './useSignalRAuth'
+
+/**
+ * Composable para monitorear el estado de conexion de sucursales
+ * Mantiene un registro actualizado de que sucursales estan conectadas
+ *
+ * @returns {Object} Estado y metodos de monitoreo
+ */
+export function useConnectionMonitor() {
+  const connectedBranches = ref(new Map()) // userId -> branchInfo
+  const lastHeartbeats = ref(new Map()) // userId -> timestamp
+  const heartbeatTimeout = 45000 // 45 segundos (30s heartbeat + 15s margen)
+
+  let heartbeatCheckInterval = null
+
+  // Instancia de SignalR
+  const signalR = useSignalRAuth()
+
+  /**
+   * Verifica si una sucursal esta conectada por userId
+   * @param {string} userId - ID del usuario de la sucursal
+   * @returns {boolean}
+   */
+  const isConnected = (userId) => {
+    if (!userId) return false
+    return connectedBranches.value.has(userId)
+  }
+
+  /**
+   * Verifica si una sucursal esta conectada por username
+   * @param {string} username - Username de la sucursal
+   * @returns {boolean}
+   */
+  const isConnectedByUsername = (username) => {
+    if (!username) return false
+    for (const [, info] of connectedBranches.value) {
+      if (info.username === username || info.branchName === username) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * Obtiene informacion de una sucursal conectada
+   * @param {string} userId - ID del usuario
+   * @returns {Object|null}
+   */
+  const getBranchInfo = (userId) => {
+    return connectedBranches.value.get(userId) || null
+  }
+
+  /**
+   * Obtiene todas las sucursales conectadas
+   * @returns {Array}
+   */
+  const getAllConnected = () => {
+    return Array.from(connectedBranches.value.values())
+  }
+
+  /**
+   * Obtiene el conteo de sucursales conectadas
+   * @returns {number}
+   */
+  const getConnectedCount = () => {
+    return connectedBranches.value.size
+  }
+
+  /**
+   * Registra una conexion de REPRODUCTOR
+   * Solo se llama cuando detectamos un reproductor (via heartbeat)
+   * @param {Object} data - Datos de conexion del reproductor
+   */
+  const registerConnection = async (data) => {
+    // Soportar tanto camelCase como PascalCase
+    const userId = data.userId || data.UserId || data.sucursalId || data.id
+    const username = data.userName || data.UserName || data.username || data.user
+    const branchName = data.branchName || data.BranchName || data.sucursalName || username
+    const connectionId = data.connectionId || data.ConnectionId
+    const sucursalId = data.sucursalId || data.SucursalId
+
+    if (!userId) {
+      console.warn('[ConnectionMonitor] No se pudo registrar reproductor: userId faltante', data)
+      return
+    }
+
+    const connectionInfo = {
+      userId,
+      username,
+      branchName,
+      sucursalId,
+      connectionId,
+      connectedAt: new Date().toISOString(),
+      lastSeen: new Date().toISOString(),
+      status: 'connected',
+      isPlayer: true, // Marcador de que es un reproductor
+      // Datos del reproductor (del heartbeat)
+      isPlaying: data.isPlaying,
+      mode: data.mode,
+      currentSong: data.currentSong || data.status?.currentItem?.title,
+      activePlayer: data.activePlayer
+    }
+
+    connectedBranches.value.set(userId, connectionInfo)
+    lastHeartbeats.value.set(userId, Date.now())
+
+    // Unirse al grupo del usuario para recibir sus heartbeats y eventos
+    if (username && signalR.connected()) {
+      try {
+        const groupName = `user_${username}`
+        await signalR.joinGroup(groupName)
+        console.log(`[ConnectionMonitor] Unido al grupo: ${groupName}`)
+      } catch (error) {
+        console.warn(`[ConnectionMonitor] No se pudo unir al grupo user_${username}:`, error)
+      }
+    }
+
+    console.log(`[ConnectionMonitor] Reproductor registrado: ${branchName} (${userId})`)
+    console.log(`[ConnectionMonitor] Total reproductores: ${connectedBranches.value.size}`)
+  }
+
+  /**
+   * Registra una desconexion de REPRODUCTOR
+   * Solo afecta a reproductores que estaban registrados
+   * @param {Object} data - Datos de desconexion
+   */
+  const registerDisconnection = async (data) => {
+    // Soportar tanto camelCase como PascalCase
+    const userId = data.userId || data.UserId || data.sucursalId || data.id
+    const username = data.userName || data.UserName || data.username || data.user
+    let usernameToLeave = username
+
+    if (userId && connectedBranches.value.has(userId)) {
+      const info = connectedBranches.value.get(userId)
+      usernameToLeave = info.username || username
+      console.log(`[ConnectionMonitor] Sucursal desconectada: ${info.branchName} (${userId})`)
+      connectedBranches.value.delete(userId)
+      lastHeartbeats.value.delete(userId)
+    } else if (username) {
+      // Buscar por username si no tenemos userId
+      for (const [uId, info] of connectedBranches.value) {
+        if (info.username === username || info.branchName === username) {
+          usernameToLeave = info.username || username
+          console.log(`[ConnectionMonitor] Sucursal desconectada: ${info.branchName} (${uId})`)
+          connectedBranches.value.delete(uId)
+          lastHeartbeats.value.delete(uId)
+          break
+        }
+      }
+    }
+
+    // Salir del grupo del usuario desconectado
+    if (usernameToLeave && signalR.connected()) {
+      try {
+        const groupName = `user_${usernameToLeave}`
+        await signalR.leaveGroup(groupName)
+        console.log(`[ConnectionMonitor] Salido del grupo: ${groupName}`)
+      } catch (error) {
+        console.warn(`[ConnectionMonitor] Error al salir del grupo:`, error)
+      }
+    }
+
+    console.log(`[ConnectionMonitor] Total conectadas: ${connectedBranches.value.size}`)
+  }
+
+  /**
+   * Actualiza el timestamp del ultimo heartbeat
+   * El cliente envia heartbeat con: userId, username, sucursalId, isPlaying, mode, currentSong, status, etc.
+   * @param {string} userId - ID del usuario
+   * @param {Object} [data] - Datos adicionales del heartbeat
+   */
+  const updateHeartbeat = (userId, data = {}) => {
+    if (!userId) return
+
+    const now = Date.now()
+    lastHeartbeats.value.set(userId, now)
+
+    if (connectedBranches.value.has(userId)) {
+      const info = connectedBranches.value.get(userId)
+      info.lastSeen = new Date(now).toISOString()
+      info.status = 'connected'
+
+      // Actualizar datos del reproductor (soportar ambos formatos)
+      if (data.isPlaying !== undefined) info.isPlaying = data.isPlaying
+      if (data.currentSong) info.currentSong = data.currentSong
+      if (data.mode) info.mode = data.mode
+      if (data.activePlayer) info.activePlayer = data.activePlayer
+
+      // Datos anidados en status (formato del cliente)
+      if (data.status) {
+        if (data.status.isPlaying !== undefined) info.isPlaying = data.status.isPlaying
+        if (data.status.mode) info.mode = data.status.mode
+        if (data.status.activePlayer) info.activePlayer = data.status.activePlayer
+        if (data.status.currentItem?.title) info.currentSong = data.status.currentItem.title
+        if (data.status.playback) info.playback = data.status.playback
+        if (data.status.playlists) info.playlists = data.status.playlists
+      }
+
+      connectedBranches.value.set(userId, info)
+      console.log(`[ConnectionMonitor] Heartbeat actualizado: ${info.branchName || userId}`, {
+        isPlaying: info.isPlaying,
+        mode: info.mode,
+        currentSong: info.currentSong
+      })
+    } else {
+      // Si no esta registrada, registrarla ahora
+      registerConnection({
+        userId,
+        userName: data.username || data.user,
+        branchName: data.branchName || data.sucursalName || data.username,
+        connectionId: data.connectionId,
+        ...data
+      })
+    }
+  }
+
+  /**
+   * Verifica heartbeats expirados y marca sucursales como desconectadas
+   */
+  const checkHeartbeatTimeouts = () => {
+    const now = Date.now()
+    const expiredUsers = []
+
+    for (const [userId, lastHeartbeat] of lastHeartbeats.value) {
+      if (now - lastHeartbeat > heartbeatTimeout) {
+        expiredUsers.push(userId)
+      }
+    }
+
+    if (expiredUsers.length > 0) {
+      console.log(`[ConnectionMonitor] Detectados ${expiredUsers.length} heartbeats expirados`)
+      expiredUsers.forEach(userId => {
+        const info = connectedBranches.value.get(userId)
+        if (info) {
+          console.log(`[ConnectionMonitor] Timeout de heartbeat: ${info.branchName} (${userId})`)
+          registerDisconnection({ userId })
+        }
+      })
+    }
+  }
+
+  /**
+   * Solicita actualizacion de usuarios online al servidor
+   */
+  const requestOnlineUsersUpdate = async () => {
+    try {
+      if (signalR.connected()) {
+        await signalR.getOnlineUsers()
+        console.log('[ConnectionMonitor] Solicitada actualizacion de usuarios online')
+      }
+    } catch (error) {
+      console.error('[ConnectionMonitor] Error solicitando usuarios online:', error)
+    }
+  }
+
+  /**
+   * Sincroniza el estado desde la respuesta de OnlineUsersUpdate
+   * El servidor envia: { TotalUsers, UserIds: ["id1", "id2"], Timestamp }
+   * @param {Object} data - Datos del servidor
+   */
+  const syncFromOnlineUsers = (data) => {
+    // Soportar ambas estructuras:
+    // - Nueva del servidor: { TotalUsers, UserIds: [...], Timestamp }
+    // - Anterior esperada: { onlineUsers: [{userId, ...}, ...] }
+    const userIds = data?.UserIds || data?.userIds || []
+    const onlineUsers = data?.onlineUsers || []
+
+    // Si no hay datos, salir
+    if (userIds.length === 0 && onlineUsers.length === 0) {
+      console.log('[ConnectionMonitor] OnlineUsersUpdate recibido sin usuarios', data)
+      return
+    }
+
+    console.log('[ConnectionMonitor] Sincronizando usuarios online:', {
+      totalUsers: data?.TotalUsers || data?.totalUsers || userIds.length || onlineUsers.length,
+      userIds,
+      onlineUsers
+    })
+
+    // Crear set de userIds que estan online segun el servidor
+    const serverOnlineUsers = new Set()
+
+    // Procesar UserIds (array de strings) - formato actual del servidor
+    userIds.forEach(userId => {
+      if (userId) {
+        serverOnlineUsers.add(userId)
+
+        // Si ya esta registrado, actualizar heartbeat
+        if (connectedBranches.value.has(userId)) {
+          updateHeartbeat(userId)
+        } else {
+          // Registrar nueva conexion con datos minimos
+          registerConnection({ userId, username: userId })
+        }
+      }
+    })
+
+    // Procesar onlineUsers (array de objetos) - formato alternativo
+    onlineUsers.forEach(user => {
+      const userId = user.userId || user.UserId || user.id
+      if (userId) {
+        serverOnlineUsers.add(userId)
+
+        if (connectedBranches.value.has(userId)) {
+          updateHeartbeat(userId, user)
+        } else {
+          registerConnection(user)
+        }
+      }
+    })
+
+    // Remover sucursales que estan en local pero no en el servidor
+    for (const userId of connectedBranches.value.keys()) {
+      if (!serverOnlineUsers.has(userId)) {
+        console.log(`[ConnectionMonitor] Removiendo sucursal no presente en servidor: ${userId}`)
+        registerDisconnection({ userId })
+      }
+    }
+
+    console.log(`[ConnectionMonitor] Sincronizacion completada: ${connectedBranches.value.size} sucursales online`)
+  }
+
+  /**
+   * Limpia todas las conexiones registradas
+   */
+  const clearAll = () => {
+    connectedBranches.value.clear()
+    lastHeartbeats.value.clear()
+    console.log('[ConnectionMonitor] Todas las conexiones limpiadas')
+  }
+
+  // Helper: normaliza claves comunes (PascalCase/camelCase) a nombres consistentes
+  const normalizeData = (raw) => {
+    if (!raw || typeof raw !== 'object') return raw
+    const map = {
+      UserId: 'userId', userId: 'userId', id: 'userId', sucursalId: 'userId', SucursalId: 'userId',
+      UserName: 'username', userName: 'username', username: 'username', user: 'username',
+      BranchName: 'branchName', branchName: 'branchName', sucursalName: 'branchName',
+      ConnectionId: 'connectionId', connectionId: 'connectionId',
+      isPlaying: 'isPlaying', mode: 'mode', currentSong: 'currentSong', activePlayer: 'activePlayer',
+      TotalUsers: 'totalUsers', UserIds: 'userIds', userIds: 'userIds', onlineUsers: 'onlineUsers',
+      message: 'message', event: 'event'
+    }
+
+    const out = {}
+    for (const key of Object.keys(raw)) {
+      const mapped = map[key] || key.charAt(0).toLowerCase() + key.slice(1)
+      out[mapped] = raw[key]
+    }
+    // si trae status anidado, normalizarlo tambien y mezclar para facilitar acceso
+    if (raw.status && typeof raw.status === 'object') {
+      for (const k of Object.keys(raw.status)) {
+        const mapped = map[k] || k.charAt(0).toLowerCase() + k.slice(1)
+        out[mapped] = out[mapped] === undefined ? raw.status[k] : out[mapped]
+      }
+    }
+    return out
+  }
+
+  // Helper: parse seguro de notificaciones que pueden venir como string JSON o con message string
+  const parseNotification = (notification) => {
+    try {
+      if (!notification) return null
+      if (typeof notification === 'string') {
+        // puede ser JSON string
+        return normalizeData(JSON.parse(notification))
+      }
+      if (typeof notification === 'object') {
+        // message puede ser string JSON o objeto
+        if (typeof notification.message === 'string') {
+          try {
+            const parsed = JSON.parse(notification.message)
+            return normalizeData({ ...notification, ...parsed })
+          } catch (e) {
+            // message no JSON, devolver combinado
+            return normalizeData(notification)
+          }
+        }
+        // ya es objeto
+        return normalizeData(notification)
+      }
+    } catch (e) {
+      console.warn('[ConnectionMonitor] parseNotification error', e)
+      return null
+    }
+  }
+
+  // Configurar listeners de SignalR
+  const setupListeners = () => {
+    // Usuario conectado (ignorado - esperamos heartbeat)
+    signalR.on('userConnected', (data) => {
+      const payload = normalizeData(data)
+      console.log('[ConnectionMonitor] Evento userConnected (ignorado - esperando heartbeat):', payload)
+    })
+
+    // Usuario desconectado
+    signalR.on('userDisconnected', (data) => {
+      const payload = normalizeData(data)
+      console.log('[ConnectionMonitor] Evento userDisconnected:', payload)
+      registerDisconnection(payload)
+    })
+
+    // Actualizacion de usuarios online
+    signalR.on('onlineUsersUpdate', (data) => {
+      const payload = normalizeData(data)
+      console.log('[ConnectionMonitor] Evento onlineUsersUpdate (referencia):', payload)
+      // No forzar sync, pero ofrecemos la funcion si se necesita
+      // syncFromOnlineUsers(payload)
+    })
+
+    // Heartbeat del reproductor
+    signalR.on('playerHeartbeat', (data) => {
+      const payload = normalizeData(data)
+      const userId = payload.userId || payload.username
+      console.log('[ConnectionMonitor] playerHeartbeat - Reproductor detectado:', { userId, payload })
+      if (userId) {
+        if (!connectedBranches.value.has(userId)) {
+          console.log('[ConnectionMonitor] Nuevo reproductor detectado:', userId)
+          registerConnection({
+            userId,
+            username: payload.username,
+            branchName: payload.branchName,
+            sucursalId: payload.sucursalId,
+            connectionId: payload.connectionId,
+            isPlayer: true,
+            ...payload
+          })
+        }
+        updateHeartbeat(userId, payload)
+      }
+    })
+
+    // Notificaciones generales (pueden contener heartbeats)
+    signalR.on('notification', (notification) => {
+      const parsed = parseNotification(notification)
+      if (!parsed) return
+      // Detectar distintos esquemas de evento para player_heartbeat
+      const eventName = parsed.event || parsed.type || parsed?.message?.event
+      if (eventName && String(eventName).toLowerCase() === 'player_heartbeat') {
+        const payload = normalizeData(parsed)
+        const userId = payload.userId || payload.username
+        console.log('[ConnectionMonitor] player_heartbeat en notification - Reproductor:', { userId, payload })
+        if (userId) {
+          if (!connectedBranches.value.has(userId)) {
+            console.log('[ConnectionMonitor] Nuevo reproductor detectado via notification:', userId)
+            registerConnection({
+              userId,
+              username: payload.username,
+              branchName: payload.branchName,
+              sucursalId: payload.sucursalId,
+              connectionId: payload.connectionId,
+              isPlayer: true,
+              ...payload
+            })
+          }
+          // fusionar status si existe para pasar campos anidados
+          updateHeartbeat(userId, { ...payload, ...payload.status })
+        }
+      }
+    })
+  }
+
+  // Lifecycle
+  onMounted(async () => {
+    console.log('[ConnectionMonitor] Iniciando monitor de REPRODUCTORES')
+    console.log('[ConnectionMonitor] Solo se registraran conexiones que envien player_heartbeat')
+
+    // Arranque robusto de SignalR con retries
+    const maxAttempts = 5
+    let attempt = 0
+    let started = false
+
+    while (attempt < maxAttempts && !started) {
+      attempt += 1
+      try {
+        await signalR.connect()
+        started = true
+        console.log(`[ConnectionMonitor] SignalR iniciado (intento ${attempt})`)
+      } catch (err) {
+        console.warn(`[ConnectionMonitor] Error iniciando SignalR (intento ${attempt}):`, err)
+        const delay = Math.min(5000, 500 * attempt)
+        await new Promise(r => setTimeout(r, delay))
+      }
+    }
+
+    if (!started) {
+      console.error('[ConnectionMonitor] No se pudo iniciar SignalR despues de varios intentos')
+    } else {
+      // Configurar listeners una vez conectado
+      setupListeners()
+    }
+
+    // Verificar timeouts cada 10 segundos (detectar reproductores desconectados)
+    heartbeatCheckInterval = setInterval(() => {
+      checkHeartbeatTimeouts()
+    }, 10000)
+  })
+
+  onUnmounted(async () => {
+    console.log('[ConnectionMonitor] Deteniendo monitor de conexiones')
+    if (heartbeatCheckInterval) {
+      clearInterval(heartbeatCheckInterval)
+    }
+    await signalR.disconnect()
+  })
+
+  return {
+    // Estado
+    connectedBranches,
+    lastHeartbeats,
+    signalR,
+
+    // Metodos de consulta
+    isConnected,
+    isConnectedByUsername,
+    getBranchInfo,
+    getAllConnected,
+    getConnectedCount,
+
+    // Metodos de gestion
+    registerConnection,
+    registerDisconnection,
+    updateHeartbeat,
+    syncFromOnlineUsers,
+    requestOnlineUsersUpdate,
+    clearAll
+  }
+}
+
+export default useConnectionMonitor
