@@ -1,32 +1,60 @@
 <template>
-  <div class="base-card group" :class="cardClasses">
+  <div
+class="base-card group"
+:class="cardClasses"
+>
     <!-- Card Header -->
-    <div v-if="$slots.header || title || subtitle" class="card-header">
+    <div
+v-if="$slots.header || title || subtitle"
+class="card-header"
+>
       <div class="card-header-content">
         <div class="card-header-text">
           <slot name="header">
-            <h3 v-if="title" class="card-title">{{ title }}</h3>
-            <p v-if="subtitle" class="card-subtitle">{{ subtitle }}</p>
+            <h3
+v-if="title"
+class="card-title"
+>
+{{ title }}
+</h3>
+            <p
+v-if="subtitle"
+class="card-subtitle"
+>
+{{ subtitle }}
+</p>
           </slot>
         </div>
-        <div v-if="$slots.actions" class="card-header-actions">
-          <slot name="actions"></slot>
+        <div
+v-if="$slots.actions"
+class="card-header-actions"
+>
+          <slot name="actions" />
         </div>
       </div>
     </div>
 
     <!-- Card Body -->
-    <div class="card-body" :class="bodyClasses">
-      <slot></slot>
+    <div
+class="card-body"
+:class="bodyClasses"
+>
+      <slot />
     </div>
 
     <!-- Card Footer -->
-    <div v-if="$slots.footer" class="card-footer">
-      <slot name="footer"></slot>
+    <div
+v-if="$slots.footer"
+class="card-footer"
+>
+      <slot name="footer" />
     </div>
 
     <!-- Glass Shine Effect -->
-    <div v-if="glass" class="card-shine"></div>
+    <div
+v-if="glass"
+class="card-shine"
+/>
   </div>
 </template>
 
@@ -84,194 +112,136 @@ const bodyClasses = computed(() => {
 </script>
 
 <style scoped>
-/* ===== BASE CARD - DARKLITE DESIGN SYSTEM ===== */
+/* Base Card */
 .base-card {
-  position: relative;
-  background: rgba(26, 26, 26, 0.7);
-  border-radius: 1.25rem;
-  overflow: hidden;
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  @apply bg-dark-tertiary rounded-xl;
+  @apply transition-all duration-200;
+  @apply relative overflow-hidden;
 }
 
-/* Glass Effect */
-.card-glass {
-  background: rgba(26, 26, 26, 0.6);
-  backdrop-filter: blur(40px) saturate(180%);
+.light .base-card {
+  @apply bg-light-elevated;
 }
 
-/* Border */
+/* Bordered variant */
 .card-bordered {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  @apply border border-dark-border;
 }
 
-/* Glass Shine Effect */
-.card-shine {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.15) 50%,
-    transparent 100%
-  );
-  opacity: 0.8;
+.light .card-bordered {
+  @apply border-light-border;
 }
 
-/* Hover State */
+/* Hover effect */
 .card-hover:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  transform: translateY(-4px);
+  @apply bg-dark-elevated border-dark-hover;
 }
 
-.card-hover:hover.card-glass {
-  background: rgba(26, 26, 26, 0.75);
+.light .card-hover:hover {
+  @apply bg-white border-light-hover;
 }
 
-/* ===== SHADOW VARIANTS ===== */
+/* Glass effect */
+.card-glass {
+  @apply bg-glass-medium backdrop-blur-xl;
+  @apply border-glass-border;
+}
+
+/* Shadow variants */
 .card-shadow-none {
-  box-shadow: none;
+  @apply shadow-none;
 }
 
 .card-shadow-sm {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+  @apply shadow-sm;
 }
 
 .card-shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  @apply shadow-md;
 }
 
 .card-shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.12);
+  @apply shadow-lg;
 }
 
 .card-shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.15);
+  @apply shadow-xl;
 }
 
 .card-shadow-2xl {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  @apply shadow-2xl;
 }
 
-.card-hover:hover.card-shadow-lg,
-.card-hover:hover.card-shadow-xl,
-.card-hover:hover.card-shadow-2xl {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-}
-
-/* ===== CARD HEADER ===== */
+/* Card Header */
 .card-header {
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  @apply px-4 sm:px-6 py-4 border-b border-dark-border;
+}
+
+.light .card-header {
+  @apply border-light-border;
 }
 
 .card-header-content {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
+  @apply flex items-start justify-between gap-4;
 }
 
 .card-header-text {
-  flex: 1;
+  @apply flex-1 min-w-0;
 }
 
 .card-title {
-  margin: 0;
-  font-size: 1.3125rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.02em;
-  line-height: 1.3;
+  @apply text-lg font-semibold text-text-primary truncate;
+}
+
+.light .card-title {
+  @apply text-text-light-primary;
 }
 
 .card-subtitle {
-  margin: 0.375rem 0 0 0;
-  font-size: 0.9375rem;
-  font-weight: 400;
-  color: #a1a1aa;
-  letter-spacing: -0.01em;
-  line-height: 1.5;
+  @apply text-sm text-text-secondary mt-1;
+}
+
+.light .card-subtitle {
+  @apply text-text-light-secondary;
 }
 
 .card-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-shrink: 0;
+  @apply flex items-center gap-2 flex-shrink-0;
 }
 
-/* ===== CARD BODY ===== */
+/* Card Body */
 .card-body {
-  padding: 2rem;
-  color: #ffffff;
-  line-height: 1.7;
+  @apply p-4 sm:p-6;
 }
 
 .card-body.no-padding {
-  padding: 0;
+  @apply p-0;
 }
 
-/* ===== CARD FOOTER ===== */
+/* Card Footer */
 .card-footer {
-  padding: 1.25rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  @apply px-4 sm:px-6 py-4 border-t border-dark-border;
+  @apply flex items-center justify-end gap-3;
 }
 
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-  .base-card {
-    border-radius: 1rem;
-  }
-
-  .card-header {
-    padding: 1.25rem 1.5rem;
-  }
-
-  .card-header-content {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .card-title {
-    font-size: 1.125rem;
-  }
-
-  .card-subtitle {
-    font-size: 0.875rem;
-  }
-
-  .card-body {
-    padding: 1.5rem;
-  }
-
-  .card-body.no-padding {
-    padding: 0;
-  }
-
-  .card-footer {
-    padding: 1rem 1.5rem;
-    flex-direction: column;
-    align-items: stretch;
-  }
+.light .card-footer {
+  @apply border-light-border;
 }
 
-/* ===== ANIMATION IMPROVEMENTS ===== */
-@media (prefers-reduced-motion: reduce) {
-  .base-card {
-    transition: none;
-  }
+/* Glass shine effect */
+.card-shine {
+  @apply absolute inset-0 pointer-events-none;
+  @apply opacity-0 transition-opacity duration-300;
+  background: linear-gradient(
+    135deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.03) 50%,
+    transparent 60%
+  );
+}
 
-  .card-hover:hover {
-    transform: none;
-  }
+.card-hover:hover .card-shine {
+  @apply opacity-100;
 }
 </style>
+

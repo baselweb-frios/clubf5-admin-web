@@ -1,188 +1,178 @@
 <template>
-  <div v-if="showStatus" class="signalr-status" :class="statusClass">
-    <div class="status-indicator">
-      <div class="status-dot" :class="dotClass"></div>
-      <span class="status-text">{{ statusText }}</span>
-    </div>
-    <div v-if="connectedCount !== null" class="status-details">
-      <i class="fa fa-building"></i>
-      <span>{{ connectedCount }} sucursales conectadas</span>
+  <div
+  v-if="showStatus"
+  class="fixed bottom-4 right-4 z-fixed"
+  >
+    <div class="card-glass p-3">
+      <div class="flex-start gap-2">
+        <!-- Status Badge with Indicator -->
+        <div :class="['badge', badgeClass]">
+          <div
+          class="w-1.5 h-1.5 rounded-full"
+          :class="dotClass"
+          />
+          <span>{{ statusText }}</span>
+        </div>
+
+        <!-- Connected Count -->
+        <div
+        v-if="connectedCount !== null"
+        class="badge badge-info"
+        >
+          <i class="fas fa-building" />
+          <span>{{ connectedCount }} sucursales</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { useSignalRAuth } from '@/composables/useSignalRAuth'
+import { ref, computed } from 'vue';
+import { useSignalRAuth } from '@/composables/useSignalRAuth';
 
-const props = defineProps({
+const { connectedCount } = defineProps({
   showDetails: {
     type: Boolean,
-    default: true
+    default: true,
   },
   connectedCount: {
     type: Number,
-    default: null
-  }
-})
+    default: null,
+  },
+});
 
 // Usar el composable de SignalR
-const signalR = useSignalRAuth()
+const signalR = useSignalRAuth();
 
-const showStatus = ref(true)
+const showStatus = ref(true);
 
 const statusText = computed(() => {
   switch (signalR.connectionState.value) {
     case 'Connected':
-      return 'Conectado'
+      return 'Conectado';
     case 'Connecting':
-      return 'Conectando...'
+      return 'Conectando...';
     case 'Reconnecting':
-      return 'Reconectando...'
+      return 'Reconectando...';
     case 'Disconnecting':
-      return 'Desconectando...'
+      return 'Desconectando...';
     case 'Disconnected':
-      return 'Desconectado'
+      return 'Desconectado';
     default:
-      return 'Desconocido'
+      return 'Desconocido';
   }
-})
+});
 
-const statusClass = computed(() => {
+const badgeClass = computed(() => {
   switch (signalR.connectionState.value) {
     case 'Connected':
-      return 'status-connected'
+      return 'badge-success';
     case 'Connecting':
     case 'Reconnecting':
-      return 'status-connecting'
+      return 'badge-warning';
     case 'Disconnecting':
     case 'Disconnected':
-      return 'status-disconnected'
+      return 'badge-danger';
     default:
-      return 'status-unknown'
+      return 'badge-info';
   }
-})
+});
 
 const dotClass = computed(() => {
   switch (signalR.connectionState.value) {
     case 'Connected':
-      return 'dot-connected'
+      return 'bg-success-500';
     case 'Connecting':
     case 'Reconnecting':
-      return 'dot-connecting'
+      return 'bg-warning-500 animate-pulse';
     default:
-      return 'dot-disconnected'
+      return 'bg-danger-500';
   }
-})
+});
 </script>
 
 <style scoped>
-.signalr-status {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(22, 24, 29, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+/* Status Container */
+.status-container {
+  @apply fixed bottom-4 right-4 z-fixed;
 }
 
-.signalr-status:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+/* Status Card */
+.status-card {
+  @apply bg-glass-medium backdrop-blur-xl rounded-xl;
+  @apply border border-glass-border;
+  @apply p-3 shadow-lg;
 }
 
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* Status Content */
+.status-content {
+  @apply flex items-center gap-2;
 }
 
+/* Status Badge */
+.status-badge {
+  @apply inline-flex items-center gap-1.5;
+  @apply px-2.5 py-1 rounded-full;
+  @apply text-xs font-medium;
+}
+
+.status-badge.connected {
+  @apply bg-success-500/20 text-success-400;
+}
+
+.status-badge.connecting {
+  @apply bg-warning-500/20 text-warning-400;
+}
+
+.status-badge.disconnected {
+  @apply bg-danger-500/20 text-danger-400;
+}
+
+/* Status Dot Indicator */
 .status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  position: relative;
+  @apply w-1.5 h-1.5 rounded-full;
 }
 
-.dot-connected {
-  background: #10b981;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
-  animation: pulse-connected 2s infinite;
+.status-dot.connected {
+  @apply bg-success-500;
 }
 
-.dot-connecting {
-  background: #f59e0b;
-  animation: pulse-connecting 1s infinite;
+.status-dot.connecting {
+  @apply bg-warning-500 animate-pulse;
 }
 
-.dot-disconnected {
-  background: #64748b;
+.status-dot.disconnected {
+  @apply bg-danger-500;
 }
 
-@keyframes pulse-connected {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.1);
-  }
+/* Connection Count Badge */
+.count-badge {
+  @apply inline-flex items-center gap-1.5;
+  @apply px-2.5 py-1 rounded-full;
+  @apply text-xs font-medium;
+  @apply bg-info-500/20 text-info-400;
 }
 
-@keyframes pulse-connecting {
-  0%, 100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 1;
-  }
+.count-badge i {
+  @apply text-xs;
 }
 
-.status-text {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+/* Light Mode */
+.light .status-badge.connected {
+  @apply text-success-600;
 }
 
-.status-details {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding-left: 12px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
+.light .status-badge.connecting {
+  @apply text-warning-600;
 }
 
-.status-details i {
-  font-size: 0.9rem;
+.light .status-badge.disconnected {
+  @apply text-danger-600;
 }
 
-.status-connected {
-  border-left: 3px solid #10b981;
-}
-
-.status-connecting {
-  border-left: 3px solid #f59e0b;
-}
-
-.status-disconnected {
-  border-left: 3px solid #ef4444;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .signalr-status {
-    display:none;
-  }
+.light .count-badge {
+  @apply text-info-600;
 }
 </style>
+

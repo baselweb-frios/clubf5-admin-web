@@ -4,25 +4,45 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-icon">
-          <i class="fas fa-cloud"></i>
+          <i class="fas fa-cloud" />
         </div>
         <div class="header-text">
-          <h1 class="page-title">Gestión de Archivos</h1>
-          <p class="page-subtitle" v-if="contexto.tipo === 'genero'">
+          <h1 class="page-title">
+Gestión de Archivos
+</h1>
+          <p
+v-if="contexto.tipo === 'genero'"
+class="page-subtitle"
+>
             Género: {{ contexto.nombreGenero }}
           </p>
-          <p class="page-subtitle" v-else-if="contexto.tipo === 'subgenero'">
+          <p
+v-else-if="contexto.tipo === 'subgenero'"
+class="page-subtitle"
+>
             {{ contexto.nombreGenero }} / {{ contexto.nombreSubgenero }}
           </p>
-          <p class="page-subtitle" v-else>Almacenamiento en la nube OBS</p>
+          <p
+v-else
+class="page-subtitle"
+>
+Almacenamiento en la nube OBS
+</p>
         </div>
         <div class="header-actions">
-          <button v-if="contexto.tipo" class="btn-secondary" @click="volverAtras">
-            <i class="fas fa-arrow-left"></i>
+          <button
+v-if="contexto.tipo"
+class="btn-secondary"
+@click="volverAtras"
+>
+            <i class="fas fa-arrow-left" />
             <span>Volver</span>
           </button>
-          <button class="btn-primary" @click="abrirModalUpload">
-            <i class="fas fa-cloud-upload-alt"></i>
+          <button
+class="btn-primary"
+@click="abrirModalUpload"
+>
+            <i class="fas fa-cloud-upload-alt" />
             <span>Subir Archivo</span>
           </button>
         </div>
@@ -30,14 +50,26 @@
     </div>
 
     <!-- Breadcrumb Navigation -->
-    <div class="breadcrumb-container" v-if="currentPath">
+    <div
+v-if="currentPath"
+class="breadcrumb-container"
+>
       <nav class="breadcrumb">
-        <button @click="navegarCarpeta('')" class="breadcrumb-item">
-          <i class="fas fa-home"></i> Inicio
+        <button
+class="breadcrumb-item"
+@click="navegarCarpeta('')"
+>
+          <i class="fas fa-home" /> Inicio
         </button>
-        <template v-for="(folder, index) in pathParts" :key="index">
+        <template
+v-for="(folder, index) in pathParts"
+:key="index"
+>
           <span class="breadcrumb-separator">/</span>
-          <button @click="navegarCarpeta(getPathUpTo(index))" class="breadcrumb-item">
+          <button
+class="breadcrumb-item"
+@click="navegarCarpeta(getPathUpTo(index))"
+>
             {{ folder }}
           </button>
         </template>
@@ -45,26 +77,41 @@
     </div>
 
     <!-- Loading State -->
-    <LoadingOverlay v-if="isLoading" message="Cargando archivos..." />
+    <LoadingOverlay
+v-if="isLoading"
+message="Cargando archivos..."
+/>
 
     <!-- Empty State -->
-    <div v-else-if="objetos.length === 0" class="empty-state">
+    <div
+v-else-if="objetos.length === 0"
+class="empty-state"
+>
       <div class="empty-state-icon">
-        <i class="fas fa-folder-open"></i>
+        <i class="fas fa-folder-open" />
       </div>
       <h3>No hay archivos en esta ubicación</h3>
       <p>Sube tu primer archivo para comenzar</p>
-      <button class="btn-primary" @click="abrirModalUpload">
-        <i class="fas fa-cloud-upload-alt"></i>
+      <button
+class="btn-primary"
+@click="abrirModalUpload"
+>
+        <i class="fas fa-cloud-upload-alt" />
         Subir Archivo
       </button>
     </div>
 
     <!-- Archivos Grid -->
-    <BaseCard v-else shadow="md" :no-padding="true">
+    <BaseCard
+v-else
+shadow="md"
+:no-padding="true"
+>
       <template #header>
         <div class="section-header">
-          <h2 class="section-title">Archivos y Carpetas</h2>
+          <h2 class="section-title">
+Archivos y Carpetas
+</h2>
           <div class="section-actions">
             <input
               v-if="objetos.length > 5"
@@ -89,29 +136,31 @@
         >
           <div class="card-header">
             <div class="archivo-icon folder-icon">
-              <i class="fas fa-folder"></i>
+              <i class="fas fa-folder" />
             </div>
             <div class="archivo-info">
-              <h3 class="archivo-name">{{ getNombreObjeto(carpeta.objectKey) }}</h3>
+              <h3 class="archivo-name">
+{{ getNombreObjeto(carpeta.objectKey) }}
+</h3>
             </div>
           </div>
 
           <div class="card-actions">
             <button
               class="card-action-btn primary"
-              @click="navegarCarpeta(carpeta.objectKey)"
               title="Abrir carpeta"
+              @click="navegarCarpeta(carpeta.objectKey)"
             >
-              <i class="fas fa-folder-open"></i>
+              <i class="fas fa-folder-open" />
               Abrir
             </button>
 
             <button
               class="card-action-btn danger"
-              @click="eliminarObjeto(carpeta.objectKey)"
               title="Eliminar carpeta"
+              @click="eliminarObjeto(carpeta.objectKey)"
             >
-              <i class="fas fa-trash-alt"></i>
+              <i class="fas fa-trash-alt" />
               Eliminar
             </button>
           </div>
@@ -124,11 +173,16 @@
           class="archivo-card"
         >
           <div class="card-header">
-            <div class="archivo-icon" :class="getFileIconClass(archivo.objectKey)">
-              <i :class="getFileIcon(archivo.objectKey)"></i>
+            <div
+class="archivo-icon"
+:class="getFileIconClass(archivo.objectKey)"
+>
+              <i :class="getFileIcon(archivo.objectKey)" />
             </div>
             <div class="archivo-info">
-              <h3 class="archivo-name">{{ getNombreObjeto(archivo.objectKey) }}</h3>
+              <h3 class="archivo-name">
+{{ getNombreObjeto(archivo.objectKey) }}
+</h3>
               <span class="archivo-size">{{ formatSize(archivo.size) }}</span>
             </div>
           </div>
@@ -137,7 +191,7 @@
             <div class="archivo-details">
               <div class="detail-item">
                 <span class="detail-label">
-                  <i class="fas fa-calendar"></i>
+                  <i class="fas fa-calendar" />
                   Modificado
                 </span>
                 <span class="detail-value">{{ formatDate(archivo.lastModified) }}</span>
@@ -148,37 +202,37 @@
           <div class="card-actions">
             <button
               class="card-action-btn info"
-              @click="generarLink(archivo.objectKey)"
               title="Obtener enlace"
+              @click="generarLink(archivo.objectKey)"
             >
-              <i class="fas fa-link"></i>
+              <i class="fas fa-link" />
               Link
             </button>
 
             <button
               class="card-action-btn success"
-              @click="descargarArchivo(archivo.objectKey)"
               title="Descargar archivo"
+              @click="descargarArchivo(archivo.objectKey)"
             >
-              <i class="fas fa-download"></i>
+              <i class="fas fa-download" />
               Descargar
             </button>
 
             <button
               class="card-action-btn warning"
-              @click="abrirModalMover(archivo)"
               title="Mover archivo"
+              @click="abrirModalMover(archivo)"
             >
-              <i class="fas fa-arrows-alt"></i>
+              <i class="fas fa-arrows-alt" />
               Mover
             </button>
 
             <button
               class="card-action-btn danger"
-              @click="eliminarArchivo(archivo.objectKey)"
               title="Eliminar archivo"
+              @click="eliminarArchivo(archivo.objectKey)"
             >
-              <i class="fas fa-trash-alt"></i>
+              <i class="fas fa-trash-alt" />
               Eliminar
             </button>
           </div>
@@ -198,13 +252,16 @@
           Archivo <span class="required">*</span>
         </label>
         <input
-          type="file"
-          @change="seleccionarArchivo"
-          class="form-input"
           ref="fileInput"
+          type="file"
+          class="form-input"
+          @change="seleccionarArchivo"
         >
-        <p v-if="archivoSeleccionado" class="file-info">
-          <i class="fas fa-file"></i>
+        <p
+v-if="archivoSeleccionado"
+class="file-info"
+>
+          <i class="fas fa-file" />
           {{ archivoSeleccionado.name }} ({{ formatSize(archivoSeleccionado.size) }})
         </p>
       </div>
@@ -224,19 +281,33 @@
         </small>
       </div>
 
-      <div v-if="uploadProgress > 0" class="upload-progress">
+      <div
+v-if="uploadProgress > 0"
+class="upload-progress"
+>
         <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: uploadProgress + '%' }"></div>
+          <div
+class="progress-fill"
+:style="{ width: uploadProgress + '%' }"
+/>
         </div>
         <span class="progress-text">{{ uploadProgress }}%</span>
       </div>
 
       <template #footer>
-        <button class="btn-secondary" @click="cerrarModalUpload" :disabled="uploadingFile">
+        <button
+class="btn-secondary"
+:disabled="uploadingFile"
+@click="cerrarModalUpload"
+>
           Cancelar
         </button>
-        <button class="btn-primary" @click="subirArchivo" :disabled="!archivoSeleccionado || uploadingFile">
-          <i class="fas fa-cloud-upload-alt"></i>
+        <button
+class="btn-primary"
+:disabled="!archivoSeleccionado || uploadingFile"
+@click="subirArchivo"
+>
+          <i class="fas fa-cloud-upload-alt" />
           {{ uploadingFile ? 'Subiendo...' : 'Subir' }}
         </button>
       </template>
@@ -271,11 +342,17 @@
       </div>
 
       <template #footer>
-        <button class="btn-secondary" @click="cerrarModalMover">
+        <button
+class="btn-secondary"
+@click="cerrarModalMover"
+>
           Cancelar
         </button>
-        <button class="btn-primary" @click="moverArchivo">
-          <i class="fas fa-arrows-alt"></i>
+        <button
+class="btn-primary"
+@click="moverArchivo"
+>
+          <i class="fas fa-arrows-alt" />
           Mover
         </button>
       </template>
@@ -291,20 +368,27 @@
         <label class="form-label">URL del archivo</label>
         <div class="link-container">
           <input
+            ref="linkInput"
             :value="linkGenerado"
             type="text"
             class="form-input"
             readonly
-            ref="linkInput"
           >
-          <button class="btn-copy" @click="copiarLink" title="Copiar enlace">
-            <i class="fas fa-copy"></i>
+          <button
+class="btn-copy"
+title="Copiar enlace"
+@click="copiarLink"
+>
+            <i class="fas fa-copy" />
           </button>
         </div>
       </div>
 
       <template #footer>
-        <button class="btn-primary" @click="cerrarModalLink">
+        <button
+class="btn-primary"
+@click="cerrarModalLink"
+>
           Cerrar
         </button>
       </template>
@@ -670,4 +754,4 @@ onMounted(() => {
 })
 </script>
 
-<style scoped src="./musica.css"></style>
+

@@ -1,9 +1,15 @@
 <template>
   <div class="container is-fluid">
     <!-- Alert Notifications -->
-    <div v-if="alertMsg" class="notification-container">
+    <div
+v-if="alertMsg"
+class="notification-container"
+>
       <div :class="['notification', `is-${alertType}`]">
-        <button class="delete" @click="alertMsg = ''"></button>
+        <button
+class="delete"
+@click="alertMsg = ''"
+/>
         <span>{{ alertMsg }}</span>
       </div>
     </div>
@@ -13,14 +19,17 @@
       <div class="card-header">
         <div class="card-header-title">
           <span class="icon has-text-primary">
-            <i class="fas fa-tags"></i>
+            <i class="fas fa-tags" />
           </span>
           <span>Gestión de Categorías</span>
         </div>
         <div class="card-header-icon">
-          <button class="button is-primary" @click="showModal = true">
+          <button
+class="button is-primary"
+@click="showModal = true"
+>
             <span class="icon">
-              <i class="fas fa-plus"></i>
+              <i class="fas fa-plus" />
             </span>
             <span>Nueva Categoría</span>
           </button>
@@ -37,15 +46,18 @@
               type="text"
               placeholder="Buscar categorías..."
               @keyup.enter="filtrarCategorias()"
-            />
+            >
             <span class="icon is-small is-left">
-              <i class="fas fa-search"></i>
+              <i class="fas fa-search" />
             </span>
           </div>
           <div class="control">
-            <button class="button is-info" @click="filtrarCategorias()">
+            <button
+class="button is-info"
+@click="filtrarCategorias()"
+>
               <span class="icon">
-                <i class="fas fa-search"></i>
+                <i class="fas fa-search" />
               </span>
               <span>Buscar</span>
             </button>
@@ -66,17 +78,21 @@
             class="table is-striped is-hoverable is-fullwidth"
           >
             <template #default="props">
-              <b-table-column field="actions" label="Acciones" width="200">
+              <b-table-column
+field="actions"
+label="Acciones"
+width="200"
+>
                 <div class="buttons are-small">
                   <button
                     v-for="(button, index) in tableButtons"
                     :key="`action-${index}`"
                     :class="['button', `is-${button.type || 'danger'}`]"
-                    @click="button.fn ? button.fn(props.row) : null"
                     :title="button.label"
+                    @click="button.fn ? button.fn(props.row) : null"
                   >
                     <span class="icon is-small">
-                      <i :class="`fas fa-${button.icon}`"></i>
+                      <i :class="`fas fa-${button.icon}`" />
                     </span>
                     <span>{{ button.label }}</span>
                   </button>
@@ -89,17 +105,26 @@
     </div>
 
     <!-- Create/Edit Modal -->
-    <div v-if="showModal" class="modal is-active">
-      <div class="modal-background" @click="showModal = false"></div>
+    <div
+v-if="showModal"
+class="modal is-active"
+>
+      <div
+class="modal-background"
+@click="showModal = false"
+/>
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">
             <span class="icon has-text-primary">
-              <i class="fas fa-tag"></i>
+              <i class="fas fa-tag" />
             </span>
             {{ form.title }}
           </p>
-          <button class="delete" @click="showModal = false"></button>
+          <button
+class="delete"
+@click="showModal = false"
+/>
         </header>
 
         <section class="modal-card-body">
@@ -113,9 +138,9 @@
                   type="text"
                   placeholder="Ingrese el nombre de la categoría"
                   required
-                />
+                >
                 <span class="icon is-small is-left">
-                  <i class="fas fa-tag"></i>
+                  <i class="fas fa-tag" />
                 </span>
               </div>
             </div>
@@ -128,7 +153,7 @@
                   class="textarea"
                   rows="3"
                   placeholder="Descripción opcional de la categoría"
-                ></textarea>
+                />
               </div>
             </div>
 
@@ -137,10 +162,18 @@
               <div class="control">
                 <div class="select is-fullwidth">
                   <select v-model="categoria.cat_tipo">
-                    <option value="">Seleccionar tipo...</option>
-                    <option value="musica">Música</option>
-                    <option value="spots">Spots</option>
-                    <option value="general">General</option>
+                    <option value="">
+Seleccionar tipo...
+</option>
+                    <option value="musica">
+Música
+</option>
+                    <option value="spots">
+Spots
+</option>
+                    <option value="general">
+General
+</option>
                   </select>
                 </div>
               </div>
@@ -154,7 +187,7 @@
                     type="checkbox"
                     true-value="A"
                     false-value="B"
-                  />
+                  >
                   Categoría activa
                 </label>
               </div>
@@ -163,15 +196,21 @@
         </section>
 
         <footer class="modal-card-foot">
-          <button class="button is-success" @click="guardarCategoria()">
+          <button
+class="button is-success"
+@click="guardarCategoria()"
+>
             <span class="icon">
-              <i class="fas fa-save"></i>
+              <i class="fas fa-save" />
             </span>
             <span>{{ form.submitLabel }}</span>
           </button>
-          <button class="button" @click="showModal = false">
+          <button
+class="button"
+@click="showModal = false"
+>
             <span class="icon">
-              <i class="fas fa-times"></i>
+              <i class="fas fa-times" />
             </span>
             <span>Cancelar</span>
           </button>
@@ -208,9 +247,6 @@ export default {
       alertType: "info"
     }
   },
-  created() {
-    this.cargarCategorias();
-  },
   computed: {
     tableColumns() {
       return [
@@ -237,6 +273,14 @@ export default {
         }
       ];
     }
+  },
+  watch: {
+    searchTerm() {
+      this.filtrarCategorias();
+    }
+  },
+  created() {
+    this.cargarCategorias();
   },
   methods: {
     async cargarCategorias() {
@@ -331,71 +375,7 @@ export default {
       this.alertType = type;
       setTimeout(() => (this.alertMsg = ""), 5000);
     }
-  },
-  watch: {
-    searchTerm() {
-      this.filtrarCategorias();
-    }
   }
 };
 </script>
 
-<style scoped>
-/* ===== BULMA ENHANCEMENTS ===== */
-
-.notification-container {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 1000;
-  max-width: 400px;
-  width: 100%;
-}
-
-.table-container {
-  margin-top: 1rem;
-}
-
-/* ===== DARK THEME SUPPORT ===== */
-@media (prefers-color-scheme: dark) {
-  .card {
-    background-color: var(--color-surface-primary);
-    border-color: var(--color-border-primary);
-  }
-
-  .card-header {
-    background-color: var(--color-bg-secondary);
-    border-color: var(--color-border-primary);
-  }
-
-  .modal-card {
-    background-color: var(--color-surface-primary);
-    color: var(--color-text-primary);
-  }
-
-  .modal-card-head,
-  .modal-card-foot {
-    background-color: var(--color-bg-secondary);
-    border-color: var(--color-border-primary);
-  }
-}
-
-/* ===== RESPONSIVE DESIGN ===== */
-@media (max-width: 768px) {
-  .notification-container {
-    top: 0.5rem;
-    right: 0.5rem;
-    left: 0.5rem;
-    max-width: none;
-  }
-
-  .card-header-icon {
-    margin-left: auto;
-  }
-
-  .modal-card {
-    margin: 1rem;
-    width: calc(100vw - 2rem);
-  }
-}
-</style>

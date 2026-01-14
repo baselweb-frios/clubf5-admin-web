@@ -4,14 +4,28 @@
       <div class="col-12">
         <card :title="data.title">
           <div v-if="isLoading">
-            <loading-spinner :loading="true" :color="'#1d8cf8'" :height="'95px'"></loading-spinner>
+            <loading-spinner
+:loading="true"
+:color="'#1d8cf8'"
+:height="'95px'"
+/>
           </div>
           <div v-else>
             <div class="col-md-4">
-              <base-button type="success" v-show="data.rows.length==0" @click="redirect()">{{$t("modulo_spots.principal.btnAdd")}}</base-button>
+              <base-button
+v-show="data.rows.length==0"
+type="success"
+@click="redirect()"
+>
+{{ $t("modulo_spots.principal.btnAdd") }}
+</base-button>
             </div>
             <div class="table-responsive">
-              <data-table :rows="data.rows" :columns="data.columns" :config="config">
+              <data-table
+:rows="data.rows"
+:columns="data.columns"
+:config="config"
+>
                 <template #empty-results>
                   No se encontraron registros
                 </template>
@@ -23,7 +37,8 @@
                     class="btn el-tooltip btn-icon btn-fab btn-info btn-sm"
                     aria-describedby="el-tooltip-8889"
                     tabindex="0"
-                    @click="btnEditar(row, $event.target)">
+                    @click="btnEditar(row, $event.target)"
+>
                     <span class="material-symbols-outlined">edit_square</span>
                   </button>
 
@@ -33,7 +48,8 @@
                     class="btn el-tooltip btn-icon btn-fab btn-danger btn-sm"
                     aria-describedby="el-tooltip-8889"
                     tabindex="0"
-                    @click="btnEliminar(row.clipro_codigo, $event.target)">
+                    @click="btnEliminar(row.clipro_codigo, $event.target)"
+>
                     <span class="material-symbols-outlined">delete</span>
                   </button>
 
@@ -43,7 +59,8 @@
                     class="btn el-tooltip btn-icon btn-fab btn-success btn-sm"
                     aria-describedby="el-tooltip-8889"
                     tabindex="0"
-                    @click="calendarRedirect(row, $event.target)">
+                    @click="calendarRedirect(row, $event.target)"
+>
                     <span class="material-symbols-outlined">calendar_clock</span>
                   </button>
                 </template>

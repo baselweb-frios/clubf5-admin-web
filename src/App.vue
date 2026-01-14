@@ -1,8 +1,17 @@
 <template>
-  <div id="app" class="min-h-screen bg-gray-50">
+  <div
+id="app"
+class="min-h-screen bg-gray-50"
+>
     <router-view v-slot="{ Component, route }">
-      <transition name="fade" mode="out-in">
-        <component :is="Component" :key="route.path" />
+      <transition
+name="fade"
+mode="out-in"
+>
+        <component
+:is="Component"
+:key="route.path"
+/>
       </transition>
     </router-view>
   </div>
@@ -19,16 +28,3 @@ onMounted(() => {
   authStore.loadUserFromStorage()
 })
 </script>
-
-<style>
-/* Transition animations */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

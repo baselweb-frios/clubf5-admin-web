@@ -1,17 +1,29 @@
 <template>
   <card>
-      <h5 slot="header" class="title">Nueva Programación</h5>
-      <form  id="frmNuevaProgramacion" accept-charset="UTF-8" role="form" v-on:submit.prevent="guardarProgramacion" class="form-lock">
+      <template #header>
+<h5 class="title">
+Nueva Programación
+</h5>
+</template>
+      <form
+id="frmNuevaProgramacion"
+accept-charset="UTF-8"
+role="form"
+class="form-lock"
+@submit.prevent="guardarProgramacion"
+>
         <div class="row">
           <div class="col-md-6 pr-md-3">
-            <base-input label="Nombre de la Programacion"
+            <base-input
+v-model="nombreProgramacion"
+                      label="Nombre de la Programacion"
                       placeholder="Nombre"
-                      v-model="nombreProgramacion"
-                      required>
-            </base-input>
+                      required
+/>
           </div>
         </div>
-        <input class="btn btn-md btn-success"
+        <input
+class="btn btn-md btn-success"
                       type="submit"
                       value="Guardar"
                     >
@@ -32,12 +44,12 @@ import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 
 export default {
-  layout: 'default',
-  name: 'frmNuevaProgramacion',
+  name: 'FrmNuevaProgramacion',
   components: {
     LoadingOverlay,
     LoadingSpinner
   },
+  layout: 'default',
 
   data () {
     return {
@@ -50,6 +62,12 @@ export default {
       codigoProgramacion: this.$route.params.codigoProgramacion,
       isLoading: false
     }
+  },
+  computed: {
+
+  },
+  mounted () {
+    this.verificarParametros()
   },
   methods: {
     guardarProgramacion () {
@@ -106,15 +124,7 @@ export default {
       // Usar alert nativo o implementar notificación personalizada
       alert(message)
     }
-  },
-  mounted () {
-    this.verificarParametros()
-  },
-  computed: {
-
   }
 }
 
 </script>
-<style>
-</style>

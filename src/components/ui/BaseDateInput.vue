@@ -1,24 +1,76 @@
 <template>
   <div class="base-date-wrapper">
-    <label v-if="label" :for="inputId" class="date-label" :class="{ 'label-required': required }">
+    <label
+v-if="label"
+:for="inputId"
+class="date-label"
+:class="{ 'label-required': required }"
+>
       {{ label }}
-      <span v-if="required" class="required-mark">*</span>
+      <span
+v-if="required"
+class="required-mark"
+>*</span>
     </label>
 
     <div class="date-container">
       <!-- Calendar Icon -->
       <div class="date-icon">
-        <svg v-if="type === 'date' || type === 'datetime-local' || type === 'month' || type === 'week'"
-             width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-          <line x1="16" y1="2" x2="16" y2="6"></line>
-          <line x1="8" y1="2" x2="8" y2="6"></line>
-          <line x1="3" y1="10" x2="21" y2="10"></line>
+        <svg
+v-if="type === 'date' || type === 'datetime-local' || type === 'month' || type === 'week'"
+             width="20"
+height="20"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="2"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+          <rect
+x="3"
+y="4"
+width="18"
+height="18"
+rx="2"
+ry="2"
+/>
+          <line
+x1="16"
+y1="2"
+x2="16"
+y2="6"
+/>
+          <line
+x1="8"
+y1="2"
+x2="8"
+y2="6"
+/>
+          <line
+x1="3"
+y1="10"
+x2="21"
+y2="10"
+/>
         </svg>
-        <svg v-else-if="type === 'time'"
-             width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polyline points="12 6 12 12 16 14"></polyline>
+        <svg
+v-else-if="type === 'time'"
+             width="20"
+height="20"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="2"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+          <circle
+cx="12"
+cy="12"
+r="10"
+/>
+          <polyline points="12 6 12 12 16 14" />
         </svg>
       </div>
 
@@ -26,10 +78,6 @@
         :id="inputId"
         :type="type"
         :value="modelValue"
-        @input="handleInput"
-        @blur="handleBlur"
-        @focus="handleFocus"
-        @change="handleChange"
         :placeholder="placeholder"
         :disabled="disabled"
         :readonly="readonly"
@@ -39,15 +87,25 @@
         :step="step"
         :class="dateClasses"
         class="base-date-input"
-      />
+        @input="handleInput"
+        @blur="handleBlur"
+        @focus="handleFocus"
+        @change="handleChange"
+      >
     </div>
 
-    <p v-if="error" class="date-error">
-      <i class="fas fa-exclamation-circle"></i>
+    <p
+v-if="error"
+class="date-error"
+>
+      <i class="fas fa-exclamation-circle" />
       {{ error }}
     </p>
-    <p v-else-if="hint" class="date-hint">
-      <i class="fas fa-info-circle"></i>
+    <p
+v-else-if="hint"
+class="date-hint"
+>
+      <i class="fas fa-info-circle" />
       {{ hint }}
     </p>
   </div>
@@ -142,240 +200,104 @@ const handleChange = (event) => {
 </script>
 
 <style scoped>
-/* ===== BASE DATE INPUT - DARKLITE DESIGN SYSTEM ===== */
+/* Wrapper */
 .base-date-wrapper {
-  width: 100%;
-  margin-bottom: 1.25rem;
+  @apply space-y-1.5;
 }
 
-/* ===== LABEL ===== */
+/* Label */
 .date-label {
-  display: block;
-  margin-bottom: 0.625rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #a1a1aa;
-  letter-spacing: 0.025em;
-  text-transform: uppercase;
-  transition: color 200ms ease;
+  @apply block text-sm font-medium text-text-secondary;
 }
 
-.label-required .required-mark {
-  color: #ef4444;
-  margin-left: 0.25rem;
-  font-weight: 700;
+.light .date-label {
+  @apply text-text-light-secondary;
 }
 
-/* ===== DATE CONTAINER ===== */
+.label-required {
+  @apply text-text-primary;
+}
+
+.light .label-required {
+  @apply text-text-light-primary;
+}
+
+.required-mark {
+  @apply text-danger-500 ml-0.5;
+}
+
+/* Date Container */
 .date-container {
-  position: relative;
-  display: flex;
-  align-items: center;
+  @apply relative flex items-center;
 }
 
+/* Date Icon */
 .date-icon {
-  position: absolute;
-  left: 0;
-  padding-left: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 2;
-  color: #71717a;
-  transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  @apply absolute left-0 top-0 bottom-0;
+  @apply flex items-center justify-center w-10;
+  @apply pointer-events-none;
+  @apply text-text-tertiary;
 }
 
-/* ===== BASE DATE INPUT ===== */
+.light .date-icon {
+  @apply text-text-light-tertiary;
+}
+
+/* Base Date Input */
 .base-date-input {
-  position: relative;
-  width: 100%;
-  padding: 0.75rem 3rem 0.75rem 3.25rem;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
-  color: #ffffff;
-  color-scheme: dark;
-  font-size: 0.9375rem;
-  font-weight: 400;
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  letter-spacing: -0.01em;
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  outline: none;
-  cursor: pointer;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  @apply w-full pl-10 pr-4 py-2.5 rounded-lg text-sm;
+  @apply bg-dark-secondary text-text-primary;
+  @apply border border-dark-border;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply read-only:bg-dark-tertiary read-only:cursor-default;
 }
 
-/* Calendar Picker Indicator - Hidden but clickable */
+.light .base-date-input {
+  @apply bg-light-secondary text-text-light-primary border-light-border;
+  @apply read-only:bg-light-tertiary;
+}
+
+/* Custom date picker styling */
 .base-date-input::-webkit-calendar-picker-indicator {
-  background: transparent;
-  cursor: pointer;
-  filter: invert(0.7);
-  opacity: 0;
-  position: absolute;
-  right: 0.75rem;
-  width: 2rem;
-  height: 2rem;
-  z-index: 3;
+  @apply cursor-pointer opacity-60 hover:opacity-100;
+  @apply transition-opacity duration-200;
+  filter: invert(1);
 }
 
-/* Clear Button */
-.base-date-input::-webkit-clear-button {
-  display: none;
-}
-
-/* Inner Spin Button */
-.base-date-input::-webkit-inner-spin-button {
-  display: none;
-}
-
-/* Placeholder */
-.base-date-input::placeholder {
-  color: #52525b;
-  opacity: 1;
-  letter-spacing: -0.01em;
-}
-
-/* Placeholder for empty date/time */
-.base-date-input::before {
-  color: #52525b;
-  content: attr(placeholder);
-}
-
-.base-date-input:focus::before,
-.base-date-input:valid::before {
-  content: "" !important;
-}
-
-/* Hover State */
-.base-date-input:hover:not(:disabled):not(:readonly) {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-}
-
-.base-date-input:hover:not(:disabled):not(:readonly) ~ .date-icon {
-  color: #a1a1aa;
-}
-
-/* Focus State */
-.base-date-input:focus {
-  border-color: #3b82f6;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 0 0 3px rgba(59, 130, 246, 0.15),
-    0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-.base-date-input:focus ~ .date-icon {
-  color: #3b82f6;
-}
-
-/* Disabled State */
-.base-date-input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: rgba(255, 255, 255, 0.02);
-  border-color: rgba(255, 255, 255, 0.05);
-  box-shadow: none;
-}
-
-/* Read-only State */
-.base-date-input:readonly {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: rgba(255, 255, 255, 0.08);
-  cursor: default;
+.light .base-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(0);
 }
 
 /* Error State */
 .base-date-input.date-error-state {
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.05);
+  @apply border-danger-500;
+  @apply focus:border-danger-500 focus:ring-danger-500;
 }
 
-.base-date-input.date-error-state:focus {
-  border-color: #ef4444;
-  box-shadow:
-    0 0 0 3px rgba(239, 68, 68, 0.15),
-    0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.base-date-input.date-error-state:focus ~ .date-icon {
-  color: #ef4444;
-}
-
-/* ===== ERROR & HINT MESSAGES ===== */
+/* Error Message */
 .date-error {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.625rem;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: #f87171;
-  letter-spacing: -0.01em;
-  animation: slideInUp 200ms ease-out;
+  @apply flex items-center gap-1.5;
+  @apply text-xs text-danger-400;
 }
 
+.date-error i {
+  @apply text-danger-500;
+}
+
+/* Hint Message */
 .date-hint {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.625rem;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: #71717a;
-  letter-spacing: -0.01em;
+  @apply flex items-center gap-1.5;
+  @apply text-xs text-text-tertiary;
 }
 
-.date-error i,
+.light .date-hint {
+  @apply text-text-light-tertiary;
+}
+
 .date-hint i {
-  font-size: 0.875rem;
-  flex-shrink: 0;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .base-date-input {
-    font-size: 0.875rem;
-    padding: 0.625rem 2.75rem 0.625rem 3rem;
-  }
-
-  .date-label {
-    font-size: 0.75rem;
-  }
-
-  .date-error,
-  .date-hint {
-    font-size: 0.75rem;
-  }
-}
-
-/* ===== ACCESSIBILITY ===== */
-@media (prefers-reduced-motion: reduce) {
-  .base-date-input,
-  .date-icon,
-  .date-error {
-    transition: none;
-    animation: none;
-  }
-
-  .base-date-input:focus {
-    transform: none;
-  }
+  @apply text-info-500;
 }
 </style>
+

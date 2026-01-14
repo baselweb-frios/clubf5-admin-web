@@ -3,61 +3,79 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header -->
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Mi Perfil</h1>
+        <h1 class="text-3xl font-bold text-gray-900">
+Mi Perfil
+</h1>
         <p class="mt-2 text-sm text-gray-600">
           Gestiona tu información personal y configuración de cuenta
         </p>
       </div>
 
       <!-- Loading State -->
-      <LoadingOverlay v-if="isLoadingProfile" message="Cargando perfil..." />
+      <LoadingOverlay
+v-if="isLoadingProfile"
+message="Cargando perfil..."
+/>
 
       <!-- Error State -->
       <div
         v-if="error"
         class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start"
       >
-        <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3"></i>
+        <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3" />
         <div>
-          <h3 class="text-sm font-medium text-red-800">Error</h3>
-          <p class="text-sm text-red-700 mt-1">{{ error }}</p>
+          <h3 class="text-sm font-medium text-red-800">
+Error
+</h3>
+          <p class="text-sm text-red-700 mt-1">
+{{ error }}
+</p>
         </div>
       </div>
 
       <!-- Tabs -->
       <div class="bg-white rounded-lg shadow">
         <div class="border-b border-gray-200">
-          <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+          <nav
+class="-mb-px flex space-x-8 px-6"
+aria-label="Tabs"
+>
             <button
-              @click="activeTab = 'profile'"
               :class="[
                 activeTab === 'profile'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
                 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors'
               ]"
+              @click="activeTab = 'profile'"
             >
-              <i class="fas fa-user mr-2"></i>
+              <i class="fas fa-user mr-2" />
               Información Personal
             </button>
             <button
-              @click="activeTab = 'password'"
               :class="[
                 activeTab === 'password'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
                 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors'
               ]"
+              @click="activeTab = 'password'"
             >
-              <i class="fas fa-lock mr-2"></i>
+              <i class="fas fa-lock mr-2" />
               Cambiar Contraseña
             </button>
           </nav>
         </div>
 
         <!-- Tab Content: Profile Information -->
-        <div v-show="activeTab === 'profile'" class="p-6">
-          <form @submit.prevent="handleUpdateProfile" class="space-y-6">
+        <div
+v-show="activeTab === 'profile'"
+class="p-6"
+>
+          <form
+class="space-y-6"
+@submit.prevent="handleUpdateProfile"
+>
             <!-- Username (Read-only) -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -68,7 +86,7 @@
                 :value="profile.username"
                 disabled
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
-              />
+              >
               <p class="mt-1 text-xs text-gray-500">
                 El nombre de usuario no puede ser modificado
               </p>
@@ -86,7 +104,7 @@
                 maxlength="100"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Juan Pérez"
-              />
+              >
             </div>
 
             <!-- Email -->
@@ -100,7 +118,7 @@
                 maxlength="100"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="correo@ejemplo.com"
-              />
+              >
             </div>
 
             <!-- Teléfono -->
@@ -114,7 +132,7 @@
                 maxlength="20"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="+54 11 1234-5678"
-              />
+              >
             </div>
 
             <!-- Fecha de Nacimiento -->
@@ -127,7 +145,7 @@
                 type="date"
                 style="color:black"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              />
+              >
             </div>
 
             <!-- Domicilio -->
@@ -141,7 +159,7 @@
                 maxlength="200"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Av. Corrientes 1234"
-              />
+              >
             </div>
 
             <!-- Localidad -->
@@ -155,14 +173,14 @@
                 maxlength="100"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Buenos Aires"
-              />
+              >
             </div>
 
             <!-- Campos específicos de Cliente -->
             <template v-if="profile.tipo === 'C'">
               <div class="border-t border-gray-200 pt-6 mt-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">
-                  <i class="fas fa-building mr-2"></i>
+                  <i class="fas fa-building mr-2" />
                   Configuración de Cliente
                 </h3>
 
@@ -179,7 +197,7 @@
                     accept="image/jpeg,image/png,image/gif,image/webp"
                     class="hidden"
                     @change="handleLogoSelect"
-                  />
+                  >
 
                   <div class="flex items-start gap-6">
                     <!-- Preview del logo -->
@@ -192,21 +210,21 @@
                           :src="logoPreview || formData.logo"
                           alt="Logo preview"
                           class="w-full h-full object-contain"
-                        />
+                        >
                         <button
                           type="button"
-                          @click="removeLogo"
                           class="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
                           title="Eliminar logo"
+                          @click="removeLogo"
                         >
-                          <i class="fas fa-times"></i>
+                          <i class="fas fa-times" />
                         </button>
                       </div>
                       <div
                         v-else
                         class="w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50"
                       >
-                        <i class="fas fa-image text-3xl text-gray-400"></i>
+                        <i class="fas fa-image text-3xl text-gray-400" />
                       </div>
                     </div>
 
@@ -214,11 +232,11 @@
                     <div class="flex-1">
                       <button
                         type="button"
-                        @click="triggerLogoUpload"
                         :disabled="isUploadingLogo"
                         class="px-6 py-3 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center"
+                        @click="triggerLogoUpload"
                       >
-                        <i class="fas fa-upload mr-2"></i>
+                        <i class="fas fa-upload mr-2" />
                         {{ logoPreview ? 'Cambiar imagen' : 'Seleccionar imagen' }}
                       </button>
                       <p class="mt-3 text-sm text-gray-500">
@@ -227,8 +245,11 @@
                       <p class="text-sm text-gray-500">
                         Tamaño máximo: 5MB
                       </p>
-                      <p v-if="logoFile" class="mt-2 text-sm text-blue-600 font-medium">
-                        <i class="fas fa-check-circle mr-1"></i>
+                      <p
+v-if="logoFile"
+class="mt-2 text-sm text-blue-600 font-medium"
+>
+                        <i class="fas fa-check-circle mr-1" />
                         {{ logoFile.name }}
                       </p>
                     </div>
@@ -248,7 +269,7 @@
                       max="60"
                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       placeholder="15"
-                    />
+                    >
                     <p class="mt-1 text-xs text-gray-500">
                       Intervalo entre reproducciones de spots (1-60 minutos)
                     </p>
@@ -266,7 +287,7 @@
                       max="31"
                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                       placeholder="15"
-                    />
+                    >
                     <p class="mt-1 text-xs text-gray-500">
                       Día del mes en que vence tu paquete (1-31)
                     </p>
@@ -286,7 +307,7 @@
                   :value="getTipoUsuarioLabel(profile.tipo)"
                   disabled
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
-                />
+                >
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -297,7 +318,7 @@
                   :value="profile.estado === 'A' ? 'Activo' : 'Inactivo'"
                   disabled
                   class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
-                />
+                >
               </div>
             </div>
 
@@ -311,15 +332,15 @@
                 :value="formatDate(profile.fechaAlta)"
                 disabled
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
-              />
+              >
             </div>
 
             <!-- Actions -->
             <div class="flex justify-end space-x-4 pt-6 border-t">
               <button
                 type="button"
-                @click="resetForm"
                 class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                @click="resetForm"
               >
                 Cancelar
               </button>
@@ -328,8 +349,15 @@
                 :disabled="isUpdating"
                 class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center"
               >
-                <LoadingSpinner v-if="isUpdating" class="mr-2" size="sm" />
-                <i v-else class="fas fa-save mr-2"></i>
+                <LoadingSpinner
+v-if="isUpdating"
+class="mr-2"
+size="sm"
+/>
+                <i
+v-else
+class="fas fa-save mr-2"
+/>
                 {{ isUpdating ? 'Guardando...' : 'Guardar Cambios' }}
               </button>
             </div>
@@ -337,13 +365,21 @@
         </div>
 
         <!-- Tab Content: Change Password -->
-        <div v-show="activeTab === 'password'" class="p-6">
-          <form @submit.prevent="handleChangePassword" class="space-y-6">
+        <div
+v-show="activeTab === 'password'"
+class="p-6"
+>
+          <form
+class="space-y-6"
+@submit.prevent="handleChangePassword"
+>
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
               <div class="flex">
-                <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-3"></i>
+                <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-3" />
                 <div class="text-sm text-blue-700">
-                  <p class="font-medium">Requisitos de contraseña:</p>
+                  <p class="font-medium">
+Requisitos de contraseña:
+</p>
                   <ul class="mt-2 space-y-1 list-disc list-inside">
                     <li>Mínimo 6 caracteres</li>
                     <li>Máximo 100 caracteres</li>
@@ -364,13 +400,13 @@
                   required
                   class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="••••••••"
-                />
+                >
                 <button
                   type="button"
-                  @click="showCurrentPassword = !showCurrentPassword"
                   class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  @click="showCurrentPassword = !showCurrentPassword"
                 >
-                  <i :class="showCurrentPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  <i :class="showCurrentPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" />
                 </button>
               </div>
             </div>
@@ -389,13 +425,13 @@
                   maxlength="100"
                   class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="••••••••"
-                />
+                >
                 <button
                   type="button"
-                  @click="showNewPassword = !showNewPassword"
                   class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  @click="showNewPassword = !showNewPassword"
                 >
-                  <i :class="showNewPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  <i :class="showNewPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" />
                 </button>
               </div>
             </div>
@@ -414,13 +450,13 @@
                   maxlength="100"
                   class="w-full px-4 py-2 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="••••••••"
-                />
+                >
                 <button
                   type="button"
-                  @click="showConfirmPassword = !showConfirmPassword"
                   class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  @click="showConfirmPassword = !showConfirmPassword"
                 >
-                  <i :class="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  <i :class="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" />
                 </button>
               </div>
               <p
@@ -435,8 +471,8 @@
             <div class="flex justify-end space-x-4 pt-6 border-t">
               <button
                 type="button"
-                @click="resetPasswordForm"
                 class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                @click="resetPasswordForm"
               >
                 Cancelar
               </button>
@@ -445,8 +481,15 @@
                 :disabled="isChangingPassword || !isPasswordValid"
                 class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors flex items-center"
               >
-                <LoadingSpinner v-if="isChangingPassword" class="mr-2" size="sm" />
-                <i v-else class="fas fa-key mr-2"></i>
+                <LoadingSpinner
+v-if="isChangingPassword"
+class="mr-2"
+size="sm"
+/>
+                <i
+v-else
+class="fas fa-key mr-2"
+/>
                 {{ isChangingPassword ? 'Cambiando...' : 'Cambiar Contraseña' }}
               </button>
             </div>
@@ -762,23 +805,3 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-/* Animaciones suaves */
-input{
-  color:black;
-  background-color:rgb(10, 10, 10);
-}
-input:focus,
-button:focus {
-  outline: none;
-}
-
-/* Transiciones */
-.transition-all {
-  transition: all 0.2s ease-in-out;
-}
-
-.transition-colors {
-  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
-}
-</style>

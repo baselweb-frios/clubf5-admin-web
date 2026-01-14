@@ -1,71 +1,74 @@
 <template>
-  <div class="biblioteca-spot">
+  <div class="page-content">
+    <div class="space-y-6">
     <!-- Loading Overlay - Solo durante carga inicial -->
     <LoadingOverlay :show="isLoading" text="Cargando biblioteca de spots..." />
 
     <!-- Contenido principal - Solo visible cuando NO está cargando -->
     <template v-if="!isLoading">
       <!-- Selector de Programación -->
-      <div v-if="selectedProgramacion" class="programacion-header">
-      <div class="programacion-info">
-        <i class="fa fa-calendar-check-o"></i>
-        <span class="programacion-label">Programación Activa:</span>
-        <strong class="programacion-name">{{ selectedProgramacion.clipro_nombre }}</strong>
-        <span class="programacion-code">({{ selectedProgramacion.clipro_codigo }})</span>
-      </div>
-      <div class="programacion-actions">
-        <button
-          v-if="isClienteRole"
-          @click="openProgramacionSelector"
-          class="btn btn-outline btn-sm"
-          title="Cambiar programación"
-        >
-          <i class="fa fa-exchange"></i>
-          Cambiar
-        </button>
-        <button
-          v-if="canCreateProgramacion"
-          @click="openCreateProgramacionModal"
-          class="btn btn-primary btn-sm"
-        >
-          <i class="fa fa-plus"></i>
-          Nueva Programación
-        </button>
-      </div>
-    </div>
-
-      <!-- Control para mostrar/ocultar spots vencidos -->
-      <div class="expired-spots-toggle">
-      <div class="toggle-container">
-        <label class="toggle-label">
-          <input
-            type="checkbox"
-            :checked="spotsStore.showExpiredSpots"
-            @change="handleToggleExpiredSpots"
-            class="toggle-input"
+      <div
+        v-if="selectedProgramacion"
+        class="card flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-3 flex-wrap">
+          <i class="fa fa-calendar-check-o text-primary-400 text-lg" />
+          <span class="text-text-secondary text-sm">Programación Activa:</span>
+          <strong class="text-text-primary">{{ selectedProgramacion.clipro_nombre }}</strong>
+          <span class="text-text-tertiary text-sm">({{ selectedProgramacion.clipro_codigo }})</span>
+        </div>
+        <div class="flex gap-2">
+          <button
+            v-if="isClienteRole"
+            class="btn btn-secondary btn-sm"
+            title="Cambiar programación"
+            @click="openProgramacionSelector"
           >
-          <span class="toggle-switch"></span>
-          <span class="toggle-text">
-            <i :class="spotsStore.showExpiredSpots ? 'fa fa-eye' : 'fa fa-eye-slash'"></i>
-            {{ spotsStore.showExpiredSpots ? 'Mostrando todos los spots' : 'Solo spots vigentes' }}
-          </span>
-        </label>
-        <div class="toggle-stats">
-          <span class="stat-item">
-            <i class="fa fa-check-circle" style="color: #10b981;"></i>
-            <strong>{{ spotsStore.activeSpotsCount }}</strong> vigentes
-          </span>
-          <span class="stat-item" v-if="spotsStore.expiredSpotsCount > 0">
-            <i class="fa fa-times-circle" style="color: #ef4444;"></i>
-            <strong>{{ spotsStore.expiredSpotsCount }}</strong> vencidos
-          </span>
-          <span class="stat-item">
-            <i class="fa fa-layer-group" style="color: #6366f1;"></i>
-            <strong>{{ spotsStore.allSpotsCount }}</strong> total
-          </span>
+            <i class="fa fa-exchange" />
+            Cambiar
+          </button>
+          <button
+            v-if="canCreateProgramacion"
+            class="btn btn-primary btn-sm"
+            @click="openCreateProgramacionModal"
+          >
+            <i class="fa fa-plus" />
+            Nueva Programación
+          </button>
         </div>
       </div>
-    </div>
+
+      <!-- Control para mostrar/ocultar spots vencidos -->
+      <div class="card">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              :checked="spotsStore.showExpiredSpots"
+              class="checkbox"
+              @change="handleToggleExpiredSpots"
+            >
+            <span class="flex items-center gap-2 text-sm text-text-primary">
+              <i :class="spotsStore.showExpiredSpots ? 'fa fa-eye text-primary-400' : 'fa fa-eye-slash text-text-tertiary'" />
+              {{ spotsStore.showExpiredSpots ? 'Mostrando todos los spots' : 'Solo spots vigentes' }}
+            </span>
+          </label>
+          <div class="flex flex-wrap gap-4 text-sm">
+            <span class="flex items-center gap-2 text-text-secondary">
+              <i class="fa fa-check-circle text-success-400" />
+              <strong class="text-text-primary">{{ spotsStore.activeSpotsCount }}</strong> vigentes
+            </span>
+            <span v-if="spotsStore.expiredSpotsCount > 0" class="flex items-center gap-2 text-text-secondary">
+              <i class="fa fa-times-circle text-danger-400" />
+              <strong class="text-text-primary">{{ spotsStore.expiredSpotsCount }}</strong> vencidos
+            </span>
+            <span class="flex items-center gap-2 text-text-secondary">
+              <i class="fa fa-layer-group text-primary-400" />
+              <strong class="text-text-primary">{{ spotsStore.allSpotsCount }}</strong> total
+            </span>
+          </div>
+        </div>
+      </div>
 
       <!-- Modal Selector de Programación -->
       <Modal
@@ -75,52 +78,65 @@
         :close-on-overlay="true"
       >
         <template #header>
-          <div class="modal-title-group">
-            <i class="fa fa-list"></i>
-            <h3>Seleccionar Programación</h3>
+          <div class="flex items-center gap-3">
+            <i class="fa fa-list text-primary-400" />
+            <h3 class="text-lg font-semibold text-text-primary">Seleccionar Programación</h3>
           </div>
         </template>
 
-        <div v-if="availableProgramaciones.length === 0" class="empty-state">
-          <i class="fa fa-inbox"></i>
-          <p>No hay programaciones disponibles</p>
+        <div
+          v-if="availableProgramaciones.length === 0"
+          class="flex flex-col items-center justify-center gap-4 py-8"
+        >
+          <i class="fa fa-inbox text-3xl text-text-secondary" />
+          <p class="text-text-secondary">No hay programaciones disponibles</p>
           <button
             v-if="canCreateProgramacion"
-            @click="openCreateProgramacionModal"
             class="btn btn-primary"
+            @click="openCreateProgramacionModal"
           >
-            <i class="fa fa-plus"></i>
+            <i class="fa fa-plus" />
             Crear Nueva Programación
           </button>
         </div>
 
-        <div v-else class="programaciones-list">
+        <div
+v-else
+class="programaciones-list space-y-2"
+>
           <div
             v-for="prog in availableProgramaciones"
             :key="prog.clipro_codigo"
+            class="programacion-item card card-hover cursor-pointer flex items-center justify-between"
+            :class="{ 'ring-2 ring-primary-500': selectedProgramacion && selectedProgramacion.clipro_codigo === prog.clipro_codigo }"
             @click="selectProgramacion(prog)"
-            class="programacion-item"
-            :class="{ 'selected': selectedProgramacion && selectedProgramacion.clipro_codigo === prog.clipro_codigo }"
           >
-            <div class="programacion-item-icon">
-              <i class="fa fa-calendar"></i>
+            <div class="flex items-center gap-3 flex-1">
+              <div class="programacion-item-icon flex-shrink-0">
+                <i class="fa fa-calendar text-primary-400" />
+              </div>
+              <div class="programacion-item-info flex-1">
+                <h4 class="font-semibold">{{ prog.clipro_nombre }}</h4>
+                <p class="text-sm text-text-secondary">
+Código: {{ prog.clipro_codigo }}
+</p>
+              </div>
             </div>
-            <div class="programacion-item-info">
-              <h4>{{ prog.clipro_nombre }}</h4>
-              <p class="programacion-item-code">Código: {{ prog.clipro_codigo }}</p>
-            </div>
-            <div class="programacion-item-action">
-              <i class="fa fa-chevron-right"></i>
+            <div class="programacion-item-action text-text-secondary">
+              <i class="fa fa-chevron-right" />
             </div>
           </div>
         </div>
 
-        <template v-if="canCreateProgramacion && availableProgramaciones.length > 0" #footer>
+        <template
+v-if="canCreateProgramacion && availableProgramaciones.length > 0"
+#footer
+>
           <button
+            class="btn btn-secondary w-full"
             @click="openCreateProgramacionModal"
-            class="btn btn-outline btn-block"
           >
-            <i class="fa fa-plus"></i>
+            <i class="fa fa-plus" />
             Crear Nueva Programación
           </button>
         </template>
@@ -134,68 +150,71 @@
         :close-on-overlay="true"
       >
         <template #header>
-          <div class="modal-title-group">
-            <i class="fa fa-plus-circle"></i>
-            <h3>Crear Nueva Programación</h3>
+          <div class="flex items-center gap-3">
+            <i class="fa fa-plus-circle text-primary-400" />
+            <h3 class="text-lg font-semibold text-text-primary">Crear Nueva Programación</h3>
           </div>
         </template>
 
         <div class="form-group">
-          <label class="form-label">
-            <i class="fa fa-tag"></i>
+          <label class="label">
+            <i class="fa fa-tag" />
             Nombre de la Programación
           </label>
           <input
             v-model="newProgramacionName"
             type="text"
-            class="form-input"
+            class="input"
             placeholder="Ej: Programación Verano 2025"
-            @keyup.enter="createNuevaProgramacion"
             autofocus
+            @keyup.enter="createNuevaProgramacion"
           >
-          <p class="form-hint">
-            <i class="fa fa-info-circle"></i>
+          <p class="text-xs text-text-secondary mt-1">
+            <i class="fa fa-info-circle" />
             Ingresa un nombre descriptivo para identificar esta programación
           </p>
         </div>
 
         <template #footer>
-          <button @click="closeCreateProgramacionModal" class="btn btn-outline">
-            <i class="fa fa-times"></i>
+          <button
+class="btn btn-secondary"
+@click="closeCreateProgramacionModal"
+>
+            <i class="fa fa-times" />
             Cancelar
           </button>
           <button
-            @click="createNuevaProgramacion"
             :disabled="!newProgramacionName || newProgramacionName.trim() === ''"
             class="btn btn-primary"
+            @click="createNuevaProgramacion"
           >
-            <i class="fa fa-check"></i>
+            <i class="fa fa-check" />
             Crear Programación
           </button>
         </template>
       </Modal>
 
-      <div class="tabs-container">
-        <div class="tab-buttons">
+      <div class="card p-0 overflow-hidden">
+        <div class="flex border-b border-dark-border">
           <button
+            class="flex-1 px-4 py-3 font-medium text-sm transition-all border-b-2"
+            :class="activeTab === 'spots' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
             @click="activeTab = 'spots'"
-            class="tab-button"
-            :class="{ 'active': activeTab === 'spots' }"
           >
-            <i class="icon library"></i>
+            <i class="fa fa-music mr-2" />
             Spots
           </button>
           <button
+            class="flex-1 px-4 py-3 font-medium text-sm transition-all border-b-2"
+            :class="activeTab === 'programar' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
             @click="activeTab = 'programar'"
-            class="tab-button"
-            :class="{ 'active': activeTab === 'programar' }"
           >
-            <i class="icon calendar"></i>
+            <i class="fa fa-calendar mr-2" />
             Programar
           </button>
         </div>
 
-        <div v-if="activeTab === 'spots'" class="tab-content">
+        <div v-if="activeTab === 'spots'" class="p-4 sm:p-6">
           <SpotTable
             :spots="spots"
             :selected-spots="selectedSpots"
@@ -206,7 +225,7 @@
           />
         </div>
 
-        <div v-if="activeTab === 'programar'" class="tab-content">
+        <div v-if="activeTab === 'programar'" class="p-4 sm:p-6">
           <ProgrammingInterface
             :spots="spots"
             :programaciones="programaciones"
@@ -227,6 +246,7 @@
         </div>
       </div>
     </template>
+  </div>
   </div>
 </template>
 <script setup>
@@ -835,735 +855,3 @@ onMounted(async () => {
   }
 })
 </script>
-<style scoped>
-/* ===== PREMIUM BIBLIOTECA SPOT - APPLE STYLE ===== */
-.biblioteca-spot {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0f1419 0%, #1a1d24 100%);
-  color: #e5e7eb;
-  position: relative;
-  padding-bottom: var(--spacing-8);
-}
-
-.biblioteca-spot::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: 
-    radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ===== LOADING OVERLAY ===== */
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 20, 25, 0.85);
-  backdrop-filter: blur(12px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.loading-spinner {
-  color: #3b82f6;
-  font-size: 1.25rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-}
-
-.loading-spinner::before {
-  content: '';
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(59, 130, 246, 0.3);
-  border-top-color: #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ===== PROGRAMACION HEADER ===== */
-.programacion-header {
-  background: rgba(26, 26, 26, 0.6);
-  backdrop-filter: blur(40px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: var(--spacing-6) var(--spacing-8);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  top: 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.programacion-info {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4);
-  flex-wrap: wrap;
-}
-
-.programacion-info i {
-  font-size: 1.5rem;
-  color: #60a5fa;
-  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.5));
-}
-
-.programacion-label {
-  color: #9ca3af;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.programacion-name {
-  color: #e5e7eb;
-  font-size: 1.25rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.programacion-code {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  color: #9ca3af;
-  font-family: monospace;
-}
-
-.programacion-actions {
-  display: flex;
-  gap: var(--spacing-3);
-}
-
-/* ===== EXPIRED SPOTS TOGGLE ===== */
-.expired-spots-toggle {
-  margin: var(--spacing-6) var(--spacing-8) 0;
-  background: rgba(26, 26, 26, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-4) var(--spacing-6);
-}
-
-.toggle-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--spacing-4);
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-  cursor: pointer;
-  user-select: none;
-}
-
-.toggle-input {
-  display: none;
-}
-
-.toggle-switch {
-  width: 44px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 9999px;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.toggle-switch::before {
-  content: '';
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  width: 20px;
-  height: 20px;
-  background: white;
-  border-radius: 50%;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.toggle-input:checked + .toggle-switch {
-  background: #3b82f6;
-}
-
-.toggle-input:checked + .toggle-switch::before {
-  transform: translateX(20px);
-}
-
-.toggle-text {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #e5e7eb;
-}
-
-.toggle-stats {
-  display: flex;
-  gap: var(--spacing-4);
-}
-
-.stat-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: 0.8125rem;
-  color: #9ca3af;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 4px 12px;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.stat-item strong {
-  color: #e5e7eb;
-  font-weight: 600;
-}
-
-/* ===== TABS ===== */
-.tabs-container {
-  padding: var(--spacing-6) var(--spacing-8);
-}
-
-.tab-buttons {
-  display: flex;
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-6);
-  background: rgba(0, 0, 0, 0.2);
-  padding: 4px;
-  border-radius: var(--radius-xl);
-  width: fit-content;
-}
-
-.tab-button {
-  padding: var(--spacing-3) var(--spacing-6);
-  border: none;
-  background: transparent;
-  color: #9ca3af;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-.tab-button:hover {
-  color: #e5e7eb;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.tab-button.active {
-  background: #3b82f6;
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.tab-content {
-  animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ===== MODAL CONTENT STYLES ===== */
-.modal-title-group {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.modal-title-group i {
-  font-size: 1.5rem;
-  color: #60a5fa;
-  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.5));
-}
-
-.modal-title-group h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #e5e7eb;
-}
-
-/* Programacion List */
-.programaciones-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-3);
-}
-
-.programacion-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4);
-  padding: var(--spacing-4);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-xl);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.programacion-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  transform: translateX(4px);
-}
-
-.programacion-item.selected {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-
-.programacion-item-icon {
-  width: 40px;
-  height: 40px;
-  background: rgba(59, 130, 246, 0.1);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #60a5fa;
-  font-size: 1.25rem;
-}
-
-.programacion-item-info h4 {
-  margin: 0 0 4px 0;
-  color: #e5e7eb;
-  font-size: 1rem;
-}
-
-.programacion-item-code {
-  margin: 0;
-  color: #9ca3af;
-  font-size: 0.75rem;
-}
-
-.programacion-item-action {
-  margin-left: auto;
-  color: #6b7280;
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: var(--spacing-8);
-  color: #9ca3af;
-}
-
-.empty-state i {
-  font-size: 3rem;
-  margin-bottom: var(--spacing-4);
-  opacity: 0.5;
-}
-
-/* Form Elements */
-.form-group {
-  margin-bottom: var(--spacing-4);
-}
-
-.form-label {
-  display: block;
-  margin-bottom: var(--spacing-2);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #e5e7eb;
-}
-
-.form-input {
-  width: 100%;
-  padding: var(--spacing-3) var(--spacing-4);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
-  color: #e5e7eb;
-  font-size: 0.9375rem;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.form-input:focus {
-  border-color: #3b82f6;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-}
-
-.form-hint {
-  margin-top: var(--spacing-2);
-  font-size: 0.75rem;
-  color: #9ca3af;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-/* Buttons */
-.btn {
-  padding: var(--spacing-2) var(--spacing-4);
-  border-radius: var(--radius-lg);
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  border: none;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #e5e7eb;
-}
-
-.btn-outline:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-.btn-block {
-  width: 100%;
-  justify-content: center;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (min-width: 1200px) {
-  .programacion-header,
-  .tabs-container,
-  .expired-spots-toggle {
-    padding-left: var(--spacing-6);
-    padding-right: var(--spacing-6);
-  }
-}
-
-@media (min-width: 1024px) {
-  .programacion-header,
-  .tabs-container,
-  .expired-spots-toggle {
-    padding-left: var(--spacing-4);
-    padding-right: var(--spacing-4);
-    margin-left: var(--spacing-4);
-    margin-right: var(--spacing-4);
-  }
-
-  .programacion-name {
-    font-size: 1.125rem;
-  }
-
-  .tab-buttons {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .tab-buttons::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-@media (min-width: 768px) {
-  .biblioteca-spot {
-    padding-bottom: var(--spacing-6);
-  }
-
-  .programacion-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-4);
-    padding: var(--spacing-4);
-    margin: 0 var(--spacing-2);
-  }
-
-  .programacion-info {
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-2);
-  }
-
-  .programacion-info i {
-    font-size: 1.25rem;
-  }
-
-  .programacion-name {
-    font-size: 1rem;
-  }
-
-  .programacion-label {
-    font-size: 0.75rem;
-  }
-
-  .programacion-actions {
-    width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .programacion-actions .btn {
-    flex: 1;
-    min-width: 140px;
-    justify-content: center;
-  }
-
-  /* Expired Spots Toggle */
-  .expired-spots-toggle {
-    margin: var(--spacing-4) var(--spacing-2);
-    padding: var(--spacing-3) var(--spacing-4);
-  }
-
-  .toggle-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-3);
-  }
-
-  .toggle-stats {
-    flex-wrap: wrap;
-    width: 100%;
-    gap: var(--spacing-2);
-  }
-
-  .stat-item {
-    font-size: 0.75rem;
-    padding: 3px 10px;
-  }
-
-  /* Tabs */
-  .tabs-container {
-    padding: var(--spacing-4) var(--spacing-2);
-  }
-
-  .tab-buttons {
-    width: 100%;
-    overflow-x: auto;
-    padding-bottom: var(--spacing-2);
-    margin-bottom: var(--spacing-4);
-    gap: var(--spacing-2);
-  }
-
-  .tab-button {
-    white-space: nowrap;
-    padding: var(--spacing-2) var(--spacing-4);
-    font-size: 0.875rem;
-  }
-
-  .tab-button i {
-    font-size: 0.875rem;
-  }
-
-  /* Modal Adjustments */
-  .modal-title-group h3 {
-    font-size: 1.125rem;
-  }
-
-  .modal-title-group i {
-    font-size: 1.25rem;
-  }
-
-  .programacion-item {
-    padding: var(--spacing-3);
-    gap: var(--spacing-3);
-  }
-
-  .programacion-item-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
-  }
-
-  .programacion-item-info h4 {
-    font-size: 0.9375rem;
-  }
-
-  /* Form Elements */
-  .form-input {
-    font-size: 1rem; /* Prevent zoom on iOS */
-  }
-
-  .btn {
-    padding: var(--spacing-2) var(--spacing-3);
-    font-size: 0.8125rem;
-  }
-}
-
-@media (min-width: 640px) {
-  .programacion-header {
-    padding: var(--spacing-3);
-    gap: var(--spacing-3);
-  }
-
-  .programacion-actions .btn {
-    min-width: 120px;
-    font-size: 0.75rem;
-    padding: var(--spacing-2);
-  }
-
-  .toggle-switch {
-    width: 40px;
-    height: 22px;
-  }
-
-  .toggle-switch::before {
-    width: 18px;
-    height: 18px;
-  }
-
-  .toggle-input:checked + .toggle-switch::before {
-    transform: translateX(18px);
-  }
-
-  .toggle-text {
-    font-size: 0.8125rem;
-  }
-
-  .tab-buttons {
-    padding: 3px;
-    gap: var(--spacing-1);
-  }
-
-  .tab-button {
-    padding: var(--spacing-2) var(--spacing-3);
-    font-size: 0.8125rem;
-    gap: var(--spacing-1);
-  }
-
-  .programacion-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .programacion-item-action {
-    align-self: flex-end;
-  }
-
-  .stat-item i {
-    font-size: 0.75rem;
-  }
-}
-
-@media (min-width: 480px) {
-  .biblioteca-spot {
-    padding-bottom: var(--spacing-4);
-  }
-
-  .programacion-header {
-    padding: var(--spacing-2);
-    margin: 0;
-  }
-
-  .programacion-name {
-    font-size: 0.9375rem;
-  }
-
-  .programacion-code {
-    font-size: 0.6875rem;
-    padding: 1px 6px;
-  }
-
-  .programacion-actions .btn {
-    flex: 1;
-    min-width: auto;
-    font-size: 0.6875rem;
-  }
-
-  .programacion-actions .btn i {
-    font-size: 0.75rem;
-  }
-
-  .expired-spots-toggle {
-    margin: var(--spacing-3) 0;
-    padding: var(--spacing-2) var(--spacing-3);
-  }
-
-  .toggle-text {
-    font-size: 0.75rem;
-  }
-
-  .toggle-stats {
-    gap: var(--spacing-1);
-  }
-
-  .stat-item {
-    font-size: 0.6875rem;
-    padding: 2px 8px;
-  }
-
-  .tabs-container {
-    padding: var(--spacing-3) 0;
-  }
-
-  .tab-buttons {
-    margin: 0 var(--spacing-2);
-  }
-
-  .tab-button {
-    padding: 6px 12px;
-    font-size: 0.75rem;
-  }
-
-  .tab-button i {
-    display: none; /* Hide icons on very small screens */
-  }
-
-  .modal-title-group h3 {
-    font-size: 1rem;
-  }
-
-  .form-group {
-    margin-bottom: var(--spacing-3);
-  }
-
-  .form-label {
-    font-size: 0.8125rem;
-  }
-
-  .btn {
-    font-size: 0.75rem;
-  }
-
-  .btn-block {
-    padding: 10px;
-  }
-}
-</style>
-

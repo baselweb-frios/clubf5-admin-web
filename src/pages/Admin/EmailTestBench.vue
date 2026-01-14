@@ -4,64 +4,63 @@
     <div class="page-header">
       <div class="header-content">
         <h1 class="page-title">
-          <i class="fa fa-envelope"></i>
+          <i class="fa fa-envelope" />
           Banco de Pruebas de Email
         </h1>
-        <p class="page-subtitle">Diagnostica y prueba la configuracion SMTP del sistema</p>
+        <p class="page-subtitle">
+          Diagnostica y prueba el servicio de email (Node.js/Nodemailer)
+        </p>
       </div>
       <div class="header-actions">
-        <button @click="loadConfig" class="btn btn-outline" :disabled="loadingConfig">
-          <i class="fa fa-refresh" :class="{ 'fa-spin': loadingConfig }"></i>
-          Recargar Config
+        <button
+          class="btn btn-outline"
+          :disabled="checkingHealth"
+          @click="checkHealth"
+        >
+          <i
+            class="fa fa-heartbeat"
+            :class="{ 'fa-spin': checkingHealth }"
+          />
+          Health Check
         </button>
       </div>
     </div>
 
-    <!-- Config Card -->
+    <!-- Service Status Card -->
     <div class="config-card">
       <div class="card-header">
-        <h3><i class="fa fa-cog"></i> Configuracion SMTP Actual</h3>
+        <h3><i class="fa fa-server" /> Estado del Servicio de Email</h3>
       </div>
       <div class="card-body">
-        <div v-if="loadingConfig" class="loading-state">
-          <i class="fa fa-spinner fa-spin"></i>
-          <span>Cargando configuracion...</span>
-        </div>
-        <div v-else-if="configError" class="error-state">
-          <i class="fa fa-exclamation-triangle"></i>
-          <span>{{ configError }}</span>
-        </div>
-        <div v-else class="config-grid">
+        <div class="config-grid">
           <div class="config-item">
-            <span class="config-label">Servidor SMTP</span>
-            <span class="config-value">{{ config.smtpHost }}</span>
+            <span class="config-label">Servicio</span>
+            <span class="config-value">clubf5-email-service (Nodemailer)</span>
           </div>
           <div class="config-item">
-            <span class="config-label">Puerto</span>
-            <span class="config-value">{{ config.smtpPort }}</span>
+            <span class="config-label">URL</span>
+            <span class="config-value">{{ serviceUrl }}</span>
           </div>
           <div class="config-item">
-            <span class="config-label">SSL/TLS</span>
-            <span class="config-value" :class="config.enableSsl === 'true' ? 'text-success' : 'text-warning'">
-              {{ config.enableSsl === 'true' ? 'Habilitado' : 'Deshabilitado' }}
-            </span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Email Remitente</span>
-            <span class="config-value">{{ config.fromEmail }}</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Nombre Remitente</span>
-            <span class="config-value">{{ config.fromName }}</span>
-          </div>
-          <div class="config-item">
-            <span class="config-label">Credenciales</span>
+            <span class="config-label">Estado</span>
             <span class="config-value">
-              <span v-if="config.hasUsername && config.hasPassword" class="badge badge-success">
-                <i class="fa fa-check"></i> Configuradas
+              <span
+                v-if="serviceStatus === null"
+                class="badge badge-warning"
+              >
+                <i class="fa fa-question" /> Sin verificar
               </span>
-              <span v-else class="badge badge-danger">
-                <i class="fa fa-times"></i> No configuradas
+              <span
+                v-else-if="serviceStatus"
+                class="badge badge-success"
+              >
+                <i class="fa fa-check" /> Conectado
+              </span>
+              <span
+                v-else
+                class="badge badge-danger"
+              >
+                <i class="fa fa-times" /> No disponible
               </span>
             </span>
           </div>
@@ -72,79 +71,166 @@
     <!-- Test Form -->
     <div class="test-card">
       <div class="card-header">
-        <h3><i class="fa fa-paper-plane"></i> Enviar Email de Prueba</h3>
+        <h3><i class="fa fa-paper-plane" /> Enviar Email de Prueba</h3>
       </div>
       <div class="card-body">
-        <form @submit.prevent="sendTestEmail" class="test-form">
+        <form
+          class="test-form"
+          @submit.prevent="sendTestEmail"
+        >
           <div class="form-row">
             <div class="form-group">
               <label for="toEmail">Email de Destino *</label>
               <input
-                type="email"
                 id="toEmail"
                 v-model="testForm.toEmail"
+                type="email"
                 placeholder="ejemplo@correo.com"
                 required
                 :disabled="sending"
-              />
+              >
             </div>
             <div class="form-group">
-              <label for="subject">Asunto (opcional)</label>
+              <label for="username">Nombre de Usuario</label>
               <input
+                id="username"
+                v-model="testForm.username"
                 type="text"
-                id="subject"
-                v-model="testForm.subject"
-                placeholder="Email de Prueba - ClubF5"
+                placeholder="Usuario de prueba"
                 :disabled="sending"
-              />
+              >
             </div>
           </div>
 
           <div class="form-group">
-            <label>Tipo de Prueba</label>
+            <label>Tipo de Email</label>
             <div class="test-type-options">
-              <label class="test-type-option" :class="{ active: testForm.testType === 'simple' }">
-                <input type="radio" v-model="testForm.testType" value="simple" :disabled="sending" />
+              <label
+                class="test-type-option"
+                :class="{ active: testForm.testType === 'welcome' }"
+              >
+                <input
+                  v-model="testForm.testType"
+                  type="radio"
+                  value="welcome"
+                  :disabled="sending"
+                >
                 <div class="option-content">
-                  <i class="fa fa-file-text-o"></i>
-                  <span class="option-title">Simple</span>
-                  <span class="option-desc">Email basico con informacion del servidor</span>
+                  <i class="fa fa-user-plus" />
+                  <span class="option-title">Bienvenida</span>
+                  <span class="option-desc">Email de bienvenida al sistema</span>
                 </div>
               </label>
-              <label class="test-type-option" :class="{ active: testForm.testType === 'html' }">
-                <input type="radio" v-model="testForm.testType" value="html" :disabled="sending" />
+              <label
+                class="test-type-option"
+                :class="{ active: testForm.testType === 'reset' }"
+              >
+                <input
+                  v-model="testForm.testType"
+                  type="radio"
+                  value="reset"
+                  :disabled="sending"
+                >
                 <div class="option-content">
-                  <i class="fa fa-code"></i>
-                  <span class="option-title">HTML Completo</span>
-                  <span class="option-desc">Email con estilos y formato HTML</span>
-                </div>
-              </label>
-              <label class="test-type-option" :class="{ active: testForm.testType === 'reset' }">
-                <input type="radio" v-model="testForm.testType" value="reset" :disabled="sending" />
-                <div class="option-content">
-                  <i class="fa fa-key"></i>
+                  <i class="fa fa-key" />
                   <span class="option-title">Recuperacion</span>
-                  <span class="option-desc">Simula email de reset de password</span>
+                  <span class="option-desc">Email de reset de password</span>
+                </div>
+              </label>
+              <label
+                class="test-type-option"
+                :class="{ active: testForm.testType === 'notification' }"
+              >
+                <input
+                  v-model="testForm.testType"
+                  type="radio"
+                  value="notification"
+                  :disabled="sending"
+                >
+                <div class="option-content">
+                  <i class="fa fa-bell" />
+                  <span class="option-title">Notificacion</span>
+                  <span class="option-desc">Notificacion personalizada</span>
+                </div>
+              </label>
+              <label
+                class="test-type-option"
+                :class="{ active: testForm.testType === 'custom' }"
+              >
+                <input
+                  v-model="testForm.testType"
+                  type="radio"
+                  value="custom"
+                  :disabled="sending"
+                >
+                <div class="option-content">
+                  <i class="fa fa-code" />
+                  <span class="option-title">Personalizado</span>
+                  <span class="option-desc">Email con contenido libre</span>
                 </div>
               </label>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="customMessage">Mensaje Personalizado (opcional)</label>
+          <!-- Campos adicionales segun tipo -->
+          <div
+            v-if="testForm.testType === 'notification'"
+            class="form-row"
+          >
+            <div class="form-group">
+              <label for="notificationTitle">Titulo de la Notificacion</label>
+              <input
+                id="notificationTitle"
+                v-model="testForm.notificationTitle"
+                type="text"
+                placeholder="Titulo de la notificacion"
+                :disabled="sending"
+              >
+            </div>
+          </div>
+
+          <div
+            v-if="testForm.testType === 'notification' || testForm.testType === 'custom'"
+            class="form-group"
+          >
+            <label for="customMessage">{{ testForm.testType === 'custom' ? 'Contenido HTML' : 'Mensaje' }}</label>
             <textarea
               id="customMessage"
               v-model="testForm.customMessage"
-              placeholder="Escribe un mensaje adicional para incluir en el email..."
-              rows="3"
+              :placeholder="testForm.testType === 'custom' ? '<h1>Mi email personalizado</h1><p>Contenido...</p>' : 'Escribe el mensaje de la notificacion...'"
+              rows="4"
               :disabled="sending"
-            ></textarea>
+            />
+          </div>
+
+          <div
+            v-if="testForm.testType === 'custom'"
+            class="form-group"
+          >
+            <label for="customSubject">Asunto del Email</label>
+            <input
+              id="customSubject"
+              v-model="testForm.customSubject"
+              type="text"
+              placeholder="Asunto del email"
+              :disabled="sending"
+            >
           </div>
 
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary" :disabled="sending || !testForm.toEmail">
-              <i v-if="sending" class="fa fa-spinner fa-spin"></i>
-              <i v-else class="fa fa-paper-plane"></i>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              :disabled="sending || !testForm.toEmail || !serviceStatus"
+            >
+              <i
+                v-if="sending"
+                class="fa fa-spinner fa-spin"
+              />
+              <i
+                v-else
+                class="fa fa-paper-plane"
+              />
               {{ sending ? 'Enviando...' : 'Enviar Email de Prueba' }}
             </button>
           </div>
@@ -153,11 +239,17 @@
     </div>
 
     <!-- Results -->
-    <div v-if="testResults.length > 0" class="results-card">
+    <div
+      v-if="testResults.length > 0"
+      class="results-card"
+    >
       <div class="card-header">
-        <h3><i class="fa fa-history"></i> Historial de Pruebas</h3>
-        <button @click="clearResults" class="btn btn-sm btn-outline">
-          <i class="fa fa-trash"></i> Limpiar
+        <h3><i class="fa fa-history" /> Historial de Pruebas</h3>
+        <button
+          class="btn btn-sm btn-outline"
+          @click="clearResults"
+        >
+          <i class="fa fa-trash" /> Limpiar
         </button>
       </div>
       <div class="card-body">
@@ -169,19 +261,24 @@
             :class="{ success: result.success, error: !result.success }"
           >
             <div class="result-icon">
-              <i :class="result.success ? 'fa fa-check-circle' : 'fa fa-times-circle'"></i>
+              <i :class="result.success ? 'fa fa-check-circle' : 'fa fa-times-circle'" />
             </div>
             <div class="result-content">
               <div class="result-header">
                 <span class="result-email">{{ result.toEmail }}</span>
                 <span class="result-type badge">{{ result.testType }}</span>
               </div>
-              <div class="result-message">{{ result.message }}</div>
-              <div class="result-meta">
-                <span><i class="fa fa-clock-o"></i> {{ result.elapsedMs }}ms</span>
-                <span><i class="fa fa-calendar"></i> {{ formatTimestamp(result.timestamp) }}</span>
+              <div class="result-message">
+                {{ result.message }}
               </div>
-              <div v-if="result.errorDetails" class="result-error-details">
+              <div class="result-meta">
+                <span v-if="result.messageId"><i class="fa fa-tag" /> {{ result.messageId }}</span>
+                <span><i class="fa fa-calendar" /> {{ formatTimestamp(result.timestamp) }}</span>
+              </div>
+              <div
+                v-if="result.errorDetails"
+                class="result-error-details"
+              >
                 <details>
                   <summary>Ver detalles del error</summary>
                   <pre>{{ result.errorDetails }}</pre>
@@ -197,53 +294,85 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import emailTestService from '@/services/EmailTestServices'
+import EmailApiService from '@/services/EmailApiService'
 
-const config = ref({})
-const loadingConfig = ref(false)
-const configError = ref('')
+const serviceUrl = import.meta.env.VITE_EMAIL_SERVICE_URL || 'http://localhost:3001'
+const serviceStatus = ref(null)
+const checkingHealth = ref(false)
 
 const testForm = ref({
   toEmail: '',
-  subject: '',
-  testType: 'simple',
-  customMessage: ''
+  username: 'Usuario de Prueba',
+  testType: 'welcome',
+  notificationTitle: 'Notificacion de Prueba',
+  customMessage: '',
+  customSubject: 'Email de Prueba - ClubF5'
 })
 
 const sending = ref(false)
 const testResults = ref([])
 
-const loadConfig = async () => {
-  loadingConfig.value = true
-  configError.value = ''
+const checkHealth = async () => {
+  checkingHealth.value = true
   try {
-    config.value = await emailTestService.getEmailConfig()
-  } catch (err) {
-    configError.value = err.message || 'Error al cargar la configuracion'
+    serviceStatus.value = await EmailApiService.healthCheck()
+  } catch {
+    serviceStatus.value = false
   } finally {
-    loadingConfig.value = false
+    checkingHealth.value = false
   }
 }
 
 const sendTestEmail = async () => {
   sending.value = true
+
   try {
-    const result = await emailTestService.sendTestEmail({
-      toEmail: testForm.value.toEmail,
-      subject: testForm.value.subject || undefined,
-      testType: testForm.value.testType,
-      customMessage: testForm.value.customMessage || undefined
+    let result
+    const { toEmail, username, testType, notificationTitle, customMessage, customSubject } = testForm.value
+    const user = username || 'Usuario'
+
+    switch (testType) {
+      case 'welcome':
+        result = await EmailApiService.sendWelcome(toEmail, user)
+        break
+      case 'reset':
+        result = await EmailApiService.sendPasswordReset(toEmail, user, 'test-token-' + Date.now())
+        break
+      case 'notification':
+        result = await EmailApiService.sendNotification(
+          toEmail,
+          user,
+          notificationTitle || 'Notificacion',
+          customMessage || 'Este es un mensaje de prueba desde el banco de pruebas de email.'
+        )
+        break
+      case 'custom':
+        result = await EmailApiService.sendCustomEmail(
+          toEmail,
+          customSubject || 'Email de Prueba',
+          customMessage || '<h1>Email de Prueba</h1><p>Este es un email de prueba desde el banco de pruebas.</p>'
+        )
+        break
+      default:
+        throw new Error('Tipo de email no soportado')
+    }
+
+    testResults.value.unshift({
+      success: result.success,
+      message: result.success ? 'Email enviado correctamente' : result.error,
+      messageId: result.messageId,
+      toEmail,
+      testType,
+      timestamp: new Date().toISOString()
     })
-    testResults.value.unshift(result)
   } catch (err) {
     testResults.value.unshift({
       success: false,
       message: err.message || 'Error al enviar el email',
       toEmail: testForm.value.toEmail,
       testType: testForm.value.testType,
-      elapsedMs: 0,
       timestamp: new Date().toISOString(),
-      errorDetails: err.response?.data?.errorDetails || err.toString()
+      errorDetails: err.toString()
     })
   } finally {
     sending.value = false
@@ -268,7 +397,7 @@ const formatTimestamp = (timestamp) => {
 }
 
 onMounted(() => {
-  loadConfig()
+  checkHealth()
 })
 </script>
 
@@ -390,26 +519,6 @@ onMounted(() => {
   color: #f59e0b;
 }
 
-/* Loading/Error states */
-.loading-state,
-.error-state {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-  padding: var(--spacing-4);
-  border-radius: var(--radius-lg);
-}
-
-.loading-state {
-  color: #60a5fa;
-  background: rgba(59, 130, 246, 0.1);
-}
-
-.error-state {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-}
-
 /* Badges */
 .badge {
   display: inline-flex;
@@ -429,6 +538,11 @@ onMounted(() => {
 .badge-danger {
   background: rgba(239, 68, 68, 0.2);
   color: #ef4444;
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
 }
 
 /* Form */
@@ -488,7 +602,7 @@ onMounted(() => {
 /* Test Type Options */
 .test-type-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: var(--spacing-3);
 }
 
@@ -705,7 +819,7 @@ onMounted(() => {
   }
 
   .test-type-options {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>

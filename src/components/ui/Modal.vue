@@ -1,39 +1,57 @@
 <template>
   <teleport to="body">
     <transition name="modal">
-      <div v-if="modelValue" class="modal-container">
+      <div
+v-if="modelValue"
+class="modal-container"
+>
         <!-- Overlay -->
-        <div class="modal-overlay" @click="handleOverlayClick"></div>
+        <div
+class="modal-overlay"
+@click="handleOverlayClick"
+/>
 
         <!-- Modal content -->
         <div class="modal-wrapper">
-          <div class="modal-content" :class="sizeClasses" @click.stop>
+          <div
+class="modal-content"
+:class="sizeClasses"
+@click.stop
+>
             <!-- Header -->
-            <div v-if="$slots.header || title" class="modal-header">
+            <div
+v-if="$slots.header || title"
+class="modal-header"
+>
               <div class="modal-header-content">
                 <slot name="header">
-                  <h3 class="modal-title">{{ title }}</h3>
+                  <h3 class="modal-title">
+{{ title }}
+</h3>
                 </slot>
 
                 <button
                   v-if="closable"
-                  @click="close"
                   type="button"
                   class="modal-close"
+                  @click="close"
                 >
-                  <i class="fas fa-times"></i>
+                  <i class="fas fa-times" />
                 </button>
               </div>
             </div>
 
             <!-- Body -->
             <div class="modal-body">
-              <slot></slot>
+              <slot />
             </div>
 
             <!-- Footer -->
-            <div v-if="$slots.footer" class="modal-footer">
-              <slot name="footer"></slot>
+            <div
+v-if="$slots.footer"
+class="modal-footer"
+>
+              <slot name="footer" />
             </div>
           </div>
         </div>
@@ -43,7 +61,10 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, watch, onMounted, onUnmounted } from 'vue'
+
+// Contador global de modales abiertos para manejar múltiples modales
+let openModalsCount = 0
 
 const props = defineProps({
   modelValue: {
@@ -103,340 +124,180 @@ const handleEscape = (event) => {
   }
 }
 
-// Add/remove escape key listener
-watch(() => props.modelValue, (newValue) => {
-  if (newValue) {
-    document.addEventListener('keydown', handleEscape)
+// Funciones para manejar el overflow del body
+const lockBodyScroll = () => {
+  openModalsCount++
+  if (openModalsCount === 1) {
     document.body.style.overflow = 'hidden'
-  } else {
-    document.removeEventListener('keydown', handleEscape)
+  }
+}
+
+const unlockBodyScroll = () => {
+  openModalsCount = Math.max(0, openModalsCount - 1)
+  if (openModalsCount === 0) {
     document.body.style.overflow = ''
+  }
+}
+
+// Track si este modal ya bloqueó el scroll
+let hasLockedScroll = false
+
+// Add/remove escape key listener and handle body scroll
+watch(() => props.modelValue, (newValue, oldValue) => {
+  if (newValue && !oldValue) {
+    // Modal se abre
+    document.addEventListener('keydown', handleEscape)
+    if (!hasLockedScroll) {
+      lockBodyScroll()
+      hasLockedScroll = true
+    }
+  } else if (!newValue && oldValue) {
+    // Modal se cierra
+    document.removeEventListener('keydown', handleEscape)
+    if (hasLockedScroll) {
+      unlockBodyScroll()
+      hasLockedScroll = false
+    }
+  }
+}, { immediate: true })
+
+// Si el modal está abierto al montar, bloquear scroll
+onMounted(() => {
+  if (props.modelValue && !hasLockedScroll) {
+    document.addEventListener('keydown', handleEscape)
+    lockBodyScroll()
+    hasLockedScroll = true
+  }
+})
+
+// Limpiar al desmontar - MUY IMPORTANTE para evitar que quede bloqueado
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscape)
+  if (hasLockedScroll) {
+    unlockBodyScroll()
+    hasLockedScroll = false
   }
 })
 </script>
 
 <style scoped>
+/* Modal Container */
 .modal-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  overflow-y: auto;
+  @apply fixed inset-0 z-modal flex items-center justify-center;
 }
 
+/* Backdrop/Overlay */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 1;
+  @apply fixed inset-0 z-modal-backdrop;
+  @apply bg-black/60 backdrop-blur-sm;
 }
 
+/* Wrapper for centering */
 .modal-wrapper {
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100%;
-  padding: 2rem 0;
-  z-index: 2;
+  @apply relative z-modal w-full max-h-[90vh] p-4;
+  @apply flex items-center justify-center;
 }
 
+/* Modal Content Box */
 .modal-content {
-  position: relative;
-  width: 100%;
-  background: #16181d;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8),
-              0 10px 20px -5px rgba(0, 0, 0, 0.6),
-              0 0 0 1px rgba(255, 255, 255, 0.05);
-  display: flex;
-  flex-direction: column;
-  max-height: 85vh;
-  overflow: hidden;
-  margin: auto;
+  @apply w-full bg-dark-tertiary rounded-2xl;
+  @apply border border-dark-border shadow-2xl;
+  @apply overflow-hidden flex flex-col max-h-[85vh];
+}
+
+.light .modal-content {
+  @apply bg-light-elevated border-light-border;
 }
 
 /* Size variants */
 .modal-sm {
-  max-width: 28rem;
+  @apply max-w-sm;
 }
 
 .modal-md {
-  max-width: 40rem;
+  @apply max-w-lg;
 }
 
 .modal-lg {
-  max-width: 56rem;
+  @apply max-w-2xl;
 }
 
 .modal-xl {
-  max-width: 75rem;
+  @apply max-w-4xl;
 }
 
 .modal-full {
-  max-width: calc(100vw - 4rem);
-  max-height: calc(100vh - 4rem);
+  @apply max-w-[95vw] h-[90vh];
 }
 
+/* Header */
 .modal-header {
-  padding: 1.75rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(135deg, #1c1f26 0%, #1a1d24 100%);
-  flex-shrink: 0;
+  @apply px-6 py-4 border-b border-dark-border flex-shrink-0;
+}
+
+.light .modal-header {
+  @apply border-light-border;
 }
 
 .modal-header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
+  @apply flex items-center justify-between w-full;
 }
 
 .modal-title {
-  font-size: 1.375rem;
-  font-weight: 600;
-  color: #f3f4f6;
-  margin: 0;
-  letter-spacing: -0.025em;
-  line-height: 1.3;
+  @apply text-lg font-semibold text-text-primary;
 }
 
+.light .modal-title {
+  @apply text-text-light-primary;
+}
+
+/* Close button */
 .modal-close {
-  width: 2.25rem;
-  height: 2.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0.5rem;
-  color: #9ca3af;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
+  @apply p-2 rounded-lg text-text-tertiary;
+  @apply transition-all duration-200;
+  @apply hover:bg-dark-hover hover:text-text-primary;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500;
 }
 
-.modal-close:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  color: #f3f4f6;
-  transform: rotate(90deg);
+.light .modal-close {
+  @apply text-text-light-tertiary;
+  @apply hover:bg-light-hover hover:text-text-light-primary;
 }
 
-.modal-close:active {
-  transform: rotate(90deg) scale(0.95);
-}
-
-.modal-close i {
-  font-size: 1.125rem;
-}
-
+/* Body */
 .modal-body {
-  padding: 2rem;
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex: 1;
-  color: #e5e7eb;
-  line-height: 1.6;
+  @apply px-6 py-4 overflow-y-auto flex-1;
 }
 
-.modal-body::-webkit-scrollbar {
-  width: 10px;
-}
-
-.modal-body::-webkit-scrollbar-track {
-  background: rgba(15, 20, 25, 0.5);
-  border-radius: 5px;
-  margin: 4px 0;
-}
-
-.modal-body::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-.modal-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
-  background-clip: padding-box;
-}
-
+/* Footer */
 .modal-footer {
-  padding: 1.5rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(135deg, #1a1d24 0%, #16181d 100%);
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  justify-content: flex-end;
-  flex-shrink: 0;
-  flex-wrap: wrap;
+  @apply px-6 py-4 border-t border-dark-border flex-shrink-0;
+  @apply flex items-center justify-end gap-3;
+}
+
+.light .modal-footer {
+  @apply border-light-border;
 }
 
 /* Transitions */
 .modal-enter-active,
 .modal-leave-active {
-  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  @apply transition-all duration-300 ease-apple;
 }
 
 .modal-enter-from,
 .modal-leave-to {
-  opacity: 0;
+  @apply opacity-0;
 }
 
-.modal-enter-active .modal-content {
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.modal-leave-active .modal-content {
-  transition: all 0.25s cubic-bezier(0.4, 0, 1, 1);
-}
-
-.modal-enter-from .modal-content {
-  transform: scale(0.92) translateY(-30px);
-  opacity: 0;
-}
-
+.modal-enter-from .modal-content,
 .modal-leave-to .modal-content {
-  transform: scale(0.95) translateY(10px);
-  opacity: 0;
+  @apply scale-95 opacity-0;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .modal-container {
-    padding: 0.75rem;
-  }
-
-  .modal-wrapper {
-    padding: 1.5rem 0;
-  }
-
-  .modal-lg,
-  .modal-xl {
-    max-width: calc(100vw - 1.5rem);
-  }
-}
-
-@media (max-width: 768px) {
-  .modal-container {
-    padding: 0.5rem;
-    align-items: flex-start;
-  }
-
-  .modal-wrapper {
-    padding: 1rem 0;
-  }
-
-  .modal-content {
-    max-height: calc(100vh - 2rem);
-    border-radius: 0.75rem;
-  }
-
-  .modal-sm,
-  .modal-md,
-  .modal-lg,
-  .modal-xl {
-    max-width: 100%;
-  }
-
-  .modal-header,
-  .modal-footer {
-    padding: 1.25rem 1.5rem;
-  }
-
-  .modal-body {
-    padding: 1.5rem;
-  }
-
-  .modal-title {
-    font-size: 1.125rem;
-  }
-
-  .modal-close {
-    width: 2rem;
-    height: 2rem;
-  }
-
-  .modal-close i {
-    font-size: 1rem;
-  }
-
-  .modal-footer {
-    flex-direction: column-reverse;
-  }
-
-  .modal-footer > * {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .modal-container {
-    padding: 0.25rem;
-  }
-
-  .modal-header,
-  .modal-footer {
-    padding: 1rem;
-  }
-
-  .modal-body {
-    padding: 1.25rem 1rem;
-  }
-}
-
-/* Utility classes for modal content */
-.modal-body .modal-title-group {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.modal-body .modal-title-group i {
-  font-size: 1.5rem;
-  color: #0189dd;
-}
-
-.modal-body .modal-title-group h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.modal-footer .modal-actions-right {
-  display: flex;
-  gap: 0.875rem;
-  margin-left: auto;
-}
-
-/* Ensure buttons in footer have proper styling */
-.modal-footer .btn {
-  min-width: auto;
-}
-
-@media (max-width: 768px) {
-  .modal-footer .modal-actions-right {
-    width: 100%;
-    flex-direction: column-reverse;
-  }
-
-  .modal-footer .modal-actions-right .btn {
-    width: 100%;
-  }
+.modal-enter-to .modal-content,
+.modal-leave-from .modal-content {
+  @apply scale-100 opacity-100;
 }
 </style>
+

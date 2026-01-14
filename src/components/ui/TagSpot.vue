@@ -1,46 +1,57 @@
 <template>
-  <div class="tag-spot-container">
-    <div class="selected-tags">
+  <div class="space-y-4">
+    <!-- Selected Tags -->
+    <div class="flex flex-wrap gap-2">
       <span
         v-for="(option, index) in selectedOptions"
         :key="`selected-${option.codSpot}-${index}`"
-        class="tag-spot"
+        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
         :class="getTagClass(option.tipo)"
       >
-        <span class="tag-name">{{ option.nombreSpot }}</span>
-        <span class="tag-duration" v-if="option.duracion">{{ formatDuration(option.duracion) }}</span>
+        <span class="truncate max-w-[150px]">{{ option.nombreSpot }}</span>
+        <span
+          v-if="option.duracion"
+          class="text-xs opacity-75"
+        >{{ formatDuration(option.duracion) }}</span>
         <button
-          @click="removeTag(index)"
-          class="tag-remove"
+          class="ml-1 p-0.5 rounded hover:bg-white/20 transition-colors"
           aria-label="Remover spot"
+          @click="removeTag(index)"
         >
-          <i class="fas fa-times"></i>
+          <i class="fas fa-times text-xs" />
         </button>
       </span>
     </div>
 
-    <div class="available-tags">
-      <div class="tags-header">
-        <h4>Spots Disponibles</h4>
-        <span class="tags-count">{{ options.length }} disponibles</span>
+    <!-- Available Tags -->
+    <div class="card">
+      <div class="flex-between mb-4">
+        <h4 class="text-base font-semibold text-text-primary">Spots Disponibles</h4>
+        <span class="badge badge-info">{{ options.length }} disponibles</span>
       </div>
 
-      <div class="tags-list">
+      <div class="flex flex-wrap gap-2">
         <button
           v-for="spot in options"
           :key="spot.codSpot"
-          @click="addTag(spot)"
-          class="tag-spot-btn"
-          :class="getTagClass(spot.tipo)"
+          class="btn btn-sm gap-2 transition-all duration-200"
+          :class="[getButtonClass(spot.tipo), { 'opacity-50 cursor-not-allowed': isSelected(spot) }]"
           :disabled="isSelected(spot)"
+          @click="addTag(spot)"
         >
-          <i class="fas fa-plus"></i>
-          <span class="spot-name">{{ spot.nombreSpot }}</span>
-          <span class="spot-duration" v-if="spot.duracion">{{ formatDuration(spot.duracion) }}</span>
+          <i class="fas fa-plus text-xs" />
+          <span class="truncate max-w-[120px]">{{ spot.nombreSpot }}</span>
+          <span
+            v-if="spot.duracion"
+            class="text-xs opacity-75"
+          >{{ formatDuration(spot.duracion) }}</span>
         </button>
 
-        <div v-if="options.length === 0" class="no-spots">
-          <i class="fas fa-info-circle"></i>
+        <div
+          v-if="options.length === 0"
+          class="alert alert-info w-full"
+        >
+          <i class="fas fa-info-circle" />
           <p>No hay spots disponibles de tipo {{ getTipoLabel(tipoSpot) }}</p>
         </div>
       </div>
@@ -107,11 +118,20 @@ const isSelected = (spot) => {
 
 const getTagClass = (tipo) => {
   const classes = {
-    inst: 'tag-inst',
-    prom: 'tag-prom',
-    noti: 'tag-noti'
+    inst: 'bg-primary-500/20 text-primary-400 border border-primary-500/30',
+    prom: 'bg-success-500/20 text-success-400 border border-success-500/30',
+    noti: 'bg-warning-500/20 text-warning-400 border border-warning-500/30'
   }
-  return classes[tipo] || 'tag-default'
+  return classes[tipo] || 'bg-dark-hover text-text-secondary border border-dark-border'
+}
+
+const getButtonClass = (tipo) => {
+  const classes = {
+    inst: 'bg-primary-600 text-white hover:bg-primary-500',
+    prom: 'bg-success-600 text-white hover:bg-success-500',
+    noti: 'bg-warning-600 text-white hover:bg-warning-500'
+  }
+  return classes[tipo] || 'btn-secondary'
 }
 
 const getTipoLabel = (tipo) => {
@@ -137,189 +157,158 @@ watch(() => props.modelValue, (newVal) => {
 </script>
 
 <style scoped>
-.tag-spot-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* ===== SELECTED TAGS ===== */
+.tag-container {
+  @apply flex flex-wrap gap-2;
 }
 
-.selected-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  min-height: 50px;
-  padding: 0.75rem;
-  background-color: var(--color-surface-secondary, #f7fafc);
-  border-radius: var(--border-radius-md, 8px);
-  border: 2px dashed var(--color-border-primary, #e2e8f0);
+.tag-item {
+  @apply inline-flex items-center gap-2;
+  @apply px-3 py-1.5 rounded-lg;
+  @apply text-sm font-medium;
+  @apply transition-all duration-200;
 }
 
-.tag-spot {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--border-radius-full, 9999px);
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: white;
-  transition: all 0.2s;
-}
-
+/* Tag Types */
 .tag-inst {
-  background-color: #3182ce;
+  @apply bg-primary-500/20 text-primary-400;
+  @apply border border-primary-500/30;
 }
 
 .tag-prom {
-  background-color: #38a169;
+  @apply bg-success-500/20 text-success-400;
+  @apply border border-success-500/30;
 }
 
 .tag-noti {
-  background-color: #d69e2e;
+  @apply bg-warning-500/20 text-warning-400;
+  @apply border border-warning-500/30;
 }
 
 .tag-default {
-  background-color: #718096;
+  @apply bg-dark-hover text-text-secondary;
+  @apply border border-dark-border;
 }
 
+.light .tag-default {
+  @apply bg-light-hover text-text-light-secondary;
+  @apply border-light-border;
+}
+
+/* Tag Name */
 .tag-name {
-  font-weight: 600;
+  @apply truncate max-w-[150px];
 }
 
+/* Tag Duration */
 .tag-duration {
-  font-size: 0.75rem;
-  opacity: 0.9;
-  padding: 0.125rem 0.5rem;
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: var(--border-radius-full, 9999px);
+  @apply text-xs opacity-75;
 }
 
+/* Remove Button */
 .tag-remove {
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
+  @apply ml-1 p-0.5 rounded;
+  @apply hover:bg-white/20;
+  @apply transition-colors duration-200;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50;
 }
 
-.tag-remove:hover {
-  background-color: rgba(0, 0, 0, 0.2);
+.tag-remove i {
+  @apply text-xs;
 }
 
-.available-tags {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+/* ===== AVAILABLE SPOTS SECTION ===== */
+.spots-header {
+  @apply flex items-center justify-between mb-4;
 }
 
-.tags-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--color-border-primary, #e2e8f0);
+.spots-title {
+  @apply text-base font-semibold text-text-primary;
 }
 
-.tags-header h4 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text-primary, #1a202c);
+.light .spots-title {
+  @apply text-text-light-primary;
 }
 
-.tags-count {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary, #718096);
+.spots-grid {
+  @apply flex flex-wrap gap-2;
 }
 
-.tags-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+/* ===== SPOT BUTTONS ===== */
+.spot-btn {
+  @apply inline-flex items-center gap-2;
+  @apply px-3 py-1.5 rounded-lg;
+  @apply text-sm font-medium;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-primary;
+  @apply active:scale-[0.98];
 }
 
-.tag-spot-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  border: 2px solid currentColor;
-  border-radius: var(--border-radius-md, 8px);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  background-color: transparent;
+.spot-btn:disabled {
+  @apply opacity-50 cursor-not-allowed;
 }
 
-.tag-spot-btn.tag-inst {
-  color: #3182ce;
+.spot-btn-inst {
+  @apply bg-primary-600 text-white;
+  @apply hover:bg-primary-500;
+  @apply focus-visible:ring-primary-500;
 }
 
-.tag-spot-btn.tag-prom {
-  color: #38a169;
+.spot-btn-prom {
+  @apply bg-success-600 text-white;
+  @apply hover:bg-success-500;
+  @apply focus-visible:ring-success-500;
 }
 
-.tag-spot-btn.tag-noti {
-  color: #d69e2e;
+.spot-btn-noti {
+  @apply bg-warning-600 text-white;
+  @apply hover:bg-warning-500;
+  @apply focus-visible:ring-warning-500;
 }
 
-.tag-spot-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.spot-btn-default {
+  @apply bg-dark-elevated text-text-primary;
+  @apply border border-dark-border;
+  @apply hover:bg-dark-hover;
+  @apply focus-visible:ring-dark-border;
 }
 
-.tag-spot-btn.tag-inst:hover:not(:disabled) {
-  background-color: #3182ce;
-  color: white;
+.light .spot-btn-default {
+  @apply bg-light-secondary text-text-light-primary;
+  @apply border-light-border;
+  @apply hover:bg-light-hover;
 }
 
-.tag-spot-btn.tag-prom:hover:not(:disabled) {
-  background-color: #38a169;
-  color: white;
+.spot-btn-icon {
+  @apply text-xs;
 }
 
-.tag-spot-btn.tag-noti:hover:not(:disabled) {
-  background-color: #d69e2e;
-  color: white;
+.spot-btn-name {
+  @apply truncate max-w-[120px];
 }
 
-.tag-spot-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.spot-btn-duration {
+  @apply text-xs opacity-75;
 }
 
-.spot-name {
-  font-weight: 600;
+/* ===== EMPTY STATE ===== */
+.spots-empty {
+  @apply flex items-start gap-3;
+  @apply w-full p-4 rounded-lg;
+  @apply bg-info-500/10 border border-info-500/30;
+  @apply text-info-300;
 }
 
-.spot-duration {
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: var(--border-radius-full, 9999px);
+.spots-empty i {
+  @apply text-info-400 mt-0.5;
 }
 
-.no-spots {
-  width: 100%;
-  text-align: center;
-  padding: 2rem;
-  color: var(--color-text-secondary, #718096);
+.light .spots-empty {
+  @apply text-info-700;
 }
 
-.no-spots i {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  display: block;
-}
-
-.no-spots p {
-  margin: 0;
-  font-size: 0.875rem;
+.light .spots-empty i {
+  @apply text-info-600;
 }
 </style>
+

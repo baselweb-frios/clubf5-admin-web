@@ -4,8 +4,12 @@
     class="sidebar-link"
     :class="{ 'active': active }"
   >
-    <i v-if="icon" class="icon" :class="iconClass"></i>
-    <span class="label"><slot></slot></span>
+    <i
+v-if="icon"
+class="icon"
+:class="iconClass"
+/>
+    <span class="label"><slot /></span>
   </router-link>
 </template>
 
@@ -45,172 +49,54 @@ const iconClass = computed(() => {
 </script>
 
 <style scoped>
-/* ===== PREMIUM APPLE-STYLE SIDEBAR LINK ===== */
+/* Sidebar Link */
 .sidebar-link {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.875rem 1.125rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  border-radius: 1rem;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  margin-bottom: 0.375rem;
-  position: relative;
-  overflow: hidden;
-  border: 1px solid transparent;
+  @apply flex items-center gap-3;
+  @apply px-4 py-2.5 rounded-lg;
+  @apply text-text-secondary text-sm font-medium;
+  @apply transition-all duration-200;
+  @apply hover:bg-dark-hover hover:text-text-primary;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset;
 }
 
-/* Gradient background overlay on hover */
-.sidebar-link::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(37, 99, 235, 0.05) 100%);
-  opacity: 0;
-  transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 0;
+.light .sidebar-link {
+  @apply text-text-light-secondary;
+  @apply hover:bg-light-hover hover:text-text-light-primary;
 }
 
-/* Animated accent bar on the left */
-.sidebar-link::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 0;
-  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
-  border-radius: 0 3px 3px 0;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0);
-  z-index: 2;
+/* Active State */
+.sidebar-link.active {
+  @apply bg-primary-500/10 text-primary-400;
 }
 
-/* Hover State */
-.sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-primary);
-  transform: translateX(6px);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
+.light .sidebar-link.active {
+  @apply bg-primary-500/10 text-primary-600;
 }
 
-.sidebar-link:hover::before {
-  opacity: 1;
-}
-
-.sidebar-link:hover::after {
-  height: 70%;
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+/* Icon */
+.sidebar-link .icon {
+  @apply w-5 text-center flex-shrink-0;
+  @apply transition-colors duration-200;
 }
 
 .sidebar-link:hover .icon {
-  transform: scale(1.15) translateY(-1px);
-  color: #60a5fa;
-  filter: drop-shadow(0 2px 6px rgba(59, 130, 246, 0.4));
+  @apply text-primary-400;
 }
 
-/* Active State - Premium Glow */
-.sidebar-link.active {
-  background: rgba(59, 130, 246, 0.12);
-  backdrop-filter: blur(20px) saturate(180%);
-  color: #60a5fa;
-  border-color: rgba(59, 130, 246, 0.3);
-  box-shadow: 
-    0 8px 16px -4px rgba(59, 130, 246, 0.25),
-    0 4px 12px rgba(59, 130, 246, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 24px rgba(59, 130, 246, 0.15);
-  transform: translateX(8px);
-}
-
-.sidebar-link.active::before {
-  opacity: 1;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.08) 100%);
-}
-
-.sidebar-link.active::after {
-  height: 80%;
-  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
-  box-shadow: 
-    0 0 20px rgba(59, 130, 246, 0.6),
-    0 0 40px rgba(59, 130, 246, 0.3);
-  animation: pulse-glow 2s ease-in-out infinite;
+.light .sidebar-link:hover .icon {
+  @apply text-primary-500;
 }
 
 .sidebar-link.active .icon {
-  color: #60a5fa;
-  transform: scale(1.1);
-  filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
-  animation: float-subtle 3s ease-in-out infinite;
+  @apply text-primary-400;
 }
 
-.sidebar-link.active .label {
-  font-weight: 600;
-  color: #ffffff;
-  text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+.light .sidebar-link.active .icon {
+  @apply text-primary-600;
 }
 
-/* Icon Styling */
-.icon {
-  font-size: 1.25rem;
-  width: 1.375rem;
-  flex-shrink: 0;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Label Styling */
-.label {
-  flex: 1;
-  position: relative;
-  z-index: 1;
-  letter-spacing: -0.01em;
-  transition: all 0.3s ease;
-}
-
-/* Premium Animations */
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 
-      0 0 20px rgba(59, 130, 246, 0.6),
-      0 0 40px rgba(59, 130, 246, 0.3);
-  }
-  50% {
-    box-shadow: 
-      0 0 30px rgba(59, 130, 246, 0.8),
-      0 0 60px rgba(59, 130, 246, 0.4);
-  }
-}
-
-@keyframes float-subtle {
-  0%, 100% {
-    transform: scale(1.1) translateY(0);
-  }
-  50% {
-    transform: scale(1.1) translateY(-2px);
-  }
-}
-
-/* Touch devices - reduce transforms */
-@media (hover: none) {
-  .sidebar-link:hover {
-    transform: translateX(4px);
-  }
-  
-  .sidebar-link.active {
-    transform: translateX(6px);
-  }
+/* Label */
+.sidebar-link .label {
+  @apply truncate;
 }
 </style>

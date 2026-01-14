@@ -1,726 +1,685 @@
 <template>
-  <div class="container">
-    <loading-overlay :show="isLoading" opacity="0.85" color="#1d8cf8" height="95px" text="Procesando..." />
+  <div class="space-y-6">
+    <loading-overlay
+      :show="isLoading"
+      opacity="0.85"
+      color="#1d8cf8"
+      height="95px"
+      text="Procesando..."
+    />
 
     <!-- Header Section -->
-    <div class="page-header">
+    <div class="card">
       <div class="flex items-center gap-4">
-        <div class="header-icon">
-          <i class="fas fa-microphone-alt"></i>
+        <div class="w-12 h-12 rounded-xl bg-primary-500/20 flex items-center justify-center">
+          <i class="fas fa-microphone-alt text-primary-400 text-xl" />
         </div>
         <div>
-          <h1 class="page-title">
+          <h1 class="text-2xl font-bold text-text-primary">
             {{ isEdit ? 'Editar Spot' : 'Nuevo Spot' }}
           </h1>
-          <p class="page-subtitle">
+          <p class="text-sm text-text-secondary mt-1">
             {{ isEdit ? 'Modifica la información de tu spot publicitario' : 'Crea un nuevo spot publicitario para tu campaña' }}
           </p>
         </div>
       </div>
     </div>
 
-    <div class="form-container">
+    <div class="space-y-6">
       <!-- Información Básica -->
       <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">
-            <i class="fas fa-info-circle"></i>
-            Información del Spot
-          </h3>
+        <div class="flex items-center gap-2 mb-6">
+          <i class="fas fa-info-circle text-primary-400" />
+          <h3 class="text-lg font-semibold text-text-primary">Información del Spot</h3>
         </div>
-        <div class="card-body">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">
-                <i class="fas fa-tag"></i>
-                Nombre del Spot
-              </label>
-              <input
-                v-model="spot.spo_nombre"
-                type="text"
-                class="form-input"
-                placeholder="Ingrese el nombre del spot"
-                required
-              >
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="label flex items-center gap-2">
+              <i class="fas fa-tag" />
+              Nombre del Spot
+            </label>
+            <input
+              v-model="spot.spo_nombre"
+              type="text"
+              class="input"
+              placeholder="Ingrese el nombre del spot"
+              required
+            >
+          </div>
 
-            <div class="form-group">
-              <label class="form-label">
-                <i class="fas fa-layer-group"></i>
-                Tipo de Spot
-              </label>
-              <select v-model="spot.spo_tipo" class="form-select">
-                <option v-for="tipo in tipoSpot" :value="tipo.value" :key="tipo.value">
-                  {{ tipo.texto }}
-                </option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">
-                <i class="fas fa-calendar-plus"></i>
-                Fecha de Inicio
-              </label>
-              <input
-                type="date"
-                v-model="spot.spo_fecini"
-                class="form-input"
-                required
+          <div class="form-group">
+            <label class="label flex items-center gap-2">
+              <i class="fas fa-layer-group" />
+              Tipo de Spot
+            </label>
+            <select v-model="spot.spo_tipo" class="select">
+              <option
+                v-for="tipo in tipoSpot"
+                :key="tipo.value"
+                :value="tipo.value"
               >
-            </div>
-            <div class="form-group">
-              <label class="form-label">
-                <i class="fas fa-calendar-times"></i>
-                Fecha de Finalización
-              </label>
-              <input
-                type="date"
-                :disabled="spot.spo_tipo==='inst'"
-                v-model="spot.spo_fecfin"
-                class="form-input"
-                :min="formatDateForInput(spot.spo_fecini)"
-                required
-              >
-            </div>
+                {{ tipo.texto }}
+              </option>
+            </select>
+          </div>
 
+          <div class="form-group">
+            <label class="label flex items-center gap-2">
+              <i class="fas fa-calendar-plus" />
+              Fecha de Inicio
+            </label>
+            <input
+              v-model="spot.spo_fecini"
+              type="date"
+              class="input"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="label flex items-center gap-2">
+              <i class="fas fa-calendar-times" />
+              Fecha de Finalización
+            </label>
+            <input
+              v-model="spot.spo_fecfin"
+              type="date"
+              :disabled="spot.spo_tipo==='inst'"
+              class="input"
+              :class="{ 'opacity-50 cursor-not-allowed': spot.spo_tipo==='inst' }"
+              :min="formatDateForInput(spot.spo_fecini)"
+              required
+            >
           </div>
         </div>
       </div>
 
       <!-- Audio Section -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">
-            <i class="fas fa-music"></i>
-            Archivo media Spot ({{tipoMediaSpot.find(sp=>sp.value===spot.spo_mediaTipo)?.texto || 'Media'}})
-          </h3>
+      <div class="card p-0 overflow-hidden">
+        <div class="p-4 sm:p-6 border-b border-dark-border">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-music text-primary-400" />
+            <h3 class="text-lg font-semibold text-text-primary">
+              Archivo media Spot ({{ tipoMediaSpot.find(sp=>sp.value===spot.spo_mediaTipo)?.texto || 'Media' }})
+            </h3>
+          </div>
         </div>
-        <div class="card-body">
-          <div class="tabs">
-            <div class="tab-buttons">
-              <button
-                class="tab-button"
-                :class="{ 'active': spot.spo_mediaTipo === 'audio' && activeTab !== 'ai' }"
-                @click="setMediaType('upload','audio')"
-              >
-                <i class="fas fa-upload"></i>
-                Subir Audio
-              </button>
-              <button
-                class="tab-button"
-                :class="{ 'active': spot.spo_mediaTipo === 'video' }"
-                @click="setMediaType('upload','video')"
-              >
-                <i class="fas fa-upload"></i>
-                Subir Video
-              </button>
-              <button
-                class="tab-button"
-                :class="{ 'active': activeTab === 'ai' }"
-                @click="setMediaType('ai','audio')"
-              >
-                <i class="fas fa-robot"></i>
-                Generar con IA
-              </button>
-              <button
-                class="tab-button"
-                :class="{ 'active': activeTab === 'stream' }"
-                @click="setMediaType('stream','streaming')"
-              >
-                <i class="fas fa-globe"></i>
-                URL del stream
-              </button>
-            </div>
+        <div>
+          <div class="flex flex-wrap border-b border-dark-border">
+            <button
+              class="flex-1 min-w-[120px] px-4 py-3 text-sm font-medium transition-all border-b-2"
+              :class="spot.spo_mediaTipo === 'audio' && activeTab !== 'ai' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
+              @click="setMediaType('upload','audio')"
+            >
+              <i class="fas fa-upload mr-2" />
+              Subir Audio
+            </button>
+            <button
+              class="flex-1 min-w-[120px] px-4 py-3 text-sm font-medium transition-all border-b-2"
+              :class="spot.spo_mediaTipo === 'video' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
+              @click="setMediaType('upload','video')"
+            >
+              <i class="fas fa-upload mr-2" />
+              Subir Video
+            </button>
+            <button
+              class="flex-1 min-w-[120px] px-4 py-3 text-sm font-medium transition-all border-b-2"
+              :class="activeTab === 'ai' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
+              @click="setMediaType('ai','audio')"
+            >
+              <i class="fas fa-robot mr-2" />
+              Generar con IA
+            </button>
+            <button
+              class="flex-1 min-w-[120px] px-4 py-3 text-sm font-medium transition-all border-b-2"
+              :class="activeTab === 'stream' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
+              @click="setMediaType('stream','streaming')"
+            >
+              <i class="fas fa-globe mr-2" />
+              URL del stream
+            </button>
+          </div>
 
 
 
-            <!-- stream Tab -->
-            <div v-if="activeTab === 'stream'" class="tab-content">
-              <div class="stream-section">
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="fas fa-link"></i>
-                    URL del Stream
-                    <i
-                      class="fas fa-question-circle help-icon"
-                      title="Ingresa la URL completa del stream. Formatos soportados: HLS (.m3u8), DASH (.mpd), HTTP streams. Ejemplos: https://ejemplo.com/stream.m3u8"
-                    ></i>
-                  </label>
-                  <div class="url-input-wrapper">
-                    <i class="fas fa-globe stream-icon"></i>
-                    <input
-                      v-model="spot.spo_url"
-                      type="url"
-                      class="stream-input"
-                      placeholder="https://ejemplo.com/stream.m3u8"
-                      @blur="validateStreamUrl"
-                      @input="streamUrlError = ''"
-                    >
-                    <button
-                      v-if="spot.spo_url && spot.spo_url !== 'Formatos permitidos m3u8'"
-                      @click="spot.spo_url = 'Formatos permitidos m3u8'; streamUrlError = ''"
-                      class="clear-stream-btn"
-                      title="Limpiar URL"
-                    >
-                      <i class="fas fa-times-circle"></i>
-                    </button>
-                  </div>
-                  <p v-if="streamUrlError" class="error-hint">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    {{ streamUrlError }}
-                  </p>
-                  <p v-else class="setting-hint">
-                    <i class="fas fa-lightbulb"></i>
-                    Formatos aceptados: .m3u8 (HLS), .mpd (DASH), URLs HTTP/HTTPS
-                  </p>
+          <!-- stream Tab -->
+          <div v-if="activeTab === 'stream'" class="p-4 sm:p-6">
+            <div class="space-y-4">
+              <div class="form-group">
+                <label class="label flex items-center gap-2">
+                  <i class="fas fa-link" />
+                  URL del Stream
+                  <i
+                    class="fas fa-question-circle text-text-tertiary text-xs cursor-help"
+                    title="Ingresa la URL completa del stream. Formatos soportados: HLS (.m3u8), DASH (.mpd), HTTP streams."
+                  />
+                </label>
+                <div class="relative">
+                  <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
+                  <input
+                    v-model="spot.spo_url"
+                    type="url"
+                    class="input pl-10 pr-10"
+                    placeholder="https://ejemplo.com/stream.m3u8"
+                    @blur="validateStreamUrl"
+                    @input="streamUrlError = ''"
+                  >
+                  <button
+                    v-if="spot.spo_url && spot.spo_url !== 'Formatos permitidos m3u8'"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary transition-colors"
+                    title="Limpiar URL"
+                    @click="spot.spo_url = 'Formatos permitidos m3u8'; streamUrlError = ''"
+                  >
+                    <i class="fas fa-times-circle" />
+                  </button>
                 </div>
+                <p v-if="streamUrlError" class="text-sm text-danger-400 mt-1 flex items-center gap-1">
+                  <i class="fas fa-exclamation-triangle" />
+                  {{ streamUrlError }}
+                </p>
+                <p v-else class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
+                  <i class="fas fa-lightbulb text-warning-400" />
+                  Formatos aceptados: .m3u8 (HLS), .mpd (DASH), URLs HTTP/HTTPS
+                </p>
+              </div>
 
-                <!-- Stream Preview -->
-                <div v-if="isValidStreamUrl" class="stream-preview-section">
-                  <h4 class="preview-title">
-                    <i class="fas fa-broadcast-tower"></i>
-                    Vista Previa del Stream
-                  </h4>
-                  <div class="stream-info">
-                    <div class="stream-detail">
-                      <i class="fas fa-link"></i>
-                      <span class="stream-label">URL:</span>
-                      <span class="stream-value">{{ spot.spo_url }}</span>
-                    </div>
-                    <div class="stream-detail">
-                      <i class="fas fa-file-code"></i>
-                      <span class="stream-label">Tipo:</span>
-                      <span class="stream-value">{{ getStreamType(spot.spo_url) }}</span>
-                    </div>
+              <!-- Stream Preview -->
+              <div v-if="isValidStreamUrl" class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
+                <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
+                  <i class="fas fa-broadcast-tower text-success-400" />
+                  Vista Previa del Stream
+                </h4>
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2 text-sm">
+                    <i class="fas fa-link text-text-tertiary" />
+                    <span class="text-text-secondary">URL:</span>
+                    <span class="text-text-primary truncate">{{ spot.spo_url }}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-sm">
+                    <i class="fas fa-file-code text-text-tertiary" />
+                    <span class="text-text-secondary">Tipo:</span>
+                    <span class="text-text-primary">{{ getStreamType(spot.spo_url) }}</span>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- Upload Tab -->
-            <div v-if="activeTab === 'upload'" class="tab-content">
-              <div class="upload-area">
-                <input
-                  type="file"
-                  ref="fileInput"
-                  @change="handleFileUpload"
-                  :accept="spot.spo_mediaTipo === 'audio' ? 'audio/*,.mp3,.wav,.ogg,.aac,.flac' : 'video/*,.mp4,.webm,.ogg,.mov'"
-                  class="file-input"
-                  id="file-upload"
-                >
-                <label for="file-upload" class="upload-label" :class="{ 'has-error': fileValidationError }">
-                  <div class="upload-content">
-                    <i class="fas fa-cloud-upload-alt upload-icon" :class="{ 'text-danger': fileValidationError }"></i>
-                    <p class="upload-text" v-if="spot.spo_mediaTipo=='audio'">
-                      Arrastra tu archivo de audio aquí o haz clic para seleccionar
-                    </p>
-                    <p class="upload-text" v-if="spot.spo_mediaTipo=='video'">
-                      Arrastra tu archivo de video aquí o haz clic para seleccionar
-                    </p>
-                    <p class="upload-hint" v-if="spot.spo_mediaTipo=='audio'">
-                      Formatos soportados: MP3, WAV, OGG, AAC, FLAC (máx. 50MB)
-                    </p>
-                    <p class="upload-hint" v-if="spot.spo_mediaTipo=='video'">
-                      Formatos soportados: MP4, WebM, OGG, MOV (máx. 50MB)
-                    </p>
-                  </div>
-                </label>
+          </div>
+          <!-- Upload Tab -->
+          <div v-if="activeTab === 'upload'" class="p-4 sm:p-6">
+            <div class="space-y-4">
+              <input
+                id="file-upload"
+                ref="fileInput"
+                type="file"
+                :accept="spot.spo_mediaTipo === 'audio' ? 'audio/*,.mp3,.wav,.ogg,.aac,.flac' : 'video/*,.mp4,.webm,.ogg,.mov'"
+                class="hidden"
+                @change="handleFileUpload"
+              >
+              <label
+                for="file-upload"
+                class="block p-8 border-2 border-dashed rounded-xl cursor-pointer transition-all text-center"
+                :class="fileValidationError ? 'border-danger-500 bg-danger-500/5' : 'border-dark-border hover:border-primary-500 hover:bg-primary-500/5'"
+              >
+                <div class="flex flex-col items-center gap-3">
+                  <i
+                    class="fas fa-cloud-upload-alt text-4xl"
+                    :class="fileValidationError ? 'text-danger-400' : 'text-primary-400'"
+                  />
+                  <p v-if="spot.spo_mediaTipo=='audio'" class="text-text-primary font-medium">
+                    Arrastra tu archivo de audio aquí o haz clic para seleccionar
+                  </p>
+                  <p v-if="spot.spo_mediaTipo=='video'" class="text-text-primary font-medium">
+                    Arrastra tu archivo de video aquí o haz clic para seleccionar
+                  </p>
+                  <p v-if="spot.spo_mediaTipo=='audio'" class="text-sm text-text-tertiary">
+                    Formatos soportados: MP3, WAV, OGG, AAC, FLAC (máx. 50MB)
+                  </p>
+                  <p v-if="spot.spo_mediaTipo=='video'" class="text-sm text-text-tertiary">
+                    Formatos soportados: MP4, WebM, OGG, MOV (máx. 50MB)
+                  </p>
+                </div>
+              </label>
 
-                <!-- Validation Error -->
-                <div v-if="fileValidationError" class="file-validation-error">
-                  <i class="fas fa-exclamation-triangle"></i>
-                  {{ fileValidationError }}
+              <!-- Validation Error -->
+              <div v-if="fileValidationError" class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle" />
+                {{ fileValidationError }}
+              </div>
+
+              <!-- File Info Preview -->
+              <div v-if="file" class="flex items-center justify-between p-3 bg-dark-secondary rounded-lg border border-dark-border">
+                <div class="flex items-center gap-3">
+                  <i :class="spot.spo_mediaTipo === 'audio' ? 'fas fa-file-audio text-primary-400' : 'fas fa-file-video text-primary-400'" />
+                  <span class="font-medium text-text-primary">{{ file.name }}</span>
+                  <span class="text-sm text-text-tertiary">({{ formatFileSize(file.size) }})</span>
+                </div>
+                <button class="btn btn-ghost btn-sm btn-icon" @click="removeFile">
+                  <i class="fas fa-times" />
+                </button>
+              </div>
+
+              <!-- Media Preview Section -->
+              <div v-if="filePreviewUrl" class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
+                <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
+                  <i :class="filePreviewType === 'audio' ? 'fas fa-headphones text-primary-400' : 'fas fa-video text-primary-400'" />
+                  Vista Previa del {{ filePreviewType === 'audio' ? 'Audio' : 'Video' }}
+                </h4>
+
+                <!-- Audio Preview -->
+                <div v-if="filePreviewType === 'audio'">
+                  <audio ref="audiofile" :src="filePreviewUrl" controls class="w-full" />
                 </div>
 
-                <!-- File Info Preview -->
-                <div v-if="file" class="file-preview">
-                  <div class="file-info">
-                    <i :class="spot.spo_mediaTipo === 'audio' ? 'fas fa-file-audio' : 'fas fa-file-video'"></i>
-                    <span class="file-name">{{ file.name }}</span>
-                    <span class="file-size">({{ formatFileSize(file.size) }})</span>
-                  </div>
-                  <button @click="removeFile" class="btn btn-ghost btn-sm">
-                    <i class="fas fa-times"></i>
+                <!-- Video Preview -->
+                <div v-if="filePreviewType === 'video'">
+                  <video :src="filePreviewUrl" controls class="w-full max-h-[300px] rounded-lg">
+                    Tu navegador no soporta la reproducción de video.
+                  </video>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Generation Tab -->
+          <div v-if="activeTab === 'ai'" class="p-4 sm:p-6">
+            <div class="space-y-6">
+              <!-- Voice Filters Section -->
+              <div class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
+                <div class="flex items-center justify-between mb-4">
+                  <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary">
+                    <i class="fas fa-filter text-primary-400" />
+                    Filtrar Voces
+                    <span v-if="getActiveFiltersCount() > 0" class="badge badge-primary text-xs">
+                      {{ getActiveFiltersCount() }}
+                    </span>
+                  </h4>
+                  <button
+                    v-if="getActiveFiltersCount() > 0"
+                    class="btn btn-sm btn-ghost"
+                    title="Limpiar todos los filtros"
+                    @click="clearFilters"
+                  >
+                    <i class="fas fa-times" />
+                    Limpiar
                   </button>
                 </div>
 
-                <!-- Media Preview Section -->
-                <div v-if="filePreviewUrl" class="media-preview-section">
-                  <h4 class="preview-title">
-                    <i :class="filePreviewType === 'audio' ? 'fas fa-headphones' : 'fas fa-video'"></i>
-                    Vista Previa del {{ filePreviewType === 'audio' ? 'Audio' : 'Video' }}
-                  </h4>
-
-                  <!-- Audio Preview -->
-                  <div v-if="filePreviewType === 'audio'" class="audio-preview-player">
-                    <audio ref="audiofile" :src="filePreviewUrl" controls class="audio-element"></audio>
-                  </div>
-
-                  <!-- Video Preview -->
-                  <div v-if="filePreviewType === 'video'" class="video-preview-player">
-                    <video :src="filePreviewUrl" controls class="video-element">
-                      Tu navegador no soporta la reproducción de video.
-                    </video>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- AI Generation Tab -->
-            <div v-if="activeTab === 'ai'" class="tab-content">
-              <div class="ai-section">
-                <!-- Voice Filters Section -->
-                <div class="voice-filters-section">
-                  <div class="filters-header">
-                    <h4 class="filters-title">
-                      <i class="fas fa-filter"></i>
-                      Filtrar Voces
-                      <span v-if="getActiveFiltersCount() > 0" class="filter-count-badge">
-                        {{ getActiveFiltersCount() }}
-                      </span>
-                    </h4>
-                    <button
-                      v-if="getActiveFiltersCount() > 0"
-                      @click="clearFilters"
-                      class="btn btn-sm btn-ghost"
-                      title="Limpiar todos los filtros"
+                <!-- Search Filter -->
+                <div class="form-group mb-4">
+                  <div class="relative">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
+                    <input
+                      v-model="voiceFilters.search"
+                      type="text"
+                      class="input pl-10 pr-10"
+                      placeholder="Buscar por nombre o descripción..."
                     >
-                      <i class="fas fa-times"></i>
-                      Limpiar
+                    <button
+                      v-if="voiceFilters.search"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary transition-colors"
+                      title="Limpiar búsqueda"
+                      @click="voiceFilters.search = ''"
+                    >
+                      <i class="fas fa-times-circle" />
                     </button>
                   </div>
+                </div>
 
-                  <!-- Search Filter -->
-                  <div class="filter-group">
-                    <div class="search-input-wrapper">
-                      <i class="fas fa-search search-icon"></i>
-                      <input
-                        v-model="voiceFilters.search"
-                        type="text"
-                        class="search-input"
-                        placeholder="Buscar por nombre o descripción..."
+                <!-- Filter Chips -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                  <!-- Gender Filter -->
+                  <div v-if="availableFilters.genders.length > 0" class="form-group">
+                    <label class="label text-xs flex items-center gap-1">
+                      <i class="fas fa-venus-mars" />
+                      Género
+                    </label>
+                    <select v-model="voiceFilters.gender" class="select text-sm">
+                      <option value="all">Todos</option>
+                      <option
+                        v-for="gender in availableFilters.genders"
+                        :key="gender"
+                        :value="gender"
                       >
-                      <button
-                        v-if="voiceFilters.search"
-                        @click="voiceFilters.search = ''"
-                        class="clear-search-btn"
-                        title="Limpiar búsqueda"
-                      >
-                        <i class="fas fa-times-circle"></i>
-                      </button>
-                    </div>
+                        {{ gender === 'female' ? '♀ Femenino' : gender==='male'?'♂ Masculino':'♀♂ Neutral' }}
+                      </option>
+                    </select>
                   </div>
 
-                  <!-- Filter Chips -->
-                  <div class="filters-grid">
-                    <!-- Gender Filter -->
-                    <div class="filter-group" v-if="availableFilters.genders.length > 0">
-                      <label class="filter-label">
-                        <i class="fas fa-venus-mars"></i>
-                        Género
-                      </label>
-                      <select v-model="voiceFilters.gender" class="filter-select">
-                        <option value="all">Todos</option>
-                        <option
-                          v-for="gender in availableFilters.genders"
-                          :key="gender"
-                          :value="gender"
-                        >
-                          {{ gender === 'female' ? '♀ Femenino' : gender==='male'?'♂ Masculino':'♀♂ Neutral' }}
-                        </option>
-                      </select>
-                    </div>
-
-                    <!-- Accent Filter -->
-                    <div class="filter-group" v-if="availableFilters.accents.length > 0">
-                      <label class="filter-label">
-                        <i class="fas fa-globe-americas"></i>
-                        Acento
-                      </label>
-                      <select v-model="voiceFilters.accent" class="filter-select">
-                        <option value="all">Todos</option>
-                        <option
-                          v-for="accent in availableFilters.accents"
-                          :key="accent"
-                          :value="accent"
-                        >
-                          {{ capitalizeFirst(accent) }}
-                        </option>
-                      </select>
-                    </div>
-
-                    <!-- Age Filter -->
-                    <div class="filter-group" v-if="availableFilters.ages.length > 0">
-                      <label class="filter-label">
-                        <i class="fas fa-birthday-cake"></i>
-                        Edad
-                      </label>
-                      <select v-model="voiceFilters.age" class="filter-select">
-                        <option value="all">Todas</option>
-                        <option
-                          v-for="age in availableFilters.ages"
-                          :key="age"
-                          :value="age"
-                        >
-                          {{ capitalizeFirst(age) }}
-                        </option>
-                      </select>
-                    </div>
-
-                    <!-- Use Case Filter -->
-                    <div class="filter-group" v-if="availableFilters.useCases.length > 0">
-                      <label class="filter-label">
-                        <i class="fas fa-bullseye"></i>
-                        Uso
-                      </label>
-                      <select v-model="voiceFilters.useCase" class="filter-select">
-                        <option value="all">Todos</option>
-                        <option
-                          v-for="useCase in availableFilters.useCases"
-                          :key="useCase"
-                          :value="useCase"
-                        >
-                          {{ capitalizeFirst(useCase) }}
-                        </option>
-                      </select>
-                    </div>
+                  <!-- Accent Filter -->
+                  <div v-if="availableFilters.accents.length > 0" class="form-group">
+                    <label class="label text-xs flex items-center gap-1">
+                      <i class="fas fa-globe-americas" />
+                      Acento
+                    </label>
+                    <select v-model="voiceFilters.accent" class="select text-sm">
+                      <option value="all">Todos</option>
+                      <option
+                        v-for="accent in availableFilters.accents"
+                        :key="accent"
+                        :value="accent"
+                      >
+                        {{ capitalizeFirst(accent) }}
+                      </option>
+                    </select>
                   </div>
 
-                  <!-- Results Count -->
-                  <div class="filter-results">
-                    <i class="fas fa-info-circle"></i>
-                    <span>
-                      Mostrando <strong>{{ filteredVoices.length }}</strong> de <strong>{{ locutores.length }}</strong> voces
+                  <!-- Age Filter -->
+                  <div v-if="availableFilters.ages.length > 0" class="form-group">
+                    <label class="label text-xs flex items-center gap-1">
+                      <i class="fas fa-birthday-cake" />
+                      Edad
+                    </label>
+                    <select v-model="voiceFilters.age" class="select text-sm">
+                      <option value="all">Todas</option>
+                      <option
+                        v-for="age in availableFilters.ages"
+                        :key="age"
+                        :value="age"
+                      >
+                        {{ capitalizeFirst(age) }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- Use Case Filter -->
+                  <div v-if="availableFilters.useCases.length > 0" class="form-group">
+                    <label class="label text-xs flex items-center gap-1">
+                      <i class="fas fa-bullseye" />
+                      Uso
+                    </label>
+                    <select v-model="voiceFilters.useCase" class="select text-sm">
+                      <option value="all">Todos</option>
+                      <option
+                        v-for="useCase in availableFilters.useCases"
+                        :key="useCase"
+                        :value="useCase"
+                      >
+                        {{ capitalizeFirst(useCase) }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Results Count -->
+                <div class="flex items-center gap-2 text-sm text-text-secondary">
+                  <i class="fas fa-info-circle text-info-400" />
+                  <span>
+                    Mostrando <strong class="text-text-primary">{{ filteredVoices.length }}</strong> de <strong class="text-text-primary">{{ locutores.length }}</strong> voces
+                  </span>
+                </div>
+              </div>
+
+              <!-- Voice Selection -->
+              <div class="form-group">
+                <label class="label flex items-center gap-2">
+                  <i class="fas fa-user-tie" />
+                  Locutor Virtual
+                  <i
+                    class="fas fa-question-circle text-text-tertiary text-xs cursor-help"
+                    title="Selecciona la voz que se utilizará para generar el audio."
+                  />
+                </label>
+                <select v-model="selectedLoc" class="select" @change="onVoiceChange">
+                  <option :value="null" disabled>
+                    {{ filteredVoices.length === 0 ? 'No hay voces disponibles con estos filtros' : 'Seleccionar locutor...' }}
+                  </option>
+                  <option
+                    v-for="locutor in filteredVoices"
+                    :key="locutor.voice_id"
+                    :value="locutor"
+                  >
+                    {{ locutor.name }}{{ getVoiceDisplayInfo(locutor) }}
+                  </option>
+                </select>
+                <p v-if="filteredVoices.length === 0 && locutores.length > 0" class="text-sm text-warning-400 mt-1 flex items-center gap-1">
+                  <i class="fas fa-exclamation-triangle" />
+                  No se encontraron voces con los filtros seleccionados. Intenta ajustar los filtros.
+                </p>
+              </div>
+
+              <!-- Voice Info Card -->
+              <div v-if="selectedLoc" class="p-4 bg-dark-tertiary rounded-lg border border-dark-border">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-2">
+                    <i class="fas fa-microphone text-primary-400" />
+                    <span class="font-semibold text-text-primary">{{ selectedLoc.name }}</span>
+                    <span v-if="selectedLoc.category" class="badge badge-info text-xs">
+                      {{ selectedLoc.category }}
                     </span>
                   </div>
+                  <button
+                    class="btn btn-sm btn-secondary"
+                    :disabled="isLoadingPreview"
+                    title="Escuchar una muestra de cómo suena esta voz."
+                    @click="playVoicePreview"
+                  >
+                    <i :class="isLoadingPreview ? 'fas fa-spinner fa-spin' : 'fas fa-play'" />
+                    {{ isLoadingPreview ? 'Cargando...' : 'Preview' }}
+                  </button>
                 </div>
 
-                <!-- Voice Selection -->
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="fas fa-user-tie"></i>
-                    Locutor Virtual
-                    <i
-                      class="fas fa-question-circle help-icon"
-                      title="Selecciona la voz que se utilizará para generar el audio. Puedes escuchar una muestra de cada voz usando el botón 'Preview' después de seleccionarla."
-                    ></i>
-                  </label>
-                  <select v-model="selectedLoc" class="form-select voice-select" @change="onVoiceChange">
-                    <option :value="null" disabled>
-                      {{ filteredVoices.length === 0 ? 'No hay voces disponibles con estos filtros' : 'Seleccionar locutor...' }}
-                    </option>
-                    <option
-                      v-for="locutor in filteredVoices"
-                      :key="locutor.voice_id"
-                      :value="locutor"
-                    >
-                      {{ locutor.name }}{{ getVoiceDisplayInfo(locutor) }}
-                    </option>
-                  </select>
-                  <p v-if="filteredVoices.length === 0 && locutores.length > 0" class="setting-hint">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    No se encontraron voces con los filtros seleccionados. Intenta ajustar los filtros.
-                  </p>
+                <div v-if="selectedLoc.description" class="text-sm text-text-secondary mb-3">
+                  {{ selectedLoc.description }}
                 </div>
 
-                <!-- Voice Info Card -->
-                <div v-if="selectedLoc" class="voice-info-card">
-                  <div class="voice-info-header">
-                    <div class="voice-info-title">
-                      <i class="fas fa-microphone"></i>
-                      <span>{{ selectedLoc.name }}</span>
-                      <span v-if="selectedLoc.category" class="voice-badge">
-                        {{ selectedLoc.category }}
-                      </span>
-                    </div>
-                    <button
-                      @click="playVoicePreview"
-                      class="btn btn-sm btn-ghost preview-btn"
-                      :disabled="isLoadingPreview"
-                      title="Escuchar una muestra de cómo suena esta voz. El preview es gratuito y no consume caracteres de tu cuota."
-                    >
-                      <i :class="isLoadingPreview ? 'fas fa-spinner fa-spin' : 'fas fa-play'"></i>
-                      {{ isLoadingPreview ? 'Cargando...' : 'Preview' }}
-                    </button>
-                  </div>
-
-                  <div v-if="selectedLoc.description" class="voice-description">
-                    {{ selectedLoc.description }}
-                  </div>
-
-                  <div class="voice-properties">
-                    <div class="voice-property" v-if="selectedLoc.labels">
-                      <i class="fas fa-tags"></i>
-                      <div class="property-content">
-                        <span class="property-label">Características:</span>
-                        <div class="property-tags">
-                          <span
-                            v-for="(value, key) in selectedLoc.labels"
-                            :key="key"
-                            class="property-tag"
-                          >
-                            {{ key }}: {{ value }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="voice-property" v-if="selectedLoc.high_quality_base_model_ids">
-                      <i class="fas fa-star"></i>
-                      <div class="property-content">
-                        <span class="property-label">Modelos compatibles:</span>
-                        <span class="property-value">{{ selectedLoc.high_quality_base_model_ids.join(', ') }}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Preview Audio Player -->
-                  <div v-if="previewAudioUrl" class="preview-audio-player">
-                    <audio ref="previewAudio" :src="previewAudioUrl" controls class="audio-element-small"></audio>
-                  </div>
-                </div>
-
-                <!-- Voice Settings -->
-                <div v-if="selectedLoc" class="voice-settings-section">
-                  <h4 class="settings-title">
-                    <i class="fas fa-sliders-h"></i>
-                    Configuración de Voz
-                  </h4>
-
-                  <div class="settings-grid">
-                    <!-- Stability -->
-                    <div class="setting-control">
-                      <label class="setting-label">
-                        <span class="label-with-help">
-                          <span>Estabilidad</span>
-                          <i
-                            class="fas fa-question-circle help-icon"
-                            title="Controla la consistencia de la voz. Valores altos (0.8-1.0) generan audio más predecible y uniforme, ideal para contenido profesional. Valores bajos (0.3-0.5) permiten más variación y expresividad, útil para narrativa dramática."
-                          ></i>
-                        </span>
-                        <span class="setting-value">{{ voiceSettings.stability.toFixed(2) }}</span>
-                      </label>
-                      <input
-                        type="range"
-                        v-model.number="voiceSettings.stability"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        class="setting-slider"
-                        title="Desliza para ajustar la estabilidad"
-                      >
-                      <p class="setting-hint">
-                        <i class="fas fa-lightbulb"></i>
-                        Mayor estabilidad = voz más consistente pero menos expresiva
-                      </p>
-                    </div>
-
-                    <!-- Similarity Boost -->
-                    <div class="setting-control">
-                      <label class="setting-label">
-                        <span class="label-with-help">
-                          <span>Similitud</span>
-                          <i
-                            class="fas fa-question-circle help-icon"
-                            title="Define qué tan fiel será la voz generada al modelo original. Valores altos (0.8-1.0) mantienen la voz muy similar al original, ideal para voces clonadas. Valores medios (0.5-0.7) permiten más creatividad manteniendo el carácter."
-                          ></i>
-                        </span>
-                        <span class="setting-value">{{ voiceSettings.similarity_boost.toFixed(2) }}</span>
-                      </label>
-                      <input
-                        type="range"
-                        v-model.number="voiceSettings.similarity_boost"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        class="setting-slider"
-                        title="Desliza para ajustar la similitud"
-                      >
-                      <p class="setting-hint">
-                        <i class="fas fa-lightbulb"></i>
-                        Qué tan similar será al locutor original
-                      </p>
-                    </div>
-
-                    <!-- Style -->
-                    <div class="setting-control">
-                      <label class="setting-label">
-                        <span class="label-with-help">
-                          <span>Estilo</span>
-                          <i
-                            class="fas fa-question-circle help-icon"
-                            title="Controla la exageración emocional y estilística. Valor 0 = neutral y profesional. Valores medios (0.3-0.6) añaden carácter. Valores altos (0.7-1.0) producen actuación dramática. Usar con moderación para evitar resultados artificiales."
-                          ></i>
-                        </span>
-                        <span class="setting-value">{{ voiceSettings.style.toFixed(2) }}</span>
-                      </label>
-                      <input
-                        type="range"
-                        v-model.number="voiceSettings.style"
-                        min="0"
-                        max="1"
-                        step="0.01"
-                        class="setting-slider"
-                        title="Desliza para ajustar el estilo"
-                      >
-                      <p class="setting-hint">
-                        <i class="fas fa-lightbulb"></i>
-                        Exageración del estilo y emoción (0 = neutral, 1 = muy expresivo)
-                      </p>
-                    </div>
-
-                    <!-- Speaker Boost -->
-                    <div class="setting-control">
-                      <label class="setting-label">
-                        <span class="label-with-help">
-                          <span>Mejora de Locutor</span>
-                          <i
-                            class="fas fa-question-circle help-icon"
-                            title="Activar esta opción mejora la similitud y calidad del audio aplicando procesamiento adicional. Mejora la claridad y reduce artefactos, pero consume aproximadamente 20-30% más caracteres de tu cuota."
-                          ></i>
-                        </span>
-                        <input
-                          type="checkbox"
-                          v-model="voiceSettings.use_speaker_boost"
-                          class="setting-checkbox"
-                          title="Activa para mejorar calidad (usa más caracteres)"
+                <div class="space-y-2">
+                  <div v-if="selectedLoc.labels" class="flex items-start gap-2">
+                    <i class="fas fa-tags text-text-tertiary mt-0.5" />
+                    <div class="flex-1">
+                      <span class="text-xs text-text-tertiary">Características:</span>
+                      <div class="flex flex-wrap gap-1 mt-1">
+                        <span
+                          v-for="(value, key) in selectedLoc.labels"
+                          :key="key"
+                          class="badge badge-secondary text-xs"
                         >
-                      </label>
-                      <p class="setting-hint">
-                        <i class="fas fa-lightbulb"></i>
-                        Mejora la similitud y calidad (usa más caracteres)
-                      </p>
+                          {{ key }}: {{ value }}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <!-- Model Selection -->
+                  <div v-if="selectedLoc.high_quality_base_model_ids" class="flex items-center gap-2 text-sm">
+                    <i class="fas fa-star text-warning-400" />
+                    <span class="text-text-tertiary">Modelos compatibles:</span>
+                    <span class="text-text-secondary">{{ selectedLoc.high_quality_base_model_ids.join(', ') }}</span>
+                  </div>
+                </div>
+
+                <!-- Preview Audio Player -->
+                <div v-if="previewAudioUrl" class="mt-3 pt-3 border-t border-dark-border">
+                  <audio ref="previewAudio" :src="previewAudioUrl" controls class="w-full h-8" />
+                </div>
+              </div>
+
+              <!-- Voice Settings -->
+              <div v-if="selectedLoc" class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
+                <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-4">
+                  <i class="fas fa-sliders-h text-primary-400" />
+                  Configuración de Voz
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <!-- Stability -->
                   <div class="form-group">
-                    <label class="form-label">
-                      <i class="fas fa-brain"></i>
-                      Modelo de IA
-                      <i
-                        class="fas fa-question-circle help-icon"
-                        title="Multilingual v2: Mejor calidad, soporta español y otros idiomas. Turbo v2.5: Balance entre velocidad y calidad. Flash v2.5: Generación ultra rápida con menor latencia. Monolingual v1: Solo inglés, máxima calidad para ese idioma."
-                      ></i>
+                    <label class="label text-sm flex items-center justify-between">
+                      <span class="flex items-center gap-1">
+                        Estabilidad
+                        <i class="fas fa-question-circle text-text-tertiary text-xs cursor-help" title="Controla la consistencia de la voz." />
+                      </span>
+                      <span class="text-primary-400 font-mono">{{ voiceSettings.stability.toFixed(2) }}</span>
                     </label>
-                    <select v-model="voiceSettings.modelId" class="form-select">
-                      <option value="eleven_multilingual_v2">🌍 Multilingual v2 (Recomendado para Español)</option>
-                      <option value="eleven_turbo_v2_5">⚡ Turbo v2.5 (Rápido, buena calidad)</option>
-                      <option value="eleven_flash_v2_5">🚀 Flash v2.5 (Ultra Rápido, menor latencia)</option>
-                      <option value="eleven_monolingual_v1">🇺🇸 Monolingual v1 (Solo Inglés, alta calidad)</option>
-                    </select>
-                    <p class="setting-hint">
-                      <i class="fas fa-lightbulb"></i>
-                      <span v-if="voiceSettings.modelId === 'eleven_multilingual_v2'">
-                        Ideal para contenido en español - Mejor balance calidad/velocidad
-                      </span>
-                      <span v-else-if="voiceSettings.modelId === 'eleven_turbo_v2_5'">
-                        Generación 2x más rápida - Buena para pruebas y producción
-                      </span>
-                      <span v-else-if="voiceSettings.modelId === 'eleven_flash_v2_5'">
-                        Generación 4x más rápida - Perfecto para testing rápido
-                      </span>
-                      <span v-else>
-                        Solo para contenido en inglés - Máxima calidad en ese idioma
-                      </span>
+                    <input
+                      v-model.number="voiceSettings.stability"
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      class="w-full accent-primary-500"
+                    >
+                    <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
+                      <i class="fas fa-lightbulb text-warning-400" />
+                      Mayor estabilidad = voz más consistente
                     </p>
                   </div>
 
-                  <!-- Preset Buttons -->
-                  <div class="preset-section">
-                    <h5 class="preset-title">
-                      <i class="fas fa-magic"></i>
-                      Presets Rápidos
-                      <i
-                        class="fas fa-question-circle help-icon"
-                        title="Los presets aplican configuraciones predefinidas optimizadas para diferentes tipos de contenido. Puedes aplicar un preset y luego ajustar manualmente si lo necesitas."
-                      ></i>
-                    </h5>
-                    <div class="preset-buttons">
-                      <button
-                        @click="applyPreset('balanced')"
-                        class="btn btn-sm btn-outline"
-                        title="Stability: 0.75, Similarity: 0.75, Style: 0.0 - Ideal para spots publicitarios generales"
+                  <!-- Similarity Boost -->
+                  <div class="form-group">
+                    <label class="label text-sm flex items-center justify-between">
+                      <span class="flex items-center gap-1">
+                        Similitud
+                        <i class="fas fa-question-circle text-text-tertiary text-xs cursor-help" title="Qué tan fiel será la voz al modelo original." />
+                      </span>
+                      <span class="text-primary-400 font-mono">{{ voiceSettings.similarity_boost.toFixed(2) }}</span>
+                    </label>
+                    <input
+                      v-model.number="voiceSettings.similarity_boost"
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      class="w-full accent-primary-500"
+                    >
+                    <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
+                      <i class="fas fa-lightbulb text-warning-400" />
+                      Qué tan similar será al locutor original
+                    </p>
+                  </div>
+
+                  <!-- Style -->
+                  <div class="form-group">
+                    <label class="label text-sm flex items-center justify-between">
+                      <span class="flex items-center gap-1">
+                        Estilo
+                        <i class="fas fa-question-circle text-text-tertiary text-xs cursor-help" title="Controla la exageración emocional." />
+                      </span>
+                      <span class="text-primary-400 font-mono">{{ voiceSettings.style.toFixed(2) }}</span>
+                    </label>
+                    <input
+                      v-model.number="voiceSettings.style"
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      class="w-full accent-primary-500"
+                    >
+                    <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
+                      <i class="fas fa-lightbulb text-warning-400" />
+                      0 = neutral, 1 = muy expresivo
+                    </p>
+                  </div>
+
+                  <!-- Speaker Boost -->
+                  <div class="form-group">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                      <input
+                        v-model="voiceSettings.use_speaker_boost"
+                        type="checkbox"
+                        class="checkbox"
                       >
-                        <i class="fas fa-balance-scale"></i>
-                        Balanceado
-                      </button>
-                      <button
-                        @click="applyPreset('expressive')"
-                        class="btn btn-sm btn-outline"
-                        title="Stability: 0.50, Similarity: 0.85, Style: 0.60 - Perfecto para contenido narrativo y dramático"
-                      >
-                        <i class="fas fa-theater-masks"></i>
-                        Expresivo
-                      </button>
-                      <button
-                        @click="applyPreset('stable')"
-                        class="btn btn-sm btn-outline"
-                        title="Stability: 0.90, Similarity: 0.60, Style: 0.0 - Ideal para contenido corporativo e institucional"
-                      >
-                        <i class="fas fa-anchor"></i>
-                        Estable
-                      </button>
-                      <button
-                        @click="resetSettings"
-                        class="btn btn-sm btn-ghost"
-                        title="Restaurar valores predeterminados"
-                      >
-                        <i class="fas fa-undo"></i>
-                        Restaurar
-                      </button>
-                    </div>
+                      <span class="flex items-center gap-1 text-sm text-text-primary">
+                        Mejora de Locutor
+                        <i class="fas fa-question-circle text-text-tertiary text-xs cursor-help" title="Mejora calidad pero usa más caracteres." />
+                      </span>
+                    </label>
+                    <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1 ml-7">
+                      <i class="fas fa-lightbulb text-warning-400" />
+                      Mejora la similitud y calidad
+                    </p>
                   </div>
                 </div>
 
-                <!-- Text Input -->
-                <div class="form-group">
-                  <label class="form-label">
-                    <i class="fas fa-font"></i>
-                    Texto a Convertir
-                    <span class="char-counter">({{ MensajeSpot.length }}/{{ CarDispVoz }})</span>
-                    <i
-                      class="fas fa-question-circle help-icon"
-                      title="Escribe el texto que quieres convertir en audio. El contador muestra los caracteres usados vs disponibles en tu cuota. Usa puntuación para controlar pausas: comas (pausa corta), puntos (pausa media), puntos suspensivos (pausa larga)."
-                    ></i>
+                <!-- Model Selection -->
+                <div class="form-group mt-4">
+                  <label class="label flex items-center gap-2">
+                    <i class="fas fa-brain" />
+                    Modelo de IA
                   </label>
-                  <textarea
-                    v-model="MensajeSpot"
-                    class="form-textarea"
-                    :maxlength="CarDispVoz"
-                    placeholder="Escribe el texto que deseas convertir en audio...&#10;&#10;Tips:&#10;• Usa puntos y comas para controlar las pausas&#10;• Escribe números como texto (25 → veinticinco)&#10;• Evita MAYÚSCULAS excesivas"
-                    rows="6"
-                  ></textarea>
-                  <p class="setting-hint">
-                    <i class="fas fa-lightbulb"></i>
-                    <span>Caracteres restantes: <strong>{{ CarDispVoz - MensajeSpot.length }}</strong></span>
+                  <select v-model="voiceSettings.modelId" class="select">
+                    <option value="eleven_multilingual_v2">🌍 Multilingual v2 (Recomendado para Español)</option>
+                    <option value="eleven_turbo_v2_5">⚡ Turbo v2.5 (Rápido, buena calidad)</option>
+                    <option value="eleven_flash_v2_5">🚀 Flash v2.5 (Ultra Rápido, menor latencia)</option>
+                    <option value="eleven_monolingual_v1">🇺🇸 Monolingual v1 (Solo Inglés, alta calidad)</option>
+                  </select>
+                  <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
+                    <i class="fas fa-lightbulb text-warning-400" />
+                    <span v-if="voiceSettings.modelId === 'eleven_multilingual_v2'">Ideal para español</span>
+                    <span v-else-if="voiceSettings.modelId === 'eleven_turbo_v2_5'">2x más rápido</span>
+                    <span v-else-if="voiceSettings.modelId === 'eleven_flash_v2_5'">4x más rápido</span>
+                    <span v-else>Solo inglés</span>
                   </p>
                 </div>
 
-                <!-- Generate Actions -->
-                <div class="ai-actions">
-                  <button
-                    @click="generarVoz()"
-                    class="btn btn-primary"
-                    :disabled="!selectedLoc || !MensajeSpot.trim() || isLoading"
-                  >
-                    <i class="fas fa-magic"></i>
-                    Generar Audio con IA
-                  </button>
-                  <div class="character-info" v-if="CarDispVoz > 0">
-                    <i class="fas fa-info-circle"></i>
-                    Caracteres disponibles: {{ CarDispVoz }}
+                <!-- Preset Buttons -->
+                <div class="mt-4 pt-4 border-t border-dark-border">
+                  <h5 class="flex items-center gap-2 text-sm font-medium text-text-primary mb-3">
+                    <i class="fas fa-magic text-primary-400" />
+                    Presets Rápidos
+                  </h5>
+                  <div class="flex flex-wrap gap-2">
+                    <button class="btn btn-sm btn-secondary" @click="applyPreset('balanced')">
+                      <i class="fas fa-balance-scale" />
+                      Balanceado
+                    </button>
+                    <button class="btn btn-sm btn-secondary" @click="applyPreset('expressive')">
+                      <i class="fas fa-theater-masks" />
+                      Expresivo
+                    </button>
+                    <button class="btn btn-sm btn-secondary" @click="applyPreset('stable')">
+                      <i class="fas fa-anchor" />
+                      Estable
+                    </button>
+                    <button class="btn btn-sm btn-ghost" @click="resetSettings">
+                      <i class="fas fa-undo" />
+                      Restaurar
+                    </button>
                   </div>
                 </div>
+              </div>
 
-                <!-- Audio Preview for AI Generated Audio -->
-                <div v-if="filePreviewUrl && filePreviewType === 'audio'" class="media-preview-section">
-                  <h4 class="preview-title">
-                    <i class="fas fa-headphones"></i>
-                    Vista Previa del Audio Generado
-                  </h4>
-                  <div class="audio-preview-player">
-                    <audio :src="filePreviewUrl" controls class="audio-element"></audio>
-                  </div>
+              <!-- Text Input -->
+              <div class="form-group">
+                <label class="label flex items-center gap-2">
+                  <i class="fas fa-font" />
+                  Texto a Convertir
+                  <span class="text-xs text-text-tertiary">({{ MensajeSpot.length }}/{{ CarDispVoz }})</span>
+                </label>
+                <textarea
+                  v-model="MensajeSpot"
+                  class="input min-h-[150px]"
+                  :maxlength="CarDispVoz"
+                  placeholder="Escribe el texto que deseas convertir en audio..."
+                  rows="6"
+                />
+                <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
+                  <i class="fas fa-lightbulb text-warning-400" />
+                  Caracteres restantes: <strong class="text-text-primary">{{ CarDispVoz - MensajeSpot.length }}</strong>
+                </p>
+              </div>
+
+              <!-- Generate Actions -->
+              <div class="flex flex-wrap items-center gap-4">
+                <button
+                  class="btn btn-primary"
+                  :disabled="!selectedLoc || !MensajeSpot.trim() || isLoading"
+                  @click="generarVoz()"
+                >
+                  <i class="fas fa-magic" />
+                  Generar Audio con IA
+                </button>
+                <div v-if="CarDispVoz > 0" class="flex items-center gap-2 text-sm text-text-secondary">
+                  <i class="fas fa-info-circle text-info-400" />
+                  Caracteres disponibles: {{ CarDispVoz }}
                 </div>
+              </div>
+
+              <!-- Audio Preview for AI Generated Audio -->
+              <div v-if="filePreviewUrl && filePreviewType === 'audio'" class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
+                <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
+                  <i class="fas fa-headphones text-success-400" />
+                  Vista Previa del Audio Generado
+                </h4>
+                <audio :src="filePreviewUrl" controls class="w-full" />
               </div>
             </div>
           </div>
@@ -728,15 +687,17 @@
       </div>
 
       <!-- Actions -->
-      <div class="form-actions">
-        <button @click="guardar" class="btn btn-primary btn-lg">
-          <i class="fas fa-save"></i>
-          {{ isEdit ? 'Actualizar Spot' : 'Guardar Spot' }}
-        </button>
-        <button @click="btnCancelar" class="btn btn-outline">
-          <i class="fas fa-times"></i>
-          Cancelar
-        </button>
+      <div class="card">
+        <div class="flex flex-wrap gap-3">
+          <button class="btn btn-primary" @click="guardar">
+            <i class="fas fa-save" />
+            {{ isEdit ? 'Actualizar Spot' : 'Guardar Spot' }}
+          </button>
+          <button class="btn btn-ghost" @click="btnCancelar">
+            <i class="fas fa-times" />
+            Cancelar
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1551,1623 +1512,3 @@ watch(() => spot.spo_tipo, (newVal) => {
   }
 })
 </script>
-<style lang="scss" scoped>
-/* ============================================================================
-   SPOT FORM - MODERN MINIMALIST DESIGN
-   ============================================================================ */
-
-.page-header {
-  margin-bottom: var(--spacing-8);
-  padding: var(--spacing-6);
-  background: linear-gradient(135deg, var(--color-surface-secondary), var(--color-surface-tertiary));
-  border-radius: var(--border-radius-2xl);
-  border: var(--border-width-1) solid var(--color-border-primary);
-}
-
-.header-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
-  border-radius: var(--border-radius-xl);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-xl);
-  color: var(--color-text-on-primary);
-  box-shadow: var(--shadow-lg);
-  flex-shrink: 0;
-}
-
-.page-title {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0;
-  letter-spacing: var(--letter-spacing-tight);
-}
-
-.page-subtitle {
-  font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
-  margin: var(--spacing-1) 0 0 0;
-  line-height: var(--line-height-relaxed);
-}
-
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-6);
-}
-
-/* ============================================================================
-   CARDS
-   ============================================================================ */
-
-.card {
-  background-color: var(--color-surface-primary);
-  border: var(--border-width-1) solid var(--color-border-primary);
-  border-radius: var(--border-radius-xl);
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  transition: var(--transition-base);
-}
-
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-border-secondary);
-}
-
-.card-header {
-  padding: var(--spacing-6);
-  background: linear-gradient(135deg, var(--color-surface-secondary), var(--color-surface-tertiary));
-  border-bottom: var(--border-width-1) solid var(--color-border-primary);
-}
-
-.card-title {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-
-  i {
-    color: var(--color-primary-400);
-    font-size: var(--font-size-lg);
-  }
-}
-
-.card-body {
-  padding: var(--spacing-6);
-}
-
-/* ============================================================================
-   FORM ELEMENTS
-   ============================================================================ */
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-6);
-}
-
-.form-group {
-  margin-bottom: var(--spacing-6);
-}
-
-.form-label {
-  display: block;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  margin-bottom: var(--spacing-2);
-  letter-spacing: var(--letter-spacing-wide);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-
-  i {
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
-  }
-}
-
-.form-input,
-.form-select,
-.form-textarea {
-  width: 100%;
-  padding: var(--spacing-3) var(--spacing-4);
-  font-family: var(--font-family-sans);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
-  color: var(--color-text-primary);
-  background-color: rgba(0, 0, 0, 0.2);
-  border: var(--border-width-2) solid var(--color-border-secondary);
-  border-radius: var(--border-radius-lg);
-  transition: var(--transition-base);
-  outline: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.form-input::placeholder,
-.form-textarea::placeholder {
-  color: var(--color-text-muted);
-}
-
-.form-input:hover,
-.form-select:hover,
-.form-textarea:hover {
-  border-color: black;
-  background-color: var(--color-surface-tertiary);
-}
-
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-  border-color: black;
-  background-color: var(--color-surface-primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  transform: translateY(-1px);
-}
-
-/* Enhanced select styling for better visibility */
-.form-select,
-.filter-select,
-.voice-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
-  padding-right: 2.5rem;
-  cursor: pointer;
-  position: relative;
-}
-
-.form-select:focus,
-.filter-select:focus,
-.voice-select:focus {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-}
-
-.form-textarea {
-  min-height: 120px;
-  resize: vertical;
-  font-family: var(--font-family-sans);
-}
-
-/* ============================================================================
-   TABS
-   ============================================================================ */
-
-.tabs {
-  border: var(--border-width-1) solid var(--color-border-primary);
-  border-radius: var(--border-radius-lg);
-  overflow: hidden;
-}
-
-.tab-buttons {
-  display: flex;
-  background-color: var(--color-surface-secondary);
-  border-bottom: var(--border-width-1) solid var(--color-border-primary);
-}
-
-.tab-button {
-  flex: 1;
-  padding: var(--spacing-4) var(--spacing-6);
-  background: transparent;
-  border: none;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: var(--transition-base);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  border-bottom: var(--border-width-2) solid transparent;
-
-  i {
-    font-size: var(--font-size-sm);
-  }
-
-  &:hover {
-    background-color: var(--color-surface-hover);
-    color: var(--color-text-primary);
-  }
-
-  &.active {
-    background-color: var(--color-primary-500);
-    color: var(--color-text-on-primary);
-    border-bottom-color: var(--color-primary-400);
-  }
-}
-
-.tab-content {
-  padding: var(--spacing-6);
-}
-
-/* ============================================================================
-   UPLOAD AREA
-   ============================================================================ */
-
-.upload-area {
-  margin-bottom: var(--spacing-6);
-}
-
-.file-input {
-  display: none;
-}
-
-.upload-label {
-  display: block;
-  padding: var(--spacing-8);
-  border: var(--border-width-2) dashed var(--color-border-secondary);
-  border-radius: var(--border-radius-xl);
-  background-color: var(--color-surface-secondary);
-  cursor: pointer;
-  transition: var(--transition-base);
-  text-align: center;
-
-  &:hover {
-    border-color: var(--color-primary-400);
-    background-color: var(--color-surface-tertiary);
-  }
-}
-
-.upload-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-3);
-}
-
-.upload-icon {
-  font-size: var(--font-size-4xl);
-  color: var(--color-text-muted);
-}
-
-.upload-text {
-  font-size: var(--font-size-base);
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-medium);
-  margin: 0;
-}
-
-.upload-hint {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
-.file-preview {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-4);
-  background-color: var(--color-surface-tertiary);
-  border: var(--border-width-1) solid var(--color-border-primary);
-  border-radius: var(--border-radius-lg);
-  margin-top: var(--spacing-4);
-}
-
-.file-info {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-  flex: 1;
-
-  i {
-    color: var(--color-primary-400);
-    font-size: var(--font-size-lg);
-  }
-
-  .file-name {
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
-  }
-
-  .file-size {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-  }
-}
-
-/* ============================================================================
-   AI SECTION
-   ============================================================================ */
-
-.ai-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-6);
-}
-
-.ai-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-4);
-  padding-top: var(--spacing-4);
-  border-top: var(--border-width-1) solid var(--color-border-primary);
-}
-
-.character-info {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-
-  i {
-    color: var(--color-info-500);
-  }
-}
-
-.char-counter {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  font-weight: var(--font-weight-normal);
-}
-
-/* ============================================================================
-   PREVIEW ELEMENTS (Used by Stream and Media previews)
-   ============================================================================ */
-
-.preview-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-4) 0;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-
-  i {
-    color: var(--color-success-500);
-  }
-}
-
-.audio-element {
-  width: 100%;
-  height: 48px;
-  border-radius: var(--border-radius-lg);
-  background-color: var(--color-surface-primary);
-  border: var(--border-width-1) solid var(--color-border-primary);
-}
-
-/* ============================================================================
-   FORM ACTIONS
-   ============================================================================ */
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--spacing-4);
-  padding: var(--spacing-6);
-  background: linear-gradient(135deg, var(--color-surface-secondary), var(--color-surface-tertiary));
-  border-radius: var(--border-radius-xl);
-  border: var(--border-width-1) solid var(--color-border-primary);
-}
-
-/* ============================================================================
-    ACCESSIBILITY & CONTRAST IMPROVEMENTS
-    ============================================================================ */
-
-/* Enhanced color schemes for better accessibility */
-.error-hint,
-.file-validation-error {
-  background-color: #fef2f2;
-  border-left-color: #dc2626;
-  color: #991b1b;
-}
-
-.error-hint i,
-.file-validation-error i {
-  color: #dc2626;
-}
-
-.filter-results {
-  background-color: #080808;
-  border-left-color: #2563eb;
-  color: #1e40af;
-}
-
-.filter-results i {
-  color: #080808;
-}
-
-.filter-results strong {
-  color: #050505;
-}
-
-.voice-badge {
-  background-color: #050505;
-  color: #eceef5;
-}
-
-.property-tag {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-  color: #0a0a0a;
-}
-
-.setting-hint strong {
-  color: #070707;
-}
-
-/* ============================================================================
-    RESPONSIVE DESIGN
-    ============================================================================ */
-
-/* Tablet styles (769px - 1024px) */
-@media (max-width: 1024px) and (min-width: 769px) {
-  .form-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--spacing-5);
-  }
-
-  .filters-grid {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: var(--spacing-3);
-  }
-
-  .settings-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--spacing-5);
-  }
-
-  .page-title {
-    font-size: var(--font-size-2xl);
-  }
-
-  .card-header,
-  .card-body {
-    padding: var(--spacing-5);
-  }
-
-  .tab-buttons {
-    flex-wrap: wrap;
-  }
-
-  .tab-button {
-    flex: 1 1 auto;
-    min-width: 120px;
-  }
-
-  .form-input,
-  .form-select,
-  .form-textarea {
-    font-size: var(--font-size-sm);
-  }
-
-  .upload-label {
-    padding: var(--spacing-7);
-  }
-
-  .upload-icon {
-    font-size: var(--font-size-3xl);
-  }
-}
-
-@media (max-width: 768px) {
-  .page-header {
-    padding: var(--spacing-4);
-    text-align: center;
-  }
-
-  .header-icon {
-    width: 40px;
-    height: 40px;
-    font-size: var(--font-size-lg);
-  }
-
-  .page-title {
-    font-size: var(--font-size-2xl);
-    line-height: 1.3;
-  }
-
-  .page-subtitle {
-    font-size: var(--font-size-sm);
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-4);
-  }
-
-  .card-header,
-  .card-body {
-    padding: var(--spacing-4);
-  }
-
-  .card-title {
-    font-size: var(--font-size-lg);
-  }
-
-  .tab-buttons {
-    flex-direction: column;
-    gap: var(--spacing-2);
-  }
-
-  .tab-button {
-    padding: var(--spacing-3) var(--spacing-4);
-    font-size: var(--font-size-sm);
-    min-height: 44px; /* Touch-friendly */
-  }
-
-  .ai-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--spacing-3);
-  }
-
-  .character-info {
-    justify-content: center;
-    font-size: var(--font-size-xs);
-  }
-
-  .form-actions {
-    flex-direction: column;
-    gap: var(--spacing-3);
-  }
-
-  .form-actions .btn {
-    width: 100%;
-    min-height: 48px; /* Touch-friendly */
-    font-size: var(--font-size-base);
-  }
-
-  .upload-label {
-    padding: var(--spacing-6);
-  }
-
-  .upload-icon {
-    font-size: var(--font-size-3xl);
-  }
-
-  .upload-text,
-  .upload-hint {
-    font-size: var(--font-size-sm);
-  }
-
-  .form-label {
-    font-size: var(--font-size-sm);
-  }
-
-  .form-input,
-  .form-select,
-  .form-textarea {
-    font-size: var(--font-size-base);
-    min-height: 44px; /* Touch-friendly */
-  }
-
-  .voice-info-card,
-  .voice-filters-section,
-  .voice-settings-section {
-    padding: var(--spacing-4);
-  }
-
-  .voice-info-title {
-    font-size: var(--font-size-base);
-  }
-
-  .settings-title {
-    font-size: var(--font-size-base);
-  }
-
-  .preset-buttons {
-    flex-direction: column;
-    gap: var(--spacing-2);
-  }
-
-  .preset-buttons .btn {
-    width: 100%;
-    min-height: 44px;
-  }
-
-  .stream-input {
-    font-size: var(--font-size-base);
-    min-height: 44px;
-  }
-
-  .video-element {
-    max-height: 250px;
-  }
-
-  .media-preview-section {
-    padding: var(--spacing-4);
-  }
-}
-
-@media (max-width: 480px) {
-  .container {
-    padding-left: var(--spacing-2);
-    padding-right: var(--spacing-2);
-  }
-
-  .page-header {
-    margin-bottom: var(--spacing-4);
-    padding: var(--spacing-3);
-  }
-
-  .page-title {
-    font-size: var(--font-size-xl);
-    letter-spacing: var(--letter-spacing-tight);
-  }
-
-  .page-subtitle {
-    font-size: var(--font-size-xs);
-  }
-
-  .card-header,
-  .card-body {
-    padding: var(--spacing-3);
-  }
-
-  .card-title {
-    font-size: var(--font-size-base);
-  }
-
-  .form-actions {
-    padding: var(--spacing-4);
-  }
-
-  .form-input,
-  .form-select,
-  .form-textarea {
-    font-size: var(--font-size-sm);
-    padding: var(--spacing-2) var(--spacing-3);
-  }
-
-  .form-select,
-  .filter-select,
-  .voice-select {
-    background-size: 1.25em 1.25em;
-    padding-right: 2rem;
-  }
-
-  .tab-button {
-    padding: var(--spacing-2) var(--spacing-3);
-    font-size: var(--font-size-xs);
-    min-height: 40px;
-  }
-
-  .upload-label {
-    padding: var(--spacing-4);
-  }
-
-  .upload-icon {
-    font-size: var(--font-size-2xl);
-  }
-
-  .upload-text {
-    font-size: var(--font-size-xs);
-  }
-
-  .upload-hint {
-    font-size: var(--font-size-xs);
-  }
-
-  .voice-info-card,
-  .voice-filters-section,
-  .voice-settings-section {
-    padding: var(--spacing-3);
-  }
-
-  .stream-input {
-    font-size: var(--font-size-sm);
-    padding-left: 2rem;
-  }
-
-  .video-element {
-    max-height: 200px;
-  }
-
-  .media-preview-section {
-    padding: var(--spacing-3);
-  }
-
-  .btn {
-    font-size: var(--font-size-sm);
-    padding: var(--spacing-2) var(--spacing-4);
-    min-height: 44px;
-  }
-
-  .btn-sm {
-    font-size: var(--font-size-xs);
-    padding: var(--spacing-1) var(--spacing-3);
-    min-height: 40px;
-  }
-}
-
-/* ============================================================================
-   ANIMATIONS
-   ============================================================================ */
-
-@keyframes slideInUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.card {
-  animation: slideInUp 0.3s ease-out;
-}
-
-.card:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.card:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-/* ============================================================================
-    ACCESSIBILITY & FOCUS MANAGEMENT
-    ============================================================================ */
-
-.tab-button:focus-visible,
-.form-input:focus-visible,
-.form-select:focus-visible,
-.form-textarea:focus-visible,
-.btn:focus-visible,
-.upload-label:focus-visible {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .form-input,
-  .form-select,
-  .form-textarea {
-    border-width: 2px;
-  }
-
-  .card {
-    border-width: 2px;
-  }
-
-  .tab-button.active {
-    border-width: 3px;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .card,
-  .file-validation-error,
-  .media-preview-section {
-    animation: none;
-  }
-
-  .form-input,
-  .form-select,
-  .form-textarea,
-  .btn {
-    transition: none;
-  }
-}
-
-/* ============================================================================
-   DARK MODE SUPPORT
-   ============================================================================ */
-
-@media (prefers-color-scheme: light) {
-  .page-header,
-  .card,
-  .audio-preview,
-  .form-actions {
-    background: linear-gradient(135deg, var(--color-neutral-50), var(--color-neutral-100));
-    border-color: var(--color-neutral-200);
-  }
-
-  .card-header {
-    background: linear-gradient(135deg, var(--color-neutral-100), var(--color-neutral-200));
-  }
-
-  .form-input,
-  .form-select,
-  .form-textarea {
-    background-color: black;
-    border-color: var(--color-neutral-300);
-    color: var(--color-neutral-900);
-  }
-
-  .form-input:hover,
-  .form-select:hover,
-  .form-textarea:hover {
-    background-color: black;
-    border-color: var(--color-neutral-400);
-  }
-}
-
-/* ============================================================================
-   VOICE INFO CARD & SETTINGS
-   ============================================================================ */
-
-.voice-info-card {
-  background: linear-gradient(135deg, var(--color-surface-secondary), var(--color-surface-tertiary));
-  border: var(--border-width-1) solid var(--color-border-primary);
-  border-radius: var(--border-radius-xl);
-  padding: var(--spacing-6);
-  margin-bottom: var(--spacing-6);
-  box-shadow: var(--shadow-md);
-}
-
-.voice-info-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-4);
-}
-
-.voice-info-title {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-
-  i {
-    color: var(--color-primary-500);
-  }
-}
-
-.voice-badge {
-  display: inline-block;
-  padding: var(--spacing-1) var(--spacing-3);
-  background-color: var(--color-primary-100);
-  color: var(--color-primary-800);
-  border-radius: var(--border-radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  text-transform: capitalize;
-}
-
-.voice-description {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--spacing-4);
-  line-height: 1.6;
-}
-
-.voice-properties {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-3);
-}
-
-.voice-property {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-2);
-  font-size: var(--font-size-sm);
-
-  i {
-    color: var(--color-text-muted);
-    margin-top: 0.2rem;
-  }
-}
-
-.property-content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-1);
-}
-
-.property-label {
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-}
-
-.property-value {
-  color: var(--color-text-primary);
-}
-
-.property-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-2);
-}
-
-.property-tag {
-  display: inline-block;
-  padding: var(--spacing-1) var(--spacing-2);
-  background-color: var(--color-surface-primary);
-  border: var(--border-width-1) solid var(--color-border-secondary);
-  border-radius: var(--border-radius-base);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-secondary);
-}
-
-.preview-audio-player {
-  margin-top: var(--spacing-4);
-  padding-top: var(--spacing-4);
-  border-top: var(--border-width-1) solid var(--color-border-primary);
-}
-
-.audio-element-small {
-  width: 100%;
-  height: 40px;
-  border-radius: var(--border-radius-lg);
-  background-color: var(--color-surface-primary);
-}
-
-/* Voice Settings Section */
-.voice-settings-section {
-  background-color: var(--color-surface-primary);
-  border: var(--border-width-1) solid var(--color-border-primary);
-  border-radius: var(--border-radius-xl);
-  padding: var(--spacing-6);
-  margin-bottom: var(--spacing-6);
-}
-
-.settings-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-6) 0;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-
-  i {
-    color: var(--color-primary-500);
-  }
-}
-
-.settings-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-6);
-  margin-bottom: var(--spacing-6);
-}
-
-.setting-control {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-}
-
-.setting-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-}
-
-.setting-value {
-  font-family: var(--font-family-mono);
-  color: var(--color-primary-600);
-  font-size: var(--font-size-sm);
-}
-
-.setting-slider {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 6px;
-  border-radius: var(--border-radius-full);
-  background: linear-gradient(to right,
-    var(--color-primary-200) 0%,
-    var(--color-primary-500) var(--slider-percent, 50%),
-    var(--color-surface-tertiary) var(--slider-percent, 50%)
-  );
-  outline: none;
-  cursor: pointer;
-  transition: var(--transition-base);
-}
-
-.setting-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--color-primary-600);
-  border: 2px solid var(--color-surface-primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: var(--transition-base);
-}
-
-.setting-slider::-webkit-slider-thumb:hover {
-  background: var(--color-primary-700);
-  transform: scale(1.1);
-}
-
-.setting-slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--color-primary-600);
-  border: 2px solid var(--color-surface-primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: var(--transition-base);
-}
-
-.setting-slider::-moz-range-thumb:hover {
-  background: var(--color-primary-700);
-  transform: scale(1.1);
-}
-
-.setting-checkbox {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: var(--color-primary-600);
-}
-
-.setting-hint {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* Help Icons */
-.help-icon {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  cursor: help;
-  margin-left: var(--spacing-1);
-  transition: var(--transition-base);
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.help-icon:hover {
-  color: var(--color-primary-500);
-  transform: scale(1.1);
-}
-
-.label-with-help {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-1);
-}
-
-/* Preset Section */
-.preset-section {
-  padding-top: var(--spacing-4);
-  border-top: var(--border-width-1) solid var(--color-border-primary);
-}
-
-.preset-title {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-3) 0;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-
-  i:not(.help-icon) {
-    color: var(--color-primary-500);
-  }
-}
-
-/* Preset Buttons */
-.preset-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-2);
-}
-
-.btn-sm {
-  padding: var(--spacing-2) var(--spacing-3);
-  font-size: var(--font-size-sm);
-}
-
-/* Enhanced hints with icons */
-.setting-hint {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-1);
-
-  i {
-    color: var(--color-warning-500);
-    font-size: var(--font-size-xs);
-    margin-top: 0.15rem;
-    flex-shrink: 0;
-  }
-
-  strong {
-    color: var(--color-primary-600);
-    font-weight: var(--font-weight-semibold);
-  }
-}
-
-/* Preview button enhancement */
-.preview-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  white-space: nowrap;
-  transition: var(--transition-base);
-}
-
-.preview-btn:hover:not(:disabled) {
-  background-color: var(--color-success-100);
-  color: var(--color-success-700);
-  border-color: var(--color-success-300);
-}
-
-.preview-btn i {
-  transition: var(--transition-base);
-}
-
-.preview-btn:hover:not(:disabled) i {
-  transform: scale(1.1);
-}
-
-/* Char counter enhancement */
-.char-counter {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-xs);
-  padding: var(--spacing-1) var(--spacing-2);
-  background-color: var(--color-surface-tertiary);
-  border-radius: var(--border-radius-base);
-  margin-left: auto;
-}
-
-/* ============================================================================
-   VOICE FILTERS SECTION
-   ============================================================================ */
-
-.voice-filters-section {
-  background: linear-gradient(135deg, var(--color-surface-secondary), var(--color-surface-tertiary));
-  border: var(--border-width-1) solid var(--color-border-primary);
-  border-radius: var(--border-radius-xl);
-  padding: var(--spacing-6);
-  margin-bottom: var(--spacing-6);
-}
-
-.filters-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-4);
-}
-
-.filters-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-
-  i {
-    color: var(--color-primary-500);
-  }
-}
-
-.filter-count-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 var(--spacing-2);
-  background-color: var(--color-primary-500);
-  color: var(--color-text-on-primary);
-  border-radius: var(--border-radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  margin-left: var(--spacing-2);
-}
-
-/* Search Input */
-.search-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  margin-bottom: var(--spacing-4);
-}
-
-.search-icon {
-  position: absolute;
-  left: var(--spacing-4);
-  color: var(--color-text-muted);
-  pointer-events: none;
-  font-size: var(--font-size-base);
-}
-
-.search-input {
-  width: 100%;
-  padding: var(--spacing-3) var(--spacing-4) var(--spacing-3) calc(var(--spacing-4) * 2.5);
-  font-size: var(--font-size-base);
-  color: var(--color-text-primary);
-  background-color: var(--color-surface-primary);
-  border: var(--border-width-2) solid var(--color-border-secondary);
-  border-radius: var(--border-radius-lg);
-  transition: var(--transition-base);
-  outline: none;
-}
-
-.search-input:focus {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.search-input::placeholder {
-  color: var(--color-text-muted);
-}
-
-.clear-search-btn {
-  position: absolute;
-  right: var(--spacing-3);
-  background: transparent;
-  border: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  padding: var(--spacing-2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--border-radius-base);
-  transition: var(--transition-base);
-}
-
-.clear-search-btn:hover {
-  color: var(--color-danger-500);
-  background-color: var(--color-surface-hover);
-}
-
-/* Filters Grid */
-.filters-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-4);
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-}
-
-.filter-label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-
-  i {
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
-  }
-}
-
-.filter-select {
-  padding: var(--spacing-2) var(--spacing-3);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  background-color: var(--color-surface-primary);
-  border: var(--border-width-1) solid var(--color-border-secondary);
-  border-radius: var(--border-radius-lg);
-  transition: var(--transition-base);
-  cursor: pointer;
-  outline: none;
-}
-
-.filter-select:hover {
-  border-color: var(--color-border-tertiary);
-  background-color: var(--color-surface-tertiary);
-}
-
-.filter-select:focus {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-}
-
-/* Filter Results */
-.filter-results {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-4);
-  background-color: var(--color-primary-50);
-  border-left: 3px solid var(--color-primary-500);
-  border-radius: var(--border-radius-base);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-
-  i {
-    color: var(--color-primary-500);
-  }
-
-  strong {
-    color: var(--color-primary-700);
-    font-weight: var(--font-weight-semibold);
-  }
-}
-
-/* Voice Select Enhancement */
-.voice-select {
-  font-family: var(--font-family-sans);
-  font-size: var(--font-size-base);
-  min-height: 44px;
-}
-
-.voice-select option {
-  padding: var(--spacing-2);
-}
-
-/* Responsive for Voice Settings */
-@media (max-width: 768px) {
-  .settings-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .filters-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .filters-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-2);
-  }
-
-  .voice-info-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-3);
-  }
-
-  .preset-buttons {
-    flex-direction: column;
-
-    .btn-sm {
-      width: 100%;
-    }
-  }
-}
-
-/* ============================================================================
-   STREAM SECTION & FILE VALIDATION
-   ============================================================================ */
-
-.stream-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-4);
-}
-
-.url-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.stream-icon {
-  position: absolute;
-  left: var(--spacing-4);
-  color: var(--color-text-muted);
-  pointer-events: none;
-  font-size: var(--font-size-base);
-}
-
-.stream-input {
-  width: 100%;
-  padding: var(--spacing-3) var(--spacing-12) var(--spacing-3) calc(var(--spacing-4) * 2.5);
-  font-size: var(--font-size-base);
-  color: var(--color-text-primary);
-  background-color: var(--color-surface-secondary);
-  border: var(--border-width-2) solid var(--color-border-secondary);
-  border-radius: var(--border-radius-lg);
-  transition: var(--transition-base);
-  outline: none;
-  font-family: var(--font-family-mono);
-}
-
-.stream-input:focus {
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  background-color: var(--color-surface-tertiary);
-}
-
-.stream-input::placeholder {
-  color: var(--color-text-muted);
-  font-family: var(--font-family-sans);
-}
-
-.clear-stream-btn {
-  position: absolute;
-  right: var(--spacing-3);
-  background: transparent;
-  border: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  padding: var(--spacing-2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--border-radius-base);
-  transition: var(--transition-base);
-  font-size: var(--font-size-lg);
-}
-
-.clear-stream-btn:hover {
-  color: var(--color-danger-500);
-  background-color: var(--color-surface-hover);
-}
-
-.error-hint {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-3);
-  background-color: var(--color-danger-50);
-  border-left: 3px solid var(--color-danger-500);
-  border-radius: var(--border-radius-base);
-  font-size: var(--font-size-sm);
-  color: var(--color-danger-700);
-  margin-top: var(--spacing-2);
-
-  i {
-    color: var(--color-danger-500);
-    font-size: var(--font-size-sm);
-  }
-}
-
-.stream-preview-section {
-  background-color: var(--color-surface-tertiary);
-  border: var(--border-width-1) solid var(--color-border-primary);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-4);
-  margin-top: var(--spacing-4);
-}
-
-.stream-info {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-}
-
-.stream-detail {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-
-  i {
-    color: var(--color-primary-500);
-    width: 16px;
-  }
-}
-
-.stream-label {
-  font-weight: var(--font-weight-medium);
-  min-width: 40px;
-}
-
-.stream-value {
-  color: var(--color-text-primary);
-  font-family: var(--font-family-mono);
-  word-break: break-all;
-}
-
-/* File Validation Error */
-.file-validation-error {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-4);
-  background-color: var(--color-danger-50);
-  border-left: 3px solid var(--color-danger-500);
-  border-radius: var(--border-radius-base);
-  font-size: var(--font-size-sm);
-  color: var(--color-danger-700);
-  margin-top: var(--spacing-4);
-  animation: slideInUp 0.3s ease-out;
-
-  i {
-    color: var(--color-danger-500);
-    font-size: var(--font-size-base);
-  }
-}
-
-.upload-label.has-error {
-  border-color: var(--color-danger-400);
-  background-color: var(--color-danger-50);
-
-  &:hover {
-    border-color: var(--color-danger-500);
-    background-color: var(--color-danger-100);
-  }
-}
-
-.text-danger {
-  color: var(--color-danger-500) !important;
-}
-
-/* Media Preview Section */
-.media-preview-section {
-  margin-top: var(--spacing-6);
-  padding: var(--spacing-6);
-  background: linear-gradient(135deg, var(--color-surface-secondary), var(--color-surface-tertiary));
-  border-radius: var(--border-radius-xl);
-  border: var(--border-width-1) solid var(--color-border-primary);
-  animation: slideInUp 0.4s ease-out;
-}
-
-.audio-preview-player,
-.video-preview-player {
-  margin-top: var(--spacing-3);
-}
-
-.video-element {
-  width: 100%;
-  max-height: 400px;
-  border-radius: var(--border-radius-lg);
-  background-color: var(--color-neutral-900);
-  border: var(--border-width-1) solid var(--color-border-primary);
-  box-shadow: var(--shadow-lg);
-}
-
-.video-element:focus {
-  outline: 2px solid var(--color-primary-500);
-  outline-offset: 2px;
-}
-
-/* Responsive for Stream & File Validation */
-@media (max-width: 768px) {
-  .stream-input {
-    padding-right: var(--spacing-10);
-    font-size: var(--font-size-sm);
-  }
-
-  .stream-detail {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-1);
-  }
-
-  .stream-label {
-    font-weight: var(--font-weight-semibold);
-  }
-
-  .video-element {
-    max-height: 250px;
-  }
-
-  .file-validation-error {
-    padding: var(--spacing-2) var(--spacing-3);
-    font-size: var(--font-size-xs);
-  }
-}
-
-@media (max-width: 480px) {
-  .stream-preview-section,
-  .media-preview-section {
-    padding: var(--spacing-4);
-  }
-
-  .video-element {
-    max-height: 200px;
-  }
-}
-</style>

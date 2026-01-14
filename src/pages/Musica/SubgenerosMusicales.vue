@@ -4,20 +4,38 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-icon">
-          <i class="fas fa-list-alt"></i>
+          <i class="fas fa-list-alt" />
         </div>
         <div class="header-text">
-          <h1 class="page-title">Subgéneros Musicales</h1>
-          <p class="page-subtitle" v-if="nombreGenero">{{ nombreGenero }}</p>
-          <p class="page-subtitle" v-else>Administración de subgéneros musicales</p>
+          <h1 class="page-title">
+Subgéneros Musicales
+</h1>
+          <p
+v-if="nombreGenero"
+class="page-subtitle"
+>
+{{ nombreGenero }}
+</p>
+          <p
+v-else
+class="page-subtitle"
+>
+Administración de subgéneros musicales
+</p>
         </div>
         <div class="header-actions">
-          <button class="btn-secondary" @click="volverGeneros">
-            <i class="fas fa-arrow-left"></i>
+          <button
+class="btn-secondary"
+@click="volverGeneros"
+>
+            <i class="fas fa-arrow-left" />
             <span>Volver</span>
           </button>
-          <button class="btn-primary" @click="abrirModalNuevo">
-            <i class="fas fa-plus"></i>
+          <button
+class="btn-primary"
+@click="abrirModalNuevo"
+>
+            <i class="fas fa-plus" />
             <span>Nuevo Subgénero</span>
           </button>
         </div>
@@ -25,26 +43,41 @@
     </div>
 
     <!-- Loading State -->
-    <LoadingOverlay v-if="isLoading" message="Cargando subgéneros musicales..." />
+    <LoadingOverlay
+v-if="isLoading"
+message="Cargando subgéneros musicales..."
+/>
 
     <!-- Empty State -->
-    <div v-else-if="subgeneros.length === 0" class="empty-state">
+    <div
+v-else-if="subgeneros.length === 0"
+class="empty-state"
+>
       <div class="empty-state-icon">
-        <i class="fas fa-list"></i>
+        <i class="fas fa-list" />
       </div>
       <h3>No hay subgéneros musicales</h3>
       <p>Crea el primer subgénero musical para comenzar</p>
-      <button class="btn-primary" @click="abrirModalNuevo">
-        <i class="fas fa-plus"></i>
+      <button
+class="btn-primary"
+@click="abrirModalNuevo"
+>
+        <i class="fas fa-plus" />
         Crear Subgénero
       </button>
     </div>
 
     <!-- Subgéneros Grid -->
-    <BaseCard v-else shadow="md" :no-padding="true">
+    <BaseCard
+v-else
+shadow="md"
+:no-padding="true"
+>
       <template #header>
         <div class="section-header">
-          <h2 class="section-title">Lista de Subgéneros</h2>
+          <h2 class="section-title">
+Lista de Subgéneros
+</h2>
           <div class="section-actions">
             <select
               v-if="!codigoGeneroFiltro"
@@ -52,8 +85,14 @@
               class="form-input"
               @change="filtrarPorGenero"
             >
-              <option value="">Todos los géneros</option>
-              <option v-for="genero in generos" :key="genero.genmus_codigo" :value="genero.genmus_codigo">
+              <option value="">
+Todos los géneros
+</option>
+              <option
+v-for="genero in generos"
+:key="genero.genmus_codigo"
+:value="genero.genmus_codigo"
+>
                 {{ genero.genmus_nombre }}
               </option>
             </select>
@@ -78,10 +117,12 @@
           >
             <div class="card-header">
               <div class="subgenero-icon">
-                <i class="fas fa-list-alt"></i>
+                <i class="fas fa-list-alt" />
               </div>
               <div class="subgenero-info">
-                <h3 class="subgenero-name">{{ subgenero.gemusu_nombre }}</h3>
+                <h3 class="subgenero-name">
+{{ subgenero.gemusu_nombre }}
+</h3>
                 <span class="subgenero-code">#{{ subgenero.gemusu_codigo }}</span>
               </div>
             </div>
@@ -90,14 +131,14 @@
               <div class="subgenero-details">
                 <div class="detail-item">
                   <span class="detail-label">
-                    <i class="fas fa-music"></i>
+                    <i class="fas fa-music" />
                     Género
                   </span>
                   <span class="detail-value">{{ getNombreGenero(subgenero.gemusu_codigoGeneroMusical) }}</span>
                 </div>
                 <div class="detail-item">
                   <span class="detail-label">
-                    <i class="fas fa-sort-numeric-up"></i>
+                    <i class="fas fa-sort-numeric-up" />
                     Número
                   </span>
                   <span class="detail-value">{{ subgenero.gemusu_numeroSubGenero }}</span>
@@ -108,19 +149,19 @@
             <div class="card-actions">
               <button
                 class="card-action-btn info"
-                @click="verArchivos(subgenero)"
                 title="Ver archivos del subgénero"
+                @click="verArchivos(subgenero)"
               >
-                <i class="fas fa-folder-open"></i>
+                <i class="fas fa-folder-open" />
                 Archivos
               </button>
 
               <button
                 class="card-action-btn danger"
-                @click="eliminarSubgenero(subgenero)"
                 title="Eliminar subgénero"
+                @click="eliminarSubgenero(subgenero)"
               >
-                <i class="fas fa-trash-alt"></i>
+                <i class="fas fa-trash-alt" />
                 Eliminar
               </button>
             </div>
@@ -128,13 +169,16 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="totalPages > 1" class="pagination-container">
+        <div
+v-if="totalPages > 1"
+class="pagination-container"
+>
           <button
             class="pagination-button"
-            @click="cambiarPagina(currentPage - 1)"
             :disabled="currentPage === 1"
+            @click="cambiarPagina(currentPage - 1)"
           >
-            <i class="fas fa-chevron-left"></i>
+            <i class="fas fa-chevron-left" />
             Anterior
           </button>
 
@@ -144,11 +188,11 @@
 
           <button
             class="pagination-button"
-            @click="cambiarPagina(currentPage + 1)"
             :disabled="currentPage === totalPages"
+            @click="cambiarPagina(currentPage + 1)"
           >
             Siguiente
-            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-chevron-right" />
           </button>
         </div>
       </div>
@@ -169,8 +213,14 @@
           class="form-input"
           :disabled="!!codigoGeneroFiltro"
         >
-          <option value="">Seleccione un género</option>
-          <option v-for="genero in generos" :key="genero.genmus_codigo" :value="genero.genmus_codigo">
+          <option value="">
+Seleccione un género
+</option>
+          <option
+v-for="genero in generos"
+:key="genero.genmus_codigo"
+:value="genero.genmus_codigo"
+>
             {{ genero.genmus_nombre }}
           </option>
         </select>
@@ -201,11 +251,18 @@
       </div>
 
       <template #footer>
-        <button class="btn-secondary" @click="cerrarModal">
+        <button
+class="btn-secondary"
+@click="cerrarModal"
+>
           Cancelar
         </button>
-        <button class="btn-primary" @click="guardarSubgenero" :disabled="!formularioValido">
-          <i class="fas fa-save"></i>
+        <button
+class="btn-primary"
+:disabled="!formularioValido"
+@click="guardarSubgenero"
+>
+          <i class="fas fa-save" />
           Crear
         </button>
       </template>
@@ -411,4 +468,4 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped src="./musica.css"></style>
+

@@ -43,14 +43,6 @@ export default [
     meta: { requiresAuth: true, roles: ['Administrador'], title: 'Gestión de Archivos' }
   },
 
-  // ===== MONITOR DE EVENTOS (Solo Administrador) =====
-  {
-    path: 'event-logs',
-    name: 'EventLogs',
-    component: () => import('@/pages/EventLogs/Index.vue'),
-    meta: { requiresAuth: true, roles: ['Administrador'], title: 'Monitor de Eventos' }
-  },
-
   // ===== GESTIÓN DE PAQUETES (Solo Administrador) =====
   {
     path: 'paquetes',

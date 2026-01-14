@@ -1,115 +1,138 @@
 <template>
-  <div class="generos-musicales-page">
+  <div class="page-wrapper">
     <!-- Header Section -->
-    <div class="page-header">
-      <div class="header-content">
-        <div class="header-icon">
-          <i class="fas fa-music"></i>
+    <div class="page-content">
+      <div class="flex-between mb-8 pb-6 border-b border-dark-border">
+        <div>
+          <h1 class="text-3xl font-bold text-text-primary mb-2">
+Géneros Musicales
+</h1>
+          <p class="text-text-secondary">
+Administración de géneros musicales del sistema
+</p>
         </div>
-        <div class="header-text">
-          <h1 class="page-title">Géneros Musicales</h1>
-          <p class="page-subtitle">Administración de géneros musicales del sistema</p>
-        </div>
-        <div class="header-actions">
-          <button class="btn-primary" @click="abrirModalNuevo">
-            <i class="fas fa-plus"></i>
-            <span>Nuevo Género</span>
-          </button>
-        </div>
+        <button
+class="btn btn-primary"
+@click="abrirModalNuevo"
+>
+          <i class="fas fa-plus" />
+          Nuevo Género
+        </button>
       </div>
-    </div>
 
-    <!-- Loading State -->
-    <LoadingOverlay v-if="isLoading" message="Cargando géneros musicales..." />
-
-    <!-- Empty State -->
-    <div v-else-if="generos.length === 0" class="empty-state">
-      <div class="empty-state-icon">
-        <i class="fas fa-music"></i>
+      <!-- Loading State -->
+      <div
+v-if="isLoading"
+class="flex-center py-12"
+>
+        <div class="spinner" />
+        <span class="ml-3 text-text-secondary">Cargando géneros musicales...</span>
       </div>
-      <h3>No hay géneros musicales</h3>
-      <p>Crea el primer género musical para comenzar</p>
-      <button class="btn-primary" @click="abrirModalNuevo">
-        <i class="fas fa-plus"></i>
-        Crear Género
-      </button>
-    </div>
 
-    <!-- Géneros Grid -->
-    <BaseCard v-else shadow="md" :no-padding="true">
-      <template #header>
-        <div class="section-header">
-          <h2 class="section-title">Lista de Géneros</h2>
-          <div class="section-actions">
-            <input
-              v-if="generos.length > 5"
-              v-model="searchQuery"
-              type="text"
-              placeholder="Buscar género..."
-              class="search-input"
-              @input="filtrarGeneros"
-            >
-          </div>
+      <!-- Empty State -->
+      <div
+v-else-if="generos.length === 0"
+class="flex-center flex-col gap-4 py-16"
+>
+        <div class="text-6xl text-text-tertiary">
+          <i class="fas fa-music" />
         </div>
-      </template>
+        <h3 class="text-xl font-bold text-text-primary">
+No hay géneros musicales
+</h3>
+        <p class="text-text-secondary">
+Crea el primer género musical para comenzar
+</p>
+        <button
+class="btn btn-primary"
+@click="abrirModalNuevo"
+>
+          <i class="fas fa-plus" />
+          Crear Género
+        </button>
+      </div>
 
-      <div class="generos-section-content">
-        <div class="generos-grid">
+      <!-- Géneros Grid -->
+      <div v-else>
+        <!-- Section Header with Search -->
+        <div class="flex-between mb-6 pb-4 border-b border-dark-border">
+          <h2 class="text-2xl font-bold text-text-primary">
+Lista de Géneros
+</h2>
+          <input
+            v-if="generos.length > 5"
+            v-model="searchQuery"
+            type="text"
+            placeholder="Buscar género..."
+            class="input max-w-xs"
+            @input="filtrarGeneros"
+          >
+        </div>
+
+        <!-- Géneros Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
           <article
             v-for="genero in paginatedGeneros"
             :key="genero.genmus_codigo"
-            class="genero-card"
+            class="card card-hover flex flex-col"
           >
-            <div class="card-header">
-              <div class="genero-icon">
-                <i class="fas fa-music"></i>
+            <!-- Card Header -->
+            <div class="flex-between gap-3 mb-4 pb-4 border-b border-dark-border">
+              <div class="flex-start gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-lg bg-primary-500/20 flex-center flex-shrink-0">
+                  <i class="fas fa-music text-primary-400" />
+                </div>
+                <div class="min-w-0">
+                  <h3 class="font-semibold text-text-primary truncate">
+{{ genero.genmus_nombre }}
+</h3>
+                  <span class="text-xs text-text-tertiary">#{{ genero.genmus_codigo }}</span>
+                </div>
               </div>
-              <div class="genero-info">
-                <h3 class="genero-name">{{ genero.genmus_nombre }}</h3>
-                <span class="genero-code">#{{ genero.genmus_codigo }}</span>
-              </div>
-              <div class="genero-badge" :class="getEstadoClass(genero.genmus_estado)">
+              <div :class="['badge', getEstadoClass(genero.genmus_estado)]">
                 {{ getEstadoTexto(genero.genmus_estado) }}
               </div>
             </div>
 
-            <div class="card-content">
-              <div class="genero-details">
-                <div class="detail-item">
-                  <span class="detail-label">
-                    <i class="fas fa-sort"></i>
-                    Orden
-                  </span>
-                  <span class="detail-value">{{ genero.genmus_orden }}</span>
+            <!-- Card Content -->
+            <div class="flex-1 mb-4">
+              <div class="flex items-start gap-2 text-sm">
+                <i class="fas fa-sort text-text-tertiary flex-shrink-0 mt-0.5" />
+                <div>
+                  <p class="text-text-secondary">
+Orden
+</p>
+                  <p class="text-text-primary font-medium">
+{{ genero.genmus_orden }}
+</p>
                 </div>
               </div>
             </div>
 
-            <div class="card-actions">
+            <!-- Card Actions -->
+            <div class="flex gap-2 pt-4 border-t border-dark-border">
               <button
-                class="card-action-btn primary"
-                @click="verSubGeneros(genero)"
+                class="flex-1 btn btn-sm btn-primary"
                 title="Ver subgéneros"
+                @click="verSubGeneros(genero)"
               >
-                <i class="fas fa-list"></i>
+                <i class="fas fa-list" />
                 Subgéneros
               </button>
-
               <button
-                class="card-action-btn info"
-                @click="verArchivos(genero)"
+                class="flex-1 btn btn-sm btn-ghost text-info-400"
                 title="Ver archivos del género"
+                @click="verArchivos(genero)"
               >
-                <i class="fas fa-folder-open"></i>
+                <i class="fas fa-folder-open" />
                 Archivos
               </button>
-
               <button
-                class="card-action-btn danger"
-                @click="eliminarGenero(genero)"
+                class="flex-1 btn btn-sm btn-danger"
                 title="Eliminar género"
+                @click="eliminarGenero(genero)"
               >
-                <i class="fas fa-trash-alt"></i>
+                <i class="fas fa-trash-alt" />
                 Eliminar
               </button>
             </div>
@@ -117,95 +140,133 @@
         </div>
 
         <!-- Pagination -->
-        <div v-if="totalPages > 1" class="pagination-container">
+        <div
+v-if="totalPages > 1"
+class="flex-center gap-4 mt-8 py-6 border-t border-dark-border"
+>
           <button
-            class="pagination-button"
-            @click="cambiarPagina(currentPage - 1)"
+            class="btn btn-secondary btn-sm"
             :disabled="currentPage === 1"
+            @click="cambiarPagina(currentPage - 1)"
           >
-            <i class="fas fa-chevron-left"></i>
+            <i class="fas fa-chevron-left" />
             Anterior
           </button>
 
-          <span class="pagination-info">
+          <span class="text-sm text-text-secondary px-3">
             Página {{ currentPage }} de {{ totalPages }}
           </span>
 
           <button
-            class="pagination-button"
-            @click="cambiarPagina(currentPage + 1)"
+            class="btn btn-secondary btn-sm"
             :disabled="currentPage === totalPages"
+            @click="cambiarPagina(currentPage + 1)"
           >
             Siguiente
-            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-chevron-right" />
           </button>
         </div>
       </div>
-    </BaseCard>
+    </div>
 
     <!-- Modal Nuevo/Editar Género -->
-    <Modal
-      v-model="mostrarModal"
-      :title="`${modoEdicion ? 'Editar' : 'Nuevo'} Género Musical`"
-      size="md"
-    >
-      <div class="form-group">
-        <label class="form-label">
-          Código <span class="required">*</span>
-        </label>
-        <input
-          v-model="generoForm.genmus_codigo"
-          type="number"
-          placeholder="Código del género"
-          class="form-input"
-          :disabled="modoEdicion"
-        >
-      </div>
+    <div
+v-if="mostrarModal"
+class="modal-backdrop"
+@click.self="cerrarModal"
+>
+      <div class="modal max-w-md">
+        <div class="modal-header">
+          <h2 class="text-lg font-bold text-text-primary">
+            {{ modoEdicion ? 'Editar' : 'Nuevo' }} Género Musical
+          </h2>
+          <button
+class="btn btn-ghost btn-icon"
+aria-label="Cerrar"
+@click="cerrarModal"
+>
+            <i class="fas fa-times" />
+          </button>
+        </div>
 
-      <div class="form-group">
-        <label class="form-label">
-          Nombre <span class="required">*</span>
-        </label>
-        <input
-          v-model="generoForm.genmus_nombre"
-          type="text"
-          placeholder="Nombre del género"
-          class="form-input"
-        >
-      </div>
+        <div class="modal-body space-y-4">
+          <div class="form-group">
+            <label class="label">
+              Código
+              <span class="text-danger-400 ml-1">*</span>
+            </label>
+            <input
+              v-model="generoForm.genmus_codigo"
+              type="number"
+              placeholder="Código del género"
+              class="input"
+              :disabled="modoEdicion"
+            >
+          </div>
 
-      <div class="form-group">
-        <label class="form-label">
-          Orden <span class="required">*</span>
-        </label>
-        <input
-          v-model="generoForm.genmus_orden"
-          type="number"
-          placeholder="Orden de visualización"
-          class="form-input"
-        >
-      </div>
+          <div class="form-group">
+            <label class="label">
+              Nombre
+              <span class="text-danger-400 ml-1">*</span>
+            </label>
+            <input
+              v-model="generoForm.genmus_nombre"
+              type="text"
+              placeholder="Nombre del género"
+              class="input"
+            >
+          </div>
 
-      <div class="form-group">
-        <label class="form-label">
-          Estado <span class="required">*</span>
-        </label>
-        <select v-model="generoForm.genmus_estado" class="form-input">
-          <option value="A">Activo</option>
-          <option value="I">Inactivo</option>
-        </select>
-      </div>
+          <div class="form-group">
+            <label class="label">
+              Orden
+              <span class="text-danger-400 ml-1">*</span>
+            </label>
+            <input
+              v-model="generoForm.genmus_orden"
+              type="number"
+              placeholder="Orden de visualización"
+              class="input"
+            >
+          </div>
 
-      <template #footer>
-        <button class="btn-secondary" @click="cerrarModal">
-          Cancelar
-        </button>
-        <button class="btn-primary" @click="guardarGenero" :disabled="!formularioValido">
-          <i class="fas fa-save"></i>
-          {{ modoEdicion ? 'Actualizar' : 'Crear' }}
-        </button>
-      </template>
-    </Modal>
+          <div class="form-group">
+            <label class="label">
+              Estado
+              <span class="text-danger-400 ml-1">*</span>
+            </label>
+            <select
+v-model="generoForm.genmus_estado"
+class="select"
+>
+              <option value="A">
+Activo
+</option>
+              <option value="I">
+Inactivo
+</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+class="btn btn-secondary"
+@click="cerrarModal"
+>
+Cancelar
+</button>
+          <button
+class="btn btn-primary"
+:disabled="!formularioValido"
+@click="guardarGenero"
+>
+            <i class="fas fa-save" />
+            {{ modoEdicion ? 'Actualizar' : 'Crear' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -213,9 +274,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import GeneroMusicalServices from '@/services/GeneroMusicalServices'
-import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
-import BaseCard from '@/components/ui/BaseCard.vue'
-import Modal from '@/components/ui/Modal.vue'
 
 const router = useRouter()
 
@@ -367,7 +425,7 @@ const cambiarPagina = (page) => {
 }
 
 const getEstadoClass = (estado) => {
-  return estado === 'A' ? 'badge-active' : 'badge-inactive'
+  return estado === 'A' ? 'badge-success' : 'badge-warning'
 }
 
 const getEstadoTexto = (estado) => {
@@ -379,5 +437,3 @@ onMounted(() => {
   cargarGeneros()
 })
 </script>
-
-<style scoped src="./musica.css"></style>

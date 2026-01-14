@@ -74,23 +74,5 @@ export default [
     name: 'Nueva programación de spot',
     component: () => import('@/pages/Spots/altaProgramacionSpots.vue'),
     meta: { requiresAuth: true, roles: ['Cliente', 'Reproductor'], title: 'Nueva Programación' }
-  },
-  {
-    path: 'pedidoSpot',
-    name: 'Pedidos de Spot',
-    component: () => import('@/pages/Spots/pedidoSpot.vue'),
-    meta: { requiresAuth: true, roles: ['Cliente', 'Reproductor'], title: 'Pedidos de Spots' }
-  },
-  {
-    path: 'altaPedidoSpot',
-    name: 'Nuevo Pedido de Spot',
-    component: () => import('@/pages/Spots/altaPedidoSpot.vue'),
-    meta: { requiresAuth: true, roles: ['Cliente', 'Reproductor'], title: 'Nuevo Pedido' }
-  },
-  {
-    path: 'resumenSpot',
-    name: 'Resumen de Spot',
-    component: () => import('@/pages/Spots/resumenSpot.vue'),
-    meta: { requiresAuth: true, roles: ['Cliente', 'Reproductor'], title: 'Resumen Spot' }
   }
 ]

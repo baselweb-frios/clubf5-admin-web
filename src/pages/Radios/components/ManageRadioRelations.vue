@@ -1,113 +1,172 @@
 <template>
-  <modal v-model="localShow" :title="`Configurar ${radio?.rad_nombre}`" size="xl" @close="handleClose">
-    <div class="space-y-6">
-      <!-- Tabs para las tres secciones -->
-      <div class="border-b border-gray-700">
-        <nav class="flex space-x-8" aria-label="Tabs">
-          <button
-            v-for="tab in tabs"
-            :key="tab.id"
-            @click="activeTab = tab.id"
-            :class="[
-              activeTab === tab.id
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300',
-              'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors'
-            ]"
-          >
-            <i :class="tab.icon" class="mr-2"></i>
-            {{ tab.name }}
-          </button>
-        </nav>
+  <div
+v-if="localShow"
+class="modal-backdrop"
+@click.self="handleClose"
+>
+    <div class="modal max-w-2xl">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-text-primary">
+Configurar {{ radio?.rad_nombre }}
+</h3>
+        <button
+class="btn btn-ghost btn-icon"
+@click="handleClose"
+>
+          <i class="fas fa-times" />
+        </button>
       </div>
+      <div class="modal-body space-y-6">
+        <!-- Tabs para las tres secciones -->
+        <div class="border-b border-dark-border">
+          <nav
+class="flex space-x-8 gap-4"
+aria-label="Tabs"
+>
+            <button
+              v-for="tab in tabs"
+              :key="tab.id"
+              :class="[
+                activeTab === tab.id
+                  ? 'border-primary-500 text-primary-400'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-dark-border',
+                'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors'
+              ]"
+              @click="activeTab = tab.id"
+            >
+              <i
+:class="tab.icon"
+class="mr-2"
+/>
+              {{ tab.name }}
+            </button>
+          </nav>
+        </div>
 
       <!-- SECCIÓN 1: GÉNEROS MUSICALES -->
-      <div v-show="activeTab === 'generos'" class="space-y-4">
+      <div
+v-show="activeTab === 'generos'"
+class="space-y-4"
+>
         <div>
-          <div class="flex items-center justify-between mb-2">
-            <label class="block text-sm font-medium text-gray-300">
+          <div class="flex-between mb-2">
+            <label class="block text-sm font-medium text-text-secondary">
               Géneros Musicales
             </label>
             <button
-              @click="showNewGeneroModal = true"
-              class="px-3 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors"
+              class="btn btn-primary btn-sm"
               type="button"
+              @click="showNewGeneroModal = true"
             >
-              <i class="fas fa-plus mr-1"></i>
+              <i class="fas fa-plus mr-1" />
               Nuevo Género
             </button>
           </div>
-          <base-select
+          <select
             v-model="selectedGenero"
-            :options="generos"
             placeholder="Seleccione un género para ver subgéneros..."
-            value-key="genmus_codigo"
-            label-key="genmus_nombre"
             :disabled="loading"
+            class="select"
             @change="loadSubGeneros"
-          />
+          >
+            <option value="">
+Seleccione un género para ver subgéneros...
+</option>
+            <option
+v-for="genero in generos"
+:key="genero.genmus_codigo"
+:value="genero.genmus_codigo"
+>
+              {{ genero.genmus_nombre }}
+            </option>
+          </select>
         </div>
 
         <!-- Botón para crear nuevo subgénero (visible cuando hay género seleccionado) -->
-        <div v-if="selectedGenero" class="flex items-center justify-between">
-          <span class="text-sm text-gray-400">
+        <div
+v-if="selectedGenero"
+class="flex-between"
+>
+          <span class="text-sm text-text-secondary">
             {{ subgeneros.length > 0 ? `${subgeneros.length} subgéneros disponibles` : 'No hay subgéneros para este género' }}
           </span>
           <button
-            @click="showNewSubgeneroModal = true"
-            class="px-3 py-1 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors"
+            class="btn btn-primary btn-sm"
             type="button"
+            @click="showNewSubgeneroModal = true"
           >
-            <i class="fas fa-plus mr-1"></i>
+            <i class="fas fa-plus mr-1" />
             Nuevo Subgénero
           </button>
         </div>
 
         <!-- Subgéneros disponibles -->
-        <div v-if="selectedGenero && subgeneros.length > 0" class="border border-gray-700 rounded-lg p-4">
-          <h4 class="text-sm font-medium text-gray-300 mb-3">Subgéneros Disponibles</h4>
+        <div
+v-if="selectedGenero && subgeneros.length > 0"
+class="border border-dark-border rounded-lg p-4"
+>
+          <h4 class="text-sm font-medium text-text-secondary mb-3">
+Subgéneros Disponibles
+</h4>
           <div class="max-h-60 overflow-y-auto space-y-2">
             <div
               v-for="subgenero in subgeneros"
               :key="subgenero.gemusu_codigo"
-              class="flex items-center p-3 bg-gray-800 rounded-lg hover:bg-gray-750 transition-colors cursor-pointer"
+              class="flex items-center p-3 bg-dark-secondary rounded-lg hover:bg-dark-hover transition-colors cursor-pointer"
               @click="toggleSubgenero(subgenero)"
             >
               <input
                 type="checkbox"
                 :checked="isSubgeneroSelected(subgenero.gemusu_codigo)"
-                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded"
+                class="checkbox"
                 @click.stop="toggleSubgenero(subgenero)"
-              />
+              >
               <div class="ml-3 flex-1">
-                <div class="text-sm font-medium text-white">{{ subgenero.gemusu_nombre }}</div>
-                <div class="text-xs text-gray-400">{{ subgenero.genmus_nombre }}</div>
+                <div class="text-sm font-medium text-text-primary">
+{{ subgenero.gemusu_nombre }}
+</div>
+                <div class="text-xs text-text-secondary">
+{{ subgenero.genmus_nombre }}
+</div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- Subgéneros seleccionados -->
-        <div v-if="selectedSubgeneros.length > 0" class="border border-gray-700 rounded-lg p-4">
-          <h4 class="text-sm font-medium text-gray-300 mb-3">
+        <div
+v-if="selectedSubgeneros.length > 0"
+class="border border-dark-border rounded-lg p-4"
+>
+          <h4 class="text-sm font-medium text-text-secondary mb-3">
             Subgéneros Seleccionados ({{ selectedSubgeneros.length }})
           </h4>
           <div class="flex flex-wrap gap-2">
             <span
               v-for="codigo in selectedSubgeneros"
               :key="codigo"
-              class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-900 text-blue-200"
+              class="badge badge-primary"
             >
               <span class="flex flex-col leading-tight">
                 <span>{{ getSubgeneroName(codigo) }}</span>
-                <span class="text-xs text-blue-400">{{ getSubgeneroGenero(codigo) }}</span>
+                <span class="text-xs">{{ getSubgeneroGenero(codigo) }}</span>
               </span>
               <button
+                class="ml-2 text-primary-300 hover:text-primary-200"
                 @click="removeSubgenero(codigo)"
-                class="ml-2 text-blue-300 hover:text-blue-100"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M6 18L18 6M6 6l12 12"
+/>
                 </svg>
               </button>
             </span>
@@ -116,28 +175,35 @@
       </div>
 
       <!-- SECCIÓN 2: RITMOS -->
-      <div v-show="activeTab === 'ritmos'" class="space-y-4">
+      <div
+v-show="activeTab === 'ritmos'"
+class="space-y-4"
+>
         <div>
-          <label class="block text-sm font-medium text-gray-300 mb-2">
+          <label class="block text-sm font-medium text-text-secondary mb-2">
             Ritmos Disponibles
           </label>
-          <div class="border border-gray-700 rounded-lg p-4">
+          <div class="border border-dark-border rounded-lg p-4">
             <div class="max-h-96 overflow-y-auto space-y-2">
               <div
                 v-for="ritmo in ritmos"
                 :key="ritmo.ritmos_codigo"
-                class="flex items-center p-3 bg-gray-800 rounded-lg hover:bg-gray-750 transition-colors cursor-pointer"
+                class="flex items-center p-3 bg-dark-secondary rounded-lg hover:bg-dark-hover transition-colors cursor-pointer"
                 @click="toggleRitmo(ritmo)"
               >
                 <input
                   type="checkbox"
                   :checked="isRitmoSelected(ritmo.ritmos_codigo)"
-                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded"
+                  class="checkbox"
                   @click.stop="toggleRitmo(ritmo)"
-                />
+                >
                 <div class="ml-3 flex-1">
-                  <div class="text-sm font-medium text-white">{{ ritmo.ritmos_nombre }}</div>
-                  <div class="text-xs text-gray-400">Orden: {{ ritmo.ritmos_orden }}</div>
+                  <div class="text-sm font-medium text-text-primary">
+{{ ritmo.ritmos_nombre }}
+</div>
+                  <div class="text-xs text-text-secondary">
+Orden: {{ ritmo.ritmos_orden }}
+</div>
                 </div>
               </div>
             </div>
@@ -145,8 +211,11 @@
         </div>
 
         <!-- Ritmos seleccionados -->
-        <div v-if="selectedRitmos.length > 0" class="border border-gray-700 rounded-lg p-4">
-          <h4 class="text-sm font-medium text-gray-300 mb-3">
+        <div
+v-if="selectedRitmos.length > 0"
+class="border border-dark-border rounded-lg p-4"
+>
+          <h4 class="text-sm font-medium text-text-secondary mb-3">
             Ritmos Seleccionados ({{ selectedRitmos.length }})
           </h4>
           <div class="flex flex-wrap gap-2">
@@ -157,11 +226,21 @@
             >
               {{ getRitmoName(codigo) }}
               <button
-                @click="removeRitmo(codigo)"
                 class="ml-2 text-purple-300 hover:text-purple-100"
+                @click="removeRitmo(codigo)"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M6 18L18 6M6 6l12 12"
+/>
                 </svg>
               </button>
             </span>
@@ -170,7 +249,10 @@
       </div>
 
       <!-- SECCIÓN 3: TIPOS DE EMPRESA Y ESTILOS -->
-      <div v-show="activeTab === 'tipos-estilos'" class="space-y-4">
+      <div
+v-show="activeTab === 'tipos-estilos'"
+class="space-y-4"
+>
         <!-- Tipos de Empresa -->
         <div>
           <label class="block text-sm font-medium text-gray-300 mb-2">
@@ -189,10 +271,14 @@
                   :checked="isTipoEmpresaSelected(tipo.tipEmp_codigo)"
                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded"
                   @click.stop="toggleTipoEmpresa(tipo)"
-                />
+                >
                 <div class="ml-3 flex-1">
-                  <div class="text-sm font-medium text-white">{{ tipo.tipEmp_nombre }}</div>
-                  <div class="text-xs text-gray-400">Grupo: {{ tipo.tipEmp_codigoTipoEmpGrupo }}</div>
+                  <div class="text-sm font-medium text-white">
+{{ tipo.tipEmp_nombre }}
+</div>
+                  <div class="text-xs text-gray-400">
+Grupo: {{ tipo.tipEmp_codigoTipoEmpGrupo }}
+</div>
                 </div>
               </div>
             </div>
@@ -200,7 +286,10 @@
         </div>
 
         <!-- Tipos de Empresa seleccionados -->
-        <div v-if="selectedTiposEmpresa.length > 0" class="border border-gray-700 rounded-lg p-4">
+        <div
+v-if="selectedTiposEmpresa.length > 0"
+class="border border-gray-700 rounded-lg p-4"
+>
           <h4 class="text-sm font-medium text-gray-300 mb-3">
             Tipos de Empresa Seleccionados ({{ selectedTiposEmpresa.length }})
           </h4>
@@ -212,11 +301,21 @@
             >
               {{ getTipoEmpresaName(codigo) }}
               <button
-                @click="removeTipoEmpresa(codigo)"
                 class="ml-2 text-green-300 hover:text-green-100"
+                @click="removeTipoEmpresa(codigo)"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M6 18L18 6M6 6l12 12"
+/>
                 </svg>
               </button>
             </span>
@@ -241,10 +340,14 @@
                   :checked="isEstiloSelected(estilo.estilo_codigo)"
                   class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded"
                   @click.stop="toggleEstilo(estilo)"
-                />
+                >
                 <div class="ml-3 flex-1">
-                  <div class="text-sm font-medium text-white">{{ estilo.estilo_nombre }}</div>
-                  <div class="text-xs text-gray-400">Orden: {{ estilo.estilo_orden }}</div>
+                  <div class="text-sm font-medium text-white">
+{{ estilo.estilo_nombre }}
+</div>
+                  <div class="text-xs text-gray-400">
+Orden: {{ estilo.estilo_orden }}
+</div>
                 </div>
               </div>
             </div>
@@ -252,7 +355,10 @@
         </div>
 
         <!-- Estilos seleccionados -->
-        <div v-if="selectedEstilos.length > 0" class="border border-gray-700 rounded-lg p-4">
+        <div
+v-if="selectedEstilos.length > 0"
+class="border border-gray-700 rounded-lg p-4"
+>
           <h4 class="text-sm font-medium text-gray-300 mb-3">
             Estilos Seleccionados ({{ selectedEstilos.length }})
           </h4>
@@ -264,11 +370,21 @@
             >
               {{ getEstiloName(codigo) }}
               <button
-                @click="removeEstilo(codigo)"
                 class="ml-2 text-yellow-300 hover:text-yellow-100"
+                @click="removeEstilo(codigo)"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M6 18L18 6M6 6l12 12"
+/>
                 </svg>
               </button>
             </span>
@@ -277,104 +393,163 @@
       </div>
 
       <!-- Loading state -->
-      <loading-spinner v-if="loading" class="py-8" />
+      <loading-spinner
+v-if="loading"
+class="py-8"
+/>
     </div>
 
-    <template #footer>
-      <base-button variant="secondary" @click="handleClose">
-        Cancelar
-      </base-button>
-      <base-button variant="primary" @click="handleSave" :disabled="submitting">
-        <loading-spinner v-if="submitting" class="mr-2" size="sm" />
+    <div class="modal-footer">
+      <button
+class="btn btn-secondary"
+@click="handleClose"
+>
+Cancelar
+</button>
+      <button
+:disabled="submitting"
+class="btn btn-primary"
+@click="handleSave"
+>
+        <i
+v-if="submitting"
+class="fas fa-spinner fa-spin mr-2"
+/>
         Guardar Configuración
-      </base-button>
-    </template>
-  </modal>
+      </button>
+    </div>
+  </div>
+  </div>
 
   <!-- Modal para crear nuevo género -->
-  <modal v-model="showNewGeneroModal" title="Crear Nuevo Género Musical" size="md" @close="closeNewGeneroModal">
-    <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">
-          Nombre del Género
-        </label>
+  <div
+v-if="showNewGeneroModal"
+class="modal-backdrop"
+@click.self="closeNewGeneroModal"
+>
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-text-primary">
+Crear Nuevo Género Musical
+</h3>
+        <button
+class="btn btn-ghost btn-icon"
+@click="closeNewGeneroModal"
+>
+          <i class="fas fa-times" />
+        </button>
+      </div>
+      <div class="modal-body space-y-4">
+        <div class="form-group">
+          <label class="label">Nombre del Género</label>
         <input
           v-model="newGenero.genmus_nombre"
           type="text"
-          class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="input"
           placeholder="Ej: Rock, Pop, Jazz..."
           @keyup.enter="createGenero"
-        />
+        >
+      </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+class="btn btn-secondary"
+@click="closeNewGeneroModal"
+>
+Cancelar
+</button>
+        <button
+          :disabled="creatingGenero || !newGenero.genmus_nombre.trim()"
+          class="btn btn-primary"
+          @click="createGenero"
+        >
+          <i
+v-if="creatingGenero"
+class="fas fa-spinner fa-spin mr-2"
+/>
+          Crear Género
+        </button>
       </div>
     </div>
-
-    <template #footer>
-      <base-button variant="secondary" @click="closeNewGeneroModal">
-        Cancelar
-      </base-button>
-      <base-button
-        variant="primary"
-        @click="createGenero"
-        :disabled="creatingGenero || !newGenero.genmus_nombre.trim()"
-      >
-        <loading-spinner v-if="creatingGenero" class="mr-2" size="sm" />
-        Crear Género
-      </base-button>
-    </template>
-  </modal>
+  </div>
 
   <!-- Modal para crear nuevo subgénero -->
-  <modal v-model="showNewSubgeneroModal" title="Crear Nuevo Subgénero Musical" size="md" @close="closeNewSubgeneroModal">
-    <div class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">
-          Género al que pertenece
-        </label>
-        <base-select
-          v-model="newSubgenero.gemusu_genmus"
-          :options="generos"
-          placeholder="Seleccione el género padre..."
-          value-key="genmus_codigo"
-          label-key="genmus_nombre"
-          :disabled="generos.length === 0"
-        />
+  <div
+v-if="showNewSubgeneroModal"
+class="modal-backdrop"
+@click.self="closeNewSubgeneroModal"
+>
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-text-primary">
+Crear Nuevo Subgénero Musical
+</h3>
+        <button
+class="btn btn-ghost btn-icon"
+@click="closeNewSubgeneroModal"
+>
+          <i class="fas fa-times" />
+        </button>
+      </div>
+      <div class="modal-body space-y-4">
+        <div class="form-group">
+          <label class="label">Género al que pertenece</label>
+          <select
+            v-model="newSubgenero.gemusu_genmus"
+            :disabled="generos.length === 0"
+            class="select"
+          >
+            <option value="">
+Seleccione el género padre...
+</option>
+            <option
+v-for="genero in generos"
+:key="genero.genmus_codigo"
+:value="genero.genmus_codigo"
+>
+              {{ genero.genmus_nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="label">Nombre del Subgénero</label>
+          <input
+            v-model="newSubgenero.gemusu_nombre"
+            type="text"
+            class="input"
+            placeholder="Ej: Rock Alternativo, Pop Latino..."
+            @keyup.enter="createSubgenero"
+          >
+        </div>
       </div>
 
-      <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2">
-          Nombre del Subgénero
-        </label>
-        <input
-          v-model="newSubgenero.gemusu_nombre"
-          type="text"
-          class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Ej: Rock Alternativo, Pop Latino..."
-          @keyup.enter="createSubgenero"
-        />
+      <div class="modal-footer">
+        <button
+class="btn btn-secondary"
+@click="closeNewSubgeneroModal"
+>
+Cancelar
+</button>
+        <button
+          :disabled="creatingSubgenero || !newSubgenero.gemusu_nombre.trim() || !newSubgenero.gemusu_genmus"
+          class="btn btn-primary"
+          @click="createSubgenero"
+        >
+          <i
+v-if="creatingSubgenero"
+class="fas fa-spinner fa-spin mr-2"
+/>
+          Crear Subgénero
+        </button>
       </div>
     </div>
-
-    <template #footer>
-      <base-button variant="secondary" @click="closeNewSubgeneroModal">
-        Cancelar
-      </base-button>
-      <base-button
-        variant="primary"
-        @click="createSubgenero"
-        :disabled="creatingSubgenero || !newSubgenero.gemusu_nombre.trim() || !newSubgenero.gemusu_genmus"
-      >
-        <loading-spinner v-if="creatingSubgenero" class="mr-2" size="sm" />
-        Crear Subgénero
-      </base-button>
-    </template>
-  </modal>
+  </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
-import Modal from '@/components/ui/Modal.vue'
-import BaseSelect from '@/components/ui/BaseSelect.vue'
-import BaseButton from '@/components/ui/BaseButton.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import generoMusicalService from '@/services/GeneroMusicalServices'
 import generoMusicalSubService from '@/services/GeneroMusicalSubServices'

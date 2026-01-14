@@ -1,132 +1,249 @@
 <template>
-  <modal v-model="localShow" :title="`Música en OBS - ${radio?.rad_nombre}`" size="xl" @close="handleClose">
-    <div class="space-y-4">
-      <!-- Controles de navegación y búsqueda -->
-      <div class="flex items-center justify-between gap-4">
-        <div class="flex items-center gap-2">
-          <base-button
-            variant="secondary"
-            size="sm"
-            @click="navigateUp"
-            :disabled="!currentPrefix || loading"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Volver
-          </base-button>
-          <span class="text-sm text-gray-400">
-            {{ currentPath || '/' }}
-          </span>
-        </div>
-        <base-button variant="secondary" size="sm" @click="loadMusic" :disabled="loading">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-          </svg>
-        </base-button>
+  <div
+v-if="localShow"
+class="modal-backdrop"
+@click.self="handleClose"
+>
+    <div class="modal max-w-2xl">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-text-primary">
+Música en OBS - {{ radio?.rad_nombre }}
+</h3>
+        <button
+class="btn btn-ghost btn-icon"
+@click="handleClose"
+>
+          <i class="fas fa-times" />
+        </button>
       </div>
-
-      <!-- Loading state -->
-      <loading-spinner v-if="loading" class="py-12" />
-
-      <!-- Lista de archivos y carpetas -->
-      <div v-else-if="objects.length > 0" class="border border-gray-700 rounded-lg overflow-hidden">
-        <div class="max-h-96 overflow-y-auto">
-          <div
-            v-for="(object, index) in objects"
-            :key="index"
-            class="flex items-center p-3 border-b border-gray-700 last:border-b-0 hover:bg-gray-800 transition-colors cursor-pointer"
-            @click="handleObjectClick(object)"
-          >
-            <div class="flex-shrink-0 mr-3">
+      <div class="modal-body space-y-4">
+        <!-- Controles de navegación y búsqueda -->
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <button
+              class="btn btn-secondary btn-sm"
+              :disabled="!currentPrefix || loading"
+              @click="navigateUp"
+            >
               <svg
-                v-if="object.IsFolder"
-                class="w-6 h-6 text-blue-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M10 19l-7-7m0 0l7-7m-7 7h18"
+/>
               </svg>
-              <svg
-                v-else
-                class="w-6 h-6 text-green-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
-              </svg>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium text-white truncate">
-                {{ object.Name }}
-              </div>
-              <div class="text-xs text-gray-400">
-                <span v-if="!object.IsFolder">
-                  {{ formatSize(object.Size) }} • {{ formatDate(object.LastModified) }}
-                </span>
-                <span v-else>
-                  Carpeta
-                </span>
-              </div>
-            </div>
-            <div v-if="!object.IsFolder" class="flex-shrink-0 ml-3 flex items-center gap-2">
-              <button
-                @click.stop="playAudio(object)"
-                class="p-2 text-blue-400 hover:text-blue-300 transition-colors"
-                title="Reproducir"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              Volver
+            </button>
+            <span class="text-sm text-text-secondary">
+              {{ currentPath || '/' }}
+            </span>
+          </div>
+          <button
+class="btn btn-secondary btn-sm"
+:disabled="loading"
+@click="loadMusic"
+>
+            <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Loading state -->
+        <loading-spinner
+v-if="loading"
+class="py-12"
+/>
+
+        <!-- Lista de archivos y carpetas -->
+        <div
+v-else-if="objects.length > 0"
+class="border border-dark-border rounded-lg overflow-hidden"
+>
+          <div class="max-h-96 overflow-y-auto">
+            <div
+              v-for="(object, index) in objects"
+              :key="index"
+              class="flex items-center p-3 border-b border-dark-border last:border-b-0 hover:bg-dark-hover transition-colors cursor-pointer"
+              @click="handleObjectClick(object)"
+            >
+              <div class="flex-shrink-0 mr-3">
+                <svg
+                  v-if="object.IsFolder"
+                  class="w-6 h-6 text-primary-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+/>
                 </svg>
-              </button>
-              <button
-                @click.stop="confirmDelete(object)"
-                class="p-2 text-red-400 hover:text-red-300 transition-colors"
-                title="Eliminar archivo"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                <svg
+                  v-else
+                  class="w-6 h-6 text-success-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+/>
                 </svg>
-              </button>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm font-medium text-text-primary truncate">
+                  {{ object.Name }}
+                </div>
+                <div class="text-xs text-text-secondary">
+                  <span v-if="!object.IsFolder">
+                    {{ formatSize(object.Size) }} • {{ formatDate(object.LastModified) }}
+                  </span>
+                  <span v-else>
+                    Carpeta
+                  </span>
+                </div>
+              </div>
+              <div
+v-if="!object.IsFolder"
+class="flex-shrink-0 ml-3 flex items-center gap-2"
+>
+                <button
+                  class="btn btn-ghost btn-icon text-primary-400 hover:text-primary-300"
+                  title="Reproducir"
+                  @click.stop="playAudio(object)"
+                >
+                  <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                    <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+/>
+                    <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+/>
+                  </svg>
+                </button>
+                <button
+                  class="btn btn-ghost btn-icon text-danger-400 hover:text-danger-300"
+                  title="Eliminar archivo"
+                  @click.stop="confirmDelete(object)"
+                >
+                  <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                    <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+/>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- Empty state -->
+        <div
+v-else
+class="text-center py-12"
+>
+          <svg
+class="mx-auto h-12 w-12 text-text-tertiary"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+/>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-text-secondary">
+No hay archivos
+</h3>
+          <p class="mt-1 text-sm text-text-tertiary">
+Esta carpeta está vacía
+</p>
+        </div>
       </div>
 
-      <!-- Empty state -->
-      <div v-else class="text-center py-12">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
-        </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-300">No hay archivos</h3>
-        <p class="mt-1 text-sm text-gray-500">Esta carpeta está vacía</p>
-      </div>
-    </div>
-
-    <template #footer>
-      <div class="flex flex-col w-full gap-3">
+      <div class="modal-footer flex-col gap-3">
         <!-- Audio Player -->
-        <div v-if="currentAudio" class="border-b border-gray-700 pb-3">
+        <div
+v-if="currentAudio"
+class="border-b border-dark-border pb-3 w-full"
+>
           <div class="flex items-center gap-4">
             <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium text-white truncate">
+              <div class="text-sm font-medium text-text-primary truncate">
                 {{ currentAudio.Name }}
               </div>
-              <div class="text-xs text-gray-400">
+              <div class="text-xs text-text-secondary">
                 Reproduciendo...
               </div>
             </div>
             <button
-              @click="stopAudio"
-              class="p-2 text-red-400 hover:text-red-300 transition-colors"
+              class="btn btn-ghost btn-icon text-danger-400 hover:text-danger-300"
               title="Detener"
+              @click="stopAudio"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h6v4H9z"></path>
+              <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+/>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M9 10h6v4H9z"
+/>
               </svg>
             </button>
           </div>
@@ -135,23 +252,27 @@
             controls
             class="w-full mt-2"
             @ended="stopAudio"
-          ></audio>
+          />
         </div>
         <!-- Botón cerrar -->
-        <div class="flex justify-end">
-          <base-button variant="secondary" @click="handleClose">
-            Cerrar
-          </base-button>
+        <div
+v-else
+class="flex justify-end w-full"
+>
+          <button
+class="btn btn-secondary"
+@click="handleClose"
+>
+Cerrar
+</button>
         </div>
       </div>
-    </template>
-  </modal>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import Modal from '@/components/ui/Modal.vue'
-import BaseButton from '@/components/ui/BaseButton.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import obsServices from '@/services/obsServices'
 

@@ -1,6 +1,11 @@
 /* eslint-env node */
 module.exports = {
   root: true,
+  env: {
+    browser: true,
+    es2021: true,
+    node: true
+  },
   extends: [
     'eslint:recommended',
     'plugin:vue/vue3-recommended'
@@ -10,11 +15,16 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
+    // Vue
     'vue/multi-word-component-names': 'off',
     'vue/no-unused-vars': 'warn',
+    'vue/html-indent': 'off',
+    
+    // JavaScript
     'no-unused-vars': 'warn',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    // Desactivar reglas de espacios/whitespace
+    
+    // Desactivar reglas de formato (Prettier lo maneja)
     'no-trailing-spaces': 'off',
     'indent': 'off',
     'semi': 'off',

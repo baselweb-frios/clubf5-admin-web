@@ -1,45 +1,77 @@
 <template>
   <div class="data-table-wrapper">
     <!-- Search -->
-    <div v-if="config.global_search?.visibility !== 'false'" class="table-search">
+    <div
+v-if="config.global_search?.visibility !== 'false'"
+class="table-search"
+>
       <div class="search-input-wrapper">
-        <i class="fas fa-search search-icon"></i>
+        <i class="fas fa-search search-icon" />
         <input
           v-model="searchQuery"
           type="text"
           :placeholder="config.global_search?.placeholder || 'Buscar...'"
           class="search-input"
-        />
-        <button v-if="searchQuery" @click="searchQuery = ''" class="clear-search">
-          <i class="fas fa-times"></i>
+        >
+        <button
+v-if="searchQuery"
+class="clear-search"
+@click="searchQuery = ''"
+>
+          <i class="fas fa-times" />
         </button>
       </div>
     </div>
 
     <!-- Table -->
     <div class="table-container">
-      <loading-spinner v-if="loading" :loading="true" text="Cargando datos..." size="40px" />
+      <loading-spinner
+v-if="loading"
+:loading="true"
+text="Cargando datos..."
+size="40px"
+/>
       
       <!-- Desktop/Tablet Table View -->
-      <table v-else class="data-table desktop-table">
+      <table
+v-else
+class="data-table desktop-table"
+>
         <thead>
           <tr>
             <th
               v-for="column in columns"
               :key="column.name || column.field"
-              @click="column.sortable ? toggleSort(column.field) : null"
               :class="{ sortable: column.sortable, active: sortColumn === column.field }"
+              @click="column.sortable ? toggleSort(column.field) : null"
             >
               <div class="th-content">
                 <span>{{ column.label }}</span>
-                <span v-if="column.sortable" class="sort-icon">
-                  <i v-if="sortColumn !== column.field" class="fas fa-sort"></i>
-                  <i v-else-if="sortDirection === 'asc'" class="fas fa-sort-up"></i>
-                  <i v-else class="fas fa-sort-down"></i>
+                <span
+v-if="column.sortable"
+class="sort-icon"
+>
+                  <i
+v-if="sortColumn !== column.field"
+class="fas fa-sort"
+/>
+                  <i
+v-else-if="sortDirection === 'asc'"
+class="fas fa-sort-up"
+/>
+                  <i
+v-else
+class="fas fa-sort-down"
+/>
                 </span>
               </div>
             </th>
-            <th v-if="rowButtons.length > 0" class="actions-column">Acciones</th>
+            <th
+v-if="rowButtons.length > 0"
+class="actions-column"
+>
+Acciones
+</th>
           </tr>
         </thead>
         <tbody>
@@ -48,7 +80,11 @@
             :key="index"
             :class="{ 'highlight-row': config.highlight_row_hover }"
           >
-            <td v-for="column in columns" :key="column.name || column.field" :data-label="column.label">
+            <td
+v-for="column in columns"
+:key="column.name || column.field"
+:data-label="column.label"
+>
               <slot
                 v-if="column.field === 'actions' || $slots[column.field]"
                 :name="column.field"
@@ -61,27 +97,39 @@
                 {{ getCellValue(row, column.field) }}
               </template>
             </td>
-            <td v-if="rowButtons.length > 0" class="actions-cell" data-label="Acciones">
+            <td
+v-if="rowButtons.length > 0"
+class="actions-cell"
+data-label="Acciones"
+>
               <div class="action-buttons">
                 <button
                   v-for="(button, btnIndex) in rowButtons"
                   :key="btnIndex"
-                  @click="button.fn(row)"
                   :class="['action-btn', `btn-${button.type || 'primary'}`]"
                   :title="button.label"
+                  @click="button.fn(row)"
                 >
-                  <i v-if="button.icon" :class="`fas fa-${button.icon}`"></i>
+                  <i
+v-if="button.icon"
+:class="`fas fa-${button.icon}`"
+/>
                   <span v-if="button.showLabel">{{ button.label }}</span>
                 </button>
               </div>
             </td>
           </tr>
           <tr v-if="paginatedData.length === 0">
-            <td :colspan="columns.length + (rowButtons.length > 0 ? 1 : 0)" class="empty-state">
+            <td
+:colspan="columns.length + (rowButtons.length > 0 ? 1 : 0)"
+class="empty-state"
+>
               <div class="empty-state-content">
-                <i class="fas fa-inbox empty-icon"></i>
+                <i class="fas fa-inbox empty-icon" />
                 <slot name="empty-results">
-                  <p class="empty-text">{{ noDataMessage }}</p>
+                  <p class="empty-text">
+{{ noDataMessage }}
+</p>
                 </slot>
               </div>
             </td>
@@ -90,15 +138,24 @@
       </table>
 
       <!-- Mobile Card View -->
-      <div v-if="!loading" class="mobile-cards">
+      <div
+v-if="!loading"
+class="mobile-cards"
+>
         <div
           v-for="(row, index) in paginatedData"
           :key="index"
           class="mobile-card"
         >
           <div class="mobile-card-content">
-            <div v-for="column in columns" :key="column.field" class="mobile-card-row">
-              <div class="mobile-card-label">{{ column.label }}</div>
+            <div
+v-for="column in columns"
+:key="column.field"
+class="mobile-card-row"
+>
+              <div class="mobile-card-label">
+{{ column.label }}
+</div>
               <div class="mobile-card-value">
                 <slot
                   v-if="column.field === 'actions' || $slots[column.field]"
@@ -113,77 +170,105 @@
                 </template>
               </div>
             </div>
-            <div v-if="rowButtons.length > 0" class="mobile-card-actions">
+            <div
+v-if="rowButtons.length > 0"
+class="mobile-card-actions"
+>
               <button
                 v-for="(button, btnIndex) in rowButtons"
                 :key="btnIndex"
-                @click="button.fn(row)"
                 :class="['action-btn', `btn-${button.type || 'primary'}`]"
                 :title="button.label"
+                @click="button.fn(row)"
               >
-                <i v-if="button.icon" :class="`fas fa-${button.icon}`"></i>
+                <i
+v-if="button.icon"
+:class="`fas fa-${button.icon}`"
+/>
                 <span v-if="button.showLabel">{{ button.label }}</span>
               </button>
             </div>
           </div>
         </div>
-        <div v-if="paginatedData.length === 0" class="empty-state-content">
-          <i class="fas fa-inbox empty-icon"></i>
+        <div
+v-if="paginatedData.length === 0"
+class="empty-state-content"
+>
+          <i class="fas fa-inbox empty-icon" />
           <slot name="empty-results">
-            <p class="empty-text">{{ noDataMessage }}</p>
+            <p class="empty-text">
+{{ noDataMessage }}
+</p>
           </slot>
         </div>
       </div>
     </div>
 
     <!-- Pagination -->
-    <div v-if="totalPages > 1" class="table-pagination">
+    <div
+v-if="totalPages > 1"
+class="table-pagination"
+>
       <div class="pagination-info">
-        <i class="fas fa-info-circle"></i>
+        <i class="fas fa-info-circle" />
         Mostrando {{ startIndex + 1 }} - {{ endIndex }} de {{ filteredData.length }} registros
       </div>
       <div class="pagination-controls">
         <button
-          @click="currentPage = 1"
           :disabled="currentPage === 1"
           class="pagination-btn"
           title="Primera página"
+          @click="currentPage = 1"
         >
-          <i class="fas fa-angle-double-left"></i>
+          <i class="fas fa-angle-double-left" />
         </button>
         <button
-          @click="currentPage--"
           :disabled="currentPage === 1"
           class="pagination-btn"
           title="Página anterior"
+          @click="currentPage--"
         >
-          <i class="fas fa-angle-left"></i>
+          <i class="fas fa-angle-left" />
         </button>
         <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
         <button
-          @click="currentPage++"
           :disabled="currentPage === totalPages"
           class="pagination-btn"
           title="Página siguiente"
+          @click="currentPage++"
         >
-          <i class="fas fa-angle-right"></i>
+          <i class="fas fa-angle-right" />
         </button>
         <button
-          @click="currentPage = totalPages"
           :disabled="currentPage === totalPages"
           class="pagination-btn"
           title="Última página"
+          @click="currentPage = totalPages"
         >
-          <i class="fas fa-angle-double-right"></i>
+          <i class="fas fa-angle-double-right" />
         </button>
       </div>
       <div class="pagination-size">
-        <select v-model="perPage" @change="currentPage = 1" class="per-page-select">
-          <option :value="5">5 por página</option>
-          <option :value="10">10 por página</option>
-          <option :value="25">25 por página</option>
-          <option :value="50">50 por página</option>
-          <option :value="100">100 por página</option>
+        <select
+v-model="perPage"
+class="per-page-select"
+@change="currentPage = 1"
+>
+          <option :value="5">
+5 por página
+</option>
+          <option :value="10">
+10 por página
+</option>
+          <option :value="25">
+25 por página
+</option>
+          <option :value="50">
+50 por página
+</option>
+          <option :value="100">
+100 por página
+</option>
         </select>
       </div>
     </div>
@@ -317,573 +402,357 @@ watch(() => props.rows, () => {
 </script>
 
 <style scoped>
+/* ===== WRAPPER ===== */
 .data-table-wrapper {
-  width: 100%;
-  background: #16181d;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0.75rem;
-  overflow: hidden;
+  @apply space-y-4;
 }
 
+/* ===== SEARCH ===== */
 .table-search {
-  padding: 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: #1c1f26;
+  @apply flex items-center;
 }
 
 .search-input-wrapper {
-  position: relative;
-  max-width: 400px;
-  display: flex;
-  align-items: center;
+  @apply relative w-full max-w-md;
 }
 
 .search-icon {
-  position: absolute;
-  left: 1rem;
-  color: #6b7280;
-  font-size: 0.875rem;
-  pointer-events: none;
+  @apply absolute left-3 top-1/2 -translate-y-1/2;
+  @apply text-text-tertiary text-sm;
+  @apply pointer-events-none;
+}
+
+.light .search-icon {
+  @apply text-text-light-tertiary;
 }
 
 .search-input {
-  width: 100%;
-  padding: 0.625rem 2.75rem 0.625rem 2.75rem;
-  background: #0f1419;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0.5rem;
-  color: #e5e7eb;
-  font-size: 0.875rem;
-  transition: all 0.2s;
+  @apply w-full pl-10 pr-10 py-2.5 rounded-lg text-sm;
+  @apply bg-dark-secondary text-text-primary;
+  @apply border border-dark-border;
+  @apply placeholder:text-text-tertiary;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500;
 }
 
-.search-input::placeholder {
-  color: #4b5563;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  background: #16181d;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.light .search-input {
+  @apply bg-light-secondary text-text-light-primary border-light-border;
+  @apply placeholder:text-text-light-tertiary;
 }
 
 .clear-search {
-  position: absolute;
-  right: 0.75rem;
-  padding: 0.25rem;
-  background: transparent;
-  border: none;
-  color: #6b7280;
-  cursor: pointer;
-  transition: color 0.2s;
+  @apply absolute right-3 top-1/2 -translate-y-1/2;
+  @apply p-1 rounded text-text-tertiary;
+  @apply hover:text-text-primary hover:bg-dark-hover;
+  @apply transition-colors duration-200;
 }
 
-.clear-search:hover {
-  color: #e5e7eb;
+.light .clear-search {
+  @apply text-text-light-tertiary;
+  @apply hover:text-text-light-primary hover:bg-light-hover;
 }
 
+/* ===== TABLE CONTAINER ===== */
 .table-container {
-  overflow-x: auto;
+  @apply w-full overflow-x-auto rounded-xl;
+  @apply border border-dark-border;
+  @apply bg-dark-tertiary;
 }
 
-.table-container::-webkit-scrollbar {
-  height: 8px;
+.light .table-container {
+  @apply border-light-border bg-light-elevated;
 }
 
-.table-container::-webkit-scrollbar-track {
-  background: #0f1419;
-}
-
-.table-container::-webkit-scrollbar-thumb {
-  background: #22252d;
-  border-radius: 4px;
-}
-
-.table-container::-webkit-scrollbar-thumb:hover {
-  background: #2a2d35;
-}
-
+/* ===== DESKTOP TABLE ===== */
 .data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-}
-
-.data-table thead {
-  background: #1c1f26;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.06);
+  @apply w-full text-sm;
 }
 
 .data-table th {
-  padding: 1rem 1.25rem;
-  text-align: left;
-  font-weight: 600;
-  color: #9ca3af;
-  white-space: nowrap;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  @apply px-4 py-3 text-left font-semibold text-text-secondary;
+  @apply bg-dark-secondary border-b border-dark-border;
+  @apply whitespace-nowrap;
 }
 
-.th-content {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.light .data-table th {
+  @apply text-text-light-secondary bg-light-secondary border-light-border;
 }
 
 .data-table th.sortable {
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.2s;
+  @apply cursor-pointer select-none;
+  @apply hover:bg-dark-hover;
 }
 
-.data-table th.sortable:hover {
-  color: #e5e7eb;
-  background: rgba(255, 255, 255, 0.02);
+.light .data-table th.sortable:hover {
+  @apply bg-light-hover;
 }
 
 .data-table th.active {
-  color: #3b82f6;
+  @apply text-primary-400;
+}
+
+.light .data-table th.active {
+  @apply text-primary-600;
+}
+
+.th-content {
+  @apply flex items-center gap-2;
 }
 
 .sort-icon {
-  display: flex;
-  align-items: center;
-  font-size: 0.75rem;
-  opacity: 0.5;
-  transition: opacity 0.2s;
+  @apply text-xs opacity-60;
 }
 
-.data-table th.sortable:hover .sort-icon,
 .data-table th.active .sort-icon {
-  opacity: 1;
-}
-
-.data-table tbody tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  transition: background-color 0.15s;
-}
-
-.data-table tbody tr.highlight-row:hover {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.data-table tbody tr:last-child {
-  border-bottom: none;
+  @apply opacity-100 text-primary-400;
 }
 
 .data-table td {
-  padding: 1rem 1.25rem;
-  color: #e5e7eb;
+  @apply px-4 py-3 text-text-primary;
+  @apply border-b border-dark-border;
 }
 
-.empty-state {
-  padding: 0 !important;
+.light .data-table td {
+  @apply text-text-light-primary border-light-border;
 }
 
-.empty-state-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  text-align: center;
-  color: #6b7280;
+.data-table tbody tr:last-child td {
+  @apply border-b-0;
 }
 
-.empty-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  opacity: 0.3;
+.data-table tbody tr {
+  @apply transition-colors duration-150;
 }
 
-.empty-text {
-  margin: 0;
-  font-size: 0.9375rem;
+.data-table tbody tr.highlight-row:hover {
+  @apply bg-dark-hover;
 }
 
-.table-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  background: #1c1f26;
-  gap: 1rem;
-  flex-wrap: wrap;
+.light .data-table tbody tr.highlight-row:hover {
+  @apply bg-light-hover;
 }
 
-.pagination-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8125rem;
-  color: #9ca3af;
-}
-
-.pagination-info i {
-  font-size: 0.75rem;
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-}
-
-.pagination-btn {
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #16181d;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0.375rem;
-  color: #9ca3af;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: #22252d;
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #e5e7eb;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.page-number {
-  padding: 0 0.75rem;
-  font-size: 0.8125rem;
-  color: #e5e7eb;
-  font-weight: 500;
-  min-width: 4rem;
-  text-align: center;
-}
-
-.per-page-select {
-  padding: 0.5rem 0.75rem;
-  background: #16181d;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0.375rem;
-  color: #e5e7eb;
-  font-size: 0.8125rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.per-page-select:hover {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: #22252d;
-}
-
-.per-page-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.per-page-select option {
-  background: #16181d;
-  color: #e5e7eb;
-}
-
-/* ===== LOADING STATE ===== */
-.table-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  gap: 1rem;
-  color: #9ca3af;
-  font-size: 0.875rem;
-}
-
-.loading-spinner-small {
-  width: 32px;
-  height: 32px;
-  border: 3px solid rgba(59, 130, 246, 0.3);
-  border-top-color: #3b82f6;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ===== ACTION BUTTONS ===== */
+/* Actions Column */
 .actions-column {
-  text-align: center;
-  width: 120px;
+  @apply text-center w-32;
 }
 
 .actions-cell {
-  text-align: center;
-  padding: 0.5rem !important;
+  @apply text-center;
 }
 
 .action-buttons {
-  display: flex;
-  gap: 0.375rem;
-  justify-content: center;
-  align-items: center;
+  @apply flex items-center justify-center gap-2;
 }
 
 .action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
-  padding: 0.375rem 0.625rem;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
+  @apply p-2 rounded-lg text-sm;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-primary;
 }
 
-.action-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-.action-btn:active {
-  transform: scale(0.98);
-}
-
-.action-btn i {
-  font-size: 0.875rem;
-}
-
-/* Button type variants */
-.action-btn.btn-is-danger,
-.action-btn.btn-danger {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-}
-
-.action-btn.btn-is-danger:hover,
-.action-btn.btn-danger:hover {
-  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
-}
-
-.action-btn.btn-is-success,
-.action-btn.btn-success {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
-}
-
-.action-btn.btn-is-success:hover,
-.action-btn.btn-success:hover {
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-}
-
-.action-btn.btn-is-primary,
 .action-btn.btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
+  @apply text-primary-400 hover:bg-primary-500/20;
+  @apply focus-visible:ring-primary-500;
 }
 
-.action-btn.btn-is-primary:hover,
-.action-btn.btn-primary:hover {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+.action-btn.btn-danger {
+  @apply text-danger-400 hover:bg-danger-500/20;
+  @apply focus-visible:ring-danger-500;
 }
 
-.action-btn.btn-is-warning,
+.action-btn.btn-success {
+  @apply text-success-400 hover:bg-success-500/20;
+  @apply focus-visible:ring-success-500;
+}
+
 .action-btn.btn-warning {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: white;
+  @apply text-warning-400 hover:bg-warning-500/20;
+  @apply focus-visible:ring-warning-500;
 }
 
-.action-btn.btn-is-warning:hover,
-.action-btn.btn-warning:hover {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+.action-btn.btn-info {
+  @apply text-info-400 hover:bg-info-500/20;
+  @apply focus-visible:ring-info-500;
 }
 
-/* ===== MOBILE CARDS VIEW ===== */
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  @apply text-center py-12;
+}
+
+.empty-state-content {
+  @apply flex flex-col items-center justify-center gap-3 py-8;
+}
+
+.empty-icon {
+  @apply text-4xl text-text-tertiary;
+}
+
+.light .empty-icon {
+  @apply text-text-light-tertiary;
+}
+
+.empty-text {
+  @apply text-text-secondary text-sm;
+}
+
+.light .empty-text {
+  @apply text-text-light-secondary;
+}
+
+/* ===== MOBILE CARDS ===== */
 .mobile-cards {
-  display: none;
+  @apply hidden space-y-3;
 }
 
 .mobile-card {
-  background: #1c1f26;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0.75rem;
-  margin-bottom: 1rem;
-  overflow: hidden;
-  transition: all 0.2s;
+  @apply bg-dark-tertiary rounded-xl border border-dark-border;
+  @apply overflow-hidden;
 }
 
-.mobile-card:hover {
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+.light .mobile-card {
+  @apply bg-light-elevated border-light-border;
 }
 
 .mobile-card-content {
-  padding: 0;
+  @apply p-4 space-y-3;
 }
 
 .mobile-card-row {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 0.75rem;
-  padding: 0.875rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  align-items: center;
+  @apply flex items-start justify-between gap-4;
+  @apply pb-2 border-b border-dark-border last:border-b-0 last:pb-0;
 }
 
-.mobile-card-row:last-child {
-  border-bottom: none;
+.light .mobile-card-row {
+  @apply border-light-border;
 }
 
 .mobile-card-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  @apply text-xs font-medium text-text-secondary uppercase tracking-wide;
+  @apply flex-shrink-0;
+}
+
+.light .mobile-card-label {
+  @apply text-text-light-secondary;
 }
 
 .mobile-card-value {
-  color: #e5e7eb;
-  font-size: 0.875rem;
+  @apply text-sm text-text-primary text-right;
+}
+
+.light .mobile-card-value {
+  @apply text-text-light-primary;
 }
 
 .mobile-card-actions {
-  display: flex;
-  gap: 0.5rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-  justify-content: flex-end;
+  @apply flex items-center justify-end gap-2 pt-3 mt-3;
+  @apply border-t border-dark-border;
 }
 
-/* ===== RESPONSIVE BREAKPOINTS ===== */
-@media (max-width: 1024px) {
-  /* Reduce paddings and allow wrapping on medium screens (notebooks) */
-  .data-table th,
-  .data-table td {
-    padding: 0.75rem 0.875rem;
-    font-size: 0.8125rem;
-    white-space: normal;
-    word-break: break-word;
-  }
-
-  /* Make actions column flexible on medium screens */
-  .actions-column {
-    width: auto;
-    min-width: 80px;
-  }
-
-  /* Switch to mobile-cards earlier for better readability on notebooks */
-  .desktop-table {
-    display: none;
-  }
-
-  .mobile-cards {
-    display: block;
-  }
-
-  /* Compact action buttons like on small screens */
-  .action-btn span {
-    display: none;
-  }
-
-  .action-btn {
-    padding: 0.5rem;
-  }
-
-  /* Avoid horizontal scrollbar where possible */
-  .table-container {
-    overflow-x: visible;
-  }
+.light .mobile-card-actions {
+  @apply border-light-border;
 }
 
+/* ===== PAGINATION ===== */
+.table-pagination {
+  @apply flex flex-wrap items-center justify-between gap-4;
+  @apply px-4 py-3 rounded-xl;
+  @apply bg-dark-secondary border border-dark-border;
+}
+
+.light .table-pagination {
+  @apply bg-light-secondary border-light-border;
+}
+
+.pagination-info {
+  @apply flex items-center gap-2;
+  @apply text-sm text-text-secondary;
+}
+
+.light .pagination-info {
+  @apply text-text-light-secondary;
+}
+
+.pagination-info i {
+  @apply text-info-500;
+}
+
+.pagination-controls {
+  @apply flex items-center gap-1;
+}
+
+.pagination-btn {
+  @apply p-2 rounded-lg text-text-secondary;
+  @apply transition-all duration-200;
+  @apply hover:bg-dark-hover hover:text-text-primary;
+  @apply disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent;
+}
+
+.light .pagination-btn {
+  @apply text-text-light-secondary;
+  @apply hover:bg-light-hover hover:text-text-light-primary;
+}
+
+.page-number {
+  @apply px-3 py-1 text-sm font-medium text-text-primary;
+}
+
+.light .page-number {
+  @apply text-text-light-primary;
+}
+
+.pagination-size {
+  @apply flex items-center;
+}
+
+.per-page-select {
+  @apply px-3 py-2 rounded-lg text-sm;
+  @apply bg-dark-tertiary text-text-primary;
+  @apply border border-dark-border;
+  @apply cursor-pointer appearance-none;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500;
+  @apply pr-8;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+}
+
+.light .per-page-select {
+  @apply bg-light-tertiary text-text-light-primary border-light-border;
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .table-search {
-    padding: 1rem;
-  }
-
-  .search-input-wrapper {
-    max-width: none;
-  }
-
-  /* Hide desktop table, show mobile cards */
   .desktop-table {
-    display: none;
+    @apply hidden;
   }
 
   .mobile-cards {
-    display: block;
+    @apply block;
   }
 
   .table-pagination {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 1rem;
-    gap: 0.75rem;
+    @apply flex-col items-stretch gap-3;
   }
 
   .pagination-info {
-    justify-content: center;
-    order: 3;
+    @apply justify-center;
   }
 
   .pagination-controls {
-    justify-content: center;
-    order: 1;
+    @apply justify-center;
   }
 
   .pagination-size {
-    order: 2;
+    @apply justify-center;
   }
 
   .per-page-select {
-    width: 100%;
-  }
-
-  .action-btn span {
-    display: none;
-  }
-
-  .action-btn {
-    padding: 0.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .mobile-card-row {
-    grid-template-columns: 1fr;
-    gap: 0.25rem;
-  }
-
-  .mobile-card-label {
-    font-size: 0.7rem;
-  }
-
-  .mobile-card-value {
-    font-size: 0.8125rem;
-  }
-
-  .pagination-btn {
-    width: 1.75rem;
-    height: 1.75rem;
-    font-size: 0.8125rem;
-  }
-
-  .page-number {
-    font-size: 0.75rem;
-    min-width: 3rem;
+    @apply w-full;
   }
 }
 </style>
+

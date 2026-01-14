@@ -1,93 +1,118 @@
 <template>
-  <div class="programming-interface">
+  
+  <div class="space-y-6">
     <!-- Alerta de programación no seleccionada -->
-    <div v-if="!codigoProgramacion" class="alert-no-programacion">
-      <i class="fa fa-exclamation-triangle"></i>
-      <div class="alert-content">
-        <h4>No hay programación seleccionada</h4>
-        <p>Debes seleccionar o crear una programación antes de poder programar spots.</p>
+    <div
+      v-if="!codigoProgramacion"
+      class="alert alert-warning"
+    >
+      <i class="fa fa-exclamation-triangle text-xl" />
+      <div class="flex-1">
+        <h4 class="font-semibold mb-1">No hay programación seleccionada</h4>
+        <p class="text-sm opacity-90">Debes seleccionar o crear una programación antes de poder programar spots.</p>
       </div>
     </div>
 
     <!-- Panel de programación -->
-    <div class="programming-panel">
-      <div class="panel-header">
-        <h3 class="panel-title">Programar Spots</h3>
+    <div class="card">
+      <div class="flex-between mb-6">
+        <h3 class="text-xl font-semibold text-text-primary">Programar Spots</h3>
       </div>
 
       <!-- Selector de spots -->
-      <div class="form-section">
-        <div class="spots-selector">
-          <div class="selected-spots">
-            <span v-for="spot in selectedSpots" :key="spot.spo_codigo" class="selected-spot-tag">
+      <div class="form-group mb-4">
+        <div class="space-y-3">
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="spot in selectedSpots"
+              :key="spot.spo_codigo"
+              class="badge badge-primary inline-flex items-center gap-2"
+            >
               {{ spot.spo_nombre }}
-              <button @click="removeSpot(spot)" class="remove-spot-btn" aria-label="Remover spot">
+              <button
+                class="hover:bg-white/20 rounded p-0.5 transition-colors"
+                aria-label="Remover spot"
+                @click="removeSpot(spot)"
+              >
                 ×
               </button>
             </span>
           </div>
 
           <!-- Indicador de spots seleccionados -->
-          <div class="spots-counter" :class="{ 'exceeds-limit': exceedsSpotLimit }">
-            <div class="counter-info">
-              <div class="counter-label">
-                <i class="fa fa-list"></i>
-                Spots Seleccionados:
+          <div
+            class="p-3 rounded-lg border transition-colors"
+            :class="exceedsSpotLimit ? 'bg-danger-500/10 border-danger-500/30' : 'bg-dark-secondary border-dark-border'"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 text-sm text-text-secondary">
+                <i class="fa fa-list" />
+                <span>Spots Seleccionados:</span>
               </div>
-              <div class="counter-values">
-                <span class="current-spots">{{ selectedSpots.length }}</span>
-                <span class="counter-separator">/</span>
-                <span class="spots-limit">{{ maxSpotsAllowed }}</span>
+              <div class="flex items-center gap-1 font-semibold">
+                <span :class="exceedsSpotLimit ? 'text-danger-400' : 'text-text-primary'">{{ selectedSpots.length }}</span>
+                <span class="text-text-tertiary">/</span>
+                <span class="text-text-secondary">{{ maxSpotsAllowed }}</span>
               </div>
             </div>
-            <div class="remaining-spots" v-if="!exceedsSpotLimit">
-              <small class="remaining-text">
-                <i class="fa fa-check-circle"></i>
+            <div v-if="!exceedsSpotLimit" class="mt-2">
+              <small class="text-success-400 flex items-center gap-1">
+                <i class="fa fa-check-circle" />
                 Puedes agregar {{ remainingSpots }} spot{{ remainingSpots !== 1 ? 's' : '' }} más
               </small>
             </div>
-            <div class="limit-warning" v-if="exceedsSpotLimit">
-              <small class="warning-text">
-                <i class="fa fa-exclamation-triangle"></i>
+            <div v-if="exceedsSpotLimit" class="mt-2">
+              <small class="text-danger-400 flex items-center gap-1">
+                <i class="fa fa-exclamation-triangle" />
                 Límite de spots alcanzado
               </small>
             </div>
           </div>
 
-          <div class="spots-dropdown-container">
+          <div class="relative">
             <input
               ref="spotInput"
               v-model="spotSearch"
+              class="input"
+              placeholder="Buscar y seleccionar spots..."
+              aria-label="Buscar spots"
               @input="filterSpots"
               @focus="showSpotsDropdown = true"
               @blur="hideSpotsDropdown"
-              class="form-input"
-              placeholder="Buscar y seleccionar spots..."
-              aria-label="Buscar spots"
-            />
+            >
 
             <div
               v-if="showSpotsDropdown && (filteredSpots.length > 0 || spotSearch)"
-              class="spots-dropdown"
+              class="absolute top-full left-0 right-0 mt-1 bg-dark-elevated border border-dark-border rounded-lg shadow-xl z-dropdown max-h-64 overflow-y-auto"
               role="listbox"
             >
-              <div v-for="group in groupedSpotsArray" :key="group.category" class="category-group">
-                <div class="category-header">
-                  <span class="category-label" :class="`category-${group.variant}`">
+              <div
+                v-for="group in groupedSpotsArray"
+                :key="group.category"
+                class="p-2"
+              >
+                <div class="flex items-center justify-between px-2 py-1 mb-1">
+                  <span
+                    class="text-xs font-semibold uppercase tracking-wide"
+                    :class="`text-${group.variant}-400`"
+                  >
                     {{ group.label }}
                   </span>
-                  <span class="category-count">({{ group.spots.length }})</span>
+                  <span class="text-xs text-text-tertiary">({{ group.spots.length }})</span>
                 </div>
                 <div
                   v-for="spot in group.spots"
                   :key="spot.spo_codigo"
-                  @mousedown.prevent="addSpot(spot)"
-                  class="dropdown-item"
+                  class="flex items-center justify-between px-3 py-2 rounded-md cursor-pointer hover:bg-dark-hover transition-colors"
                   role="option"
                   :aria-selected="isSpotSelected(spot)"
+                  @mousedown.prevent="addSpot(spot)"
                 >
-                  <span class="spot-name">{{ spot.spo_nombre }}</span>
-                  <span class="spot-category-badge" :class="`category-${group.variant}`">
+                  <span class="text-sm text-text-primary">{{ spot.spo_nombre }}</span>
+                  <span
+                    class="badge text-xs"
+                    :class="`badge-${group.variant}`"
+                  >
                     {{ group.label }}
                   </span>
                 </div>
@@ -95,22 +120,20 @@
             </div>
           </div>
         </div>
-        <div class="form-section">
-          <label class="form-label">
+        <div class="form-group mt-4">
+          <label class="label">
             Reproductor
             <span
               v-if="isReproductor"
-              class="badge badge-info"
-              style="margin-left: 8px; font-size: 0.75rem"
-              >Bloqueado</span
-            >
+              class="badge badge-info ml-2 text-xs"
+            >Bloqueado</span>
           </label>
           <select
             v-model="selectedReproductor"
-            class="form-select"
+            class="select"
             aria-label="Seleccionar reproductor"
             :disabled="isReproductor"
-            :class="{ 'disabled-field': isReproductor }"
+            :class="{ 'opacity-50 cursor-not-allowed': isReproductor }"
           >
             <option value="">Todos</option>
             <option
@@ -121,215 +144,202 @@
               {{ reproductor.clisuc_nombre }}
             </option>
           </select>
-          <small v-if="isReproductor" class="field-help-text">
-            <i class="fa fa-info-circle" />
+          <small
+            v-if="isReproductor"
+            class="text-xs text-text-secondary mt-1 block"
+          >
+            <i class="fa fa-info-circle mr-1" />
             Como reproductor solo se puede programar para si mismo
           </small>
         </div>
         <!-- Configuración de días de la semana -->
-        <div class="form-section">
-          <label class="form-label">
+        <div class="form-group mt-4">
+          <label class="label">
             Días de la Semana
             <span
               v-if="diasHabiles.length > 0"
-              class="badge badge-info"
-              style="margin-left: 8px; font-size: 0.75rem"
+              class="badge badge-info ml-2 text-xs"
             >
               Días hábiles de tu comercio
             </span>
           </label>
-          <div class="days-selector">
+          <div class="flex flex-wrap gap-2">
             <div
               v-for="day in weekDays"
               :key="day.value"
-              @click="toggleDaySelection(day.value)"
-              class="day-option"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-all"
               :class="{
-                selected: isDaySelected(day.value),
-                'invalid-day': !day.isHabil && diasHabiles.length > 0,
-                disabled: !day.isHabil && diasHabiles.length > 0
+                'bg-primary-500/20 border-primary-500 text-primary-400': isDaySelected(day.value),
+                'bg-dark-secondary border-dark-border text-text-secondary hover:border-dark-hover': !isDaySelected(day.value) && (day.isHabil || diasHabiles.length === 0),
+                'bg-dark-secondary/50 border-dark-border/50 text-text-tertiary cursor-not-allowed opacity-50': !day.isHabil && diasHabiles.length > 0
               }"
               :title="
                 !day.isHabil && diasHabiles.length > 0
                   ? 'Día no hábil según configuración del cliente'
                   : ''
               "
+              @click="toggleDaySelection(day.value)"
             >
               <input
                 type="checkbox"
                 :checked="isDaySelected(day.value)"
                 :disabled="!day.isHabil && diasHabiles.length > 0"
-                class="day-checkbox"
-              />
-              <span class="day-label">{{ day.text }}</span>
+                class="checkbox"
+              >
+              <span class="text-sm font-medium">{{ day.text }}</span>
               <i
                 v-if="!day.isHabil && diasHabiles.length > 0"
-                class="fa fa-ban"
-                style="margin-left: 4px; font-size: 0.75rem; opacity: 0.7"
-              ></i>
+                class="fa fa-ban text-xs opacity-70"
+              />
             </div>
           </div>
-          <div class="selected-days-summary" v-if="selectedDays.length > 0">
-            <small class="text-muted"> Días seleccionados: {{ getSelectedDaysText() }} </small>
+          <div v-if="selectedDays.length > 0" class="mt-2">
+            <small class="text-text-secondary">Días seleccionados: {{ getSelectedDaysText() }}</small>
           </div>
           <!-- Advertencia de días inválidos -->
-          <div v-if="hasInvalidDays" class="config-validation-warning">
-            <i class="fa fa-exclamation-triangle"></i>
+          <div v-if="hasInvalidDays" class="alert alert-warning mt-2">
+            <i class="fa fa-exclamation-triangle" />
             <span>
               Has seleccionado días no hábiles:
-              <strong>{{ invalidSelectedDays.map(d => getWeekDayName(d)).join(', ') }}</strong
-              >. Por favor, selecciona solo días hábiles configurados.
+              <strong>{{ invalidSelectedDays.map(d => getWeekDayName(d)).join(', ') }}</strong>. Por favor, selecciona solo días hábiles configurados.
             </span>
           </div>
         </div>
 
         <!-- Selector de Múltiples Minutos en Hora Específica -->
-        <div class="form-section multi-minute-section">
-          <div class="section-header">
-            <label class="form-label">
-              <i class="fa fa-clock-o"></i>
+        <div class="form-group mt-4 p-4 bg-dark-secondary rounded-lg border border-dark-border">
+          <div class="flex items-center justify-between mb-3">
+            <label class="label mb-0">
+              <i class="fa fa-clock-o mr-2" />
               Programar Múltiples Minutos
             </label>
             <button
+              class="btn btn-ghost btn-sm"
+              :class="{ 'bg-dark-elevated': showMultiMinuteSelector }"
               @click="showMultiMinuteSelector = !showMultiMinuteSelector"
-              class="btn-toggle"
-              :class="{ active: showMultiMinuteSelector }"
             >
               <i
                 class="fa"
                 :class="showMultiMinuteSelector ? 'fa-chevron-up' : 'fa-chevron-down'"
-              ></i>
+              />
               {{ showMultiMinuteSelector ? 'Ocultar' : 'Mostrar' }}
             </button>
           </div>
 
-          <p class="section-description" v-if="!showMultiMinuteSelector">
+          <p v-if="!showMultiMinuteSelector" class="text-sm text-text-secondary">
             Selecciona una hora específica y múltiples minutos para programar spots.
           </p>
 
-          <div v-if="showMultiMinuteSelector" class="multi-minute-content">
+          <div v-if="showMultiMinuteSelector" class="space-y-4">
             <!-- Selector de Hora (usa los días seleccionados globalmente) -->
-            <div class="hour-day-selector">
-              <div class="input-group full-width">
-                <label for="multiMinuteHour" class="input-label">Hora:</label>
-                <select
-                  id="multiMinuteHour"
-                  v-model="selectedHourForMultiMinute"
-                  class="form-select"
-                  @change="onDayHourChange"
-                >
-                  <option value="">Selecciona una hora</option>
-                  <option
-                    v-for="hour in 24"
+            <div class="form-group">
+              <label for="multiMinuteHour" class="label">Hora:</label>
+              <select
+                id="multiMinuteHour"
+                v-model="selectedHourForMultiMinute"
+                class="select"
+                @change="onDayHourChange"
+              >
+                <option value="">Selecciona una hora</option>
+                <option
+                  v-for="hour in 24"
                     :key="hour - 1"
                     :value="`${(hour - 1).toString().padStart(2, '0')}:00`"
-                  >
-                    {{ (hour - 1).toString().padStart(2, '0') }}:00
-                  </option>
-                </select>
-              </div>
+                >
+                  {{ hour.toString().padStart(2, '0') }}
+                </option>
+              </select>
             </div>
 
             <!-- Información de días seleccionados -->
-            <div v-if="selectedDays.length > 0" class="selected-days-info">
-              <i class="fa fa-calendar"></i>
-              <span
-                >Se programará en: <strong>{{ getSelectedDaysText() }}</strong></span
-              >
+            <div v-if="selectedDays.length > 0" class="flex items-center gap-2 text-sm text-info-400 bg-info-500/10 p-2 rounded-lg">
+              <i class="fa fa-calendar" />
+              <span>Se programará en: <strong>{{ getSelectedDaysText() }}</strong></span>
             </div>
 
             <!-- Grid de Minutos -->
             <div
               v-if="selectedHourForMultiMinute && selectedDays.length > 0"
-              class="minutes-selector"
+              class="space-y-4"
             >
-              <div class="minutes-header">
-                <span class="minutes-title">Minutos disponibles:</span>
-                <div class="minutes-stats">
-                  <span class="stat-item">
-                    <i class="fa fa-check-circle"></i>
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-medium text-text-primary">Minutos disponibles:</span>
+                <div class="flex items-center gap-4 text-sm">
+                  <span class="flex items-center gap-1 text-success-400">
+                    <i class="fa fa-check-circle" />
                     Disponibles: <strong>{{ availableMinutesCount }}</strong>
                   </span>
-                  <span class="stat-item">
-                    <i class="fa fa-calendar-check-o"></i>
+                  <span class="flex items-center gap-1 text-primary-400">
+                    <i class="fa fa-calendar-check-o" />
                     Seleccionados: <strong>{{ selectedMinutesCount }}</strong>
                   </span>
                 </div>
               </div>
 
               <!-- Grid de minutos -->
-              <div class="minutes-grid">
+              <div class="grid grid-cols-6 sm:grid-cols-10 gap-2">
                 <div
                   v-for="minute in availableMinutesInHour"
                   :key="minute"
-                  class="minute-option"
+                  class="flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-sm cursor-pointer transition-all border"
                   :class="{
-                    programmed: isMinuteProgrammed(minute),
-                    selected: isMinuteSelected(minute),
-                    available: !isMinuteProgrammed(minute),
-                    partial: !isMinuteProgrammed(minute) 
+                    'bg-dark-hover border-dark-border text-text-tertiary cursor-not-allowed': isMinuteProgrammed(minute),
+                    'bg-primary-500/20 border-primary-500 text-primary-400': isMinuteSelected(minute),
+                    'bg-dark-secondary border-dark-border text-text-secondary hover:border-primary-500/50': !isMinuteProgrammed(minute) && !isMinuteSelected(minute)
                   }"
-                  
                   @click="toggleMinuteSelection(minute)"
                 >
-                  <span class="minute-value">:{{ minute.toString().padStart(2, '0') }}</span>
-                
-                  <i v-if="isMinuteProgrammed(minute)" class="fa fa-ban minute-icon" />
-                  <i v-else-if="isMinuteSelected(minute)" class="fa fa-check-circle minute-icon" />
+                  <span>:{{ minute.toString().padStart(2, '0') }}</span>
+                  <i v-if="isMinuteProgrammed(minute)" class="fa fa-ban text-xs" />
+                  <i v-else-if="isMinuteSelected(minute)" class="fa fa-check-circle text-xs" />
                 </div>
               </div>
 
               <!-- Controles de selección -->
-              <div class="minutes-controls">
+              <div class="flex flex-wrap gap-2">
                 <button
-                  class="btn btn-outline btn-sm"
+                  class="btn btn-secondary btn-sm"
                   :disabled="availableMinutesCount === 0"
                   @click="selectAllAvailableMinutes"
                 >
-                  <i class="fa fa-check-square-o"></i>
+                  <i class="fa fa-check-square-o" />
                   Seleccionar Todos Disponibles
                 </button>
                 <button
-                  @click="clearMinuteSelection"
-                  class="btn btn-outline btn-sm"
+                  class="btn btn-secondary btn-sm"
                   :disabled="selectedMinutesCount === 0"
+                  @click="clearMinuteSelection"
                 >
-                  <i class="fa fa-times"></i>
+                  <i class="fa fa-times" />
                   Limpiar Selección
                 </button>
               </div>
 
               <!-- Preview de programaciones -->
-              <div v-if="selectedMinutesCount > 0" class="minutes-preview">
-                <div class="preview-header">
-                  <i class="fa fa-eye"></i>
+              <div v-if="selectedMinutesCount > 0" class="p-4 bg-dark-tertiary rounded-lg border border-dark-border">
+                <div class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-2">
+                  <i class="fa fa-eye" />
                   <span>Vista previa</span>
                 </div>
-                <p class="preview-text">
-                  Se programarán <strong>{{ selectedSpots.length }}</strong> spot(s) en
-                  <strong>{{ selectedMinutesCount }}</strong> minuto(s) para
-                  <strong>{{ selectedDays.length }}</strong> día(s) seleccionado(s) (<strong>{{
-                    getSelectedDaysText()
-                  }}</strong
-                  >) a las <strong>{{ selectedHourForMultiMinute }}</strong
-                  >.
+                <p class="text-sm text-text-secondary mb-2">
+                  Se programarán <strong class="text-text-primary">{{ selectedSpots.length }}</strong> spot(s) en
+                  <strong class="text-text-primary">{{ selectedMinutesCount }}</strong> minuto(s) para
+                  <strong class="text-text-primary">{{ selectedDays.length }}</strong> día(s) seleccionado(s) (<strong class="text-text-primary">{{ getSelectedDaysText() }}</strong>) a las <strong class="text-text-primary">{{ selectedHourForMultiMinute }}</strong>.
                 </p>
-                <p class="preview-total">
-                  <i class="fa fa-calculator"></i>
+                <p class="text-sm text-text-secondary flex items-center gap-2 mb-3">
+                  <i class="fa fa-calculator" />
                   Total de programaciones:
-                  <strong>{{ selectedMinutesCount * selectedDays.length }}</strong>
+                  <strong class="text-primary-400">{{ selectedMinutesCount * selectedDays.length }}</strong>
                 </p>
-                <div class="preview-times">
+                <div class="flex flex-wrap gap-1">
                   <span
                     v-for="minute in selectedMinutes.slice(0, 6)"
                     :key="minute"
-                    class="time-badge"
+                    class="badge badge-primary"
                   >
-                    {{ selectedHourForMultiMinute.split(':')[0] }}:{{
-                      minute.toString().padStart(2, '0')
-                    }}
+                    {{ selectedHourForMultiMinute.split(':')[0] }}:{{ minute.toString().padStart(2, '0') }}
                   </span>
-                  <span v-if="selectedMinutesCount > 6" class="time-badge more">
+                  <span v-if="selectedMinutesCount > 6" class="badge badge-info">
                     +{{ selectedMinutesCount - 6 }} más
                   </span>
                 </div>
@@ -337,82 +347,77 @@
 
               <!-- Botón de programar -->
               <button
-                @click="programSelectedMinutes"
                 :disabled="!canProgramSelectedMinutes"
-                class="btn btn-primary btn-program-minutes"
+                class="btn btn-primary w-full"
+                @click="programSelectedMinutes"
               >
-                <i class="fa fa-calendar-plus-o"></i>
+                <i class="fa fa-calendar-plus-o" />
                 Programar {{ selectedMinutesCount }} Minuto(s)
               </button>
             </div>
 
             <!-- Mensaje cuando no hay día/hora seleccionados -->
-            <div v-else class="empty-state">
-              <i class="fa fa-hand-pointer-o"></i>
-              <p v-if="selectedDays.length === 0">
+            <div v-else class="text-center py-8 text-text-secondary">
+              <i class="fa fa-hand-pointer-o text-3xl mb-3 opacity-50" />
+              <p v-if="selectedDays.length === 0" class="text-sm">
                 Primero selecciona al menos un día en los filtros globales
               </p>
-              <p v-else>Selecciona una hora para ver los minutos disponibles</p>
+              <p v-else class="text-sm">Selecciona una hora para ver los minutos disponibles</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Resumen de configuración actual -->
-
       <!-- Botón Flotante para Programaciones Pendientes -->
       <button
         v-if="pendingProgramaciones.length > 0"
+        class="fixed bottom-6 right-6 z-fixed flex flex-col items-center gap-1 px-4 py-3 bg-primary-600 hover:bg-primary-500 text-white rounded-xl shadow-lg transition-all animate-pulse"
         @click="showPendingModal = true"
-        class="floating-pending-btn"
-        :class="{ pulse: pendingProgramaciones.length > 0 }"
       >
-        <div class="floating-btn-content">
-          <i class="fa fa-clock-o"></i>
-          <span class="floating-btn-count">{{ pendingProgramaciones.length }}</span>
+        <div class="flex items-center gap-2">
+          <i class="fa fa-clock-o" />
+          <span class="font-bold text-lg">{{ pendingProgramaciones.length }}</span>
         </div>
-        <span class="floating-btn-label">Pendientes</span>
+        <span class="text-xs opacity-90">Pendientes</span>
       </button>
     </div>
 
     <!-- Modal de Programaciones Pendientes -->
     <Modal v-model="showPendingModal" size="lg" :closable="true">
       <template #header>
-        <div class="modal-title-group">
-          <i class="fa fa-clock-o"></i>
-          <h3 class="modal-title">Programaciones Pendientes</h3>
-          <span class="pending-badge">{{ pendingProgramaciones.length }}</span>
+        <div class="flex items-center gap-3">
+          <i class="fa fa-clock-o text-primary-400" />
+          <h3 class="text-lg font-semibold text-text-primary">Programaciones Pendientes</h3>
+          <span class="badge badge-primary">{{ pendingProgramaciones.length }}</span>
         </div>
       </template>
 
       <template #default>
-        <div v-if="pendingProgramaciones.length > 0">
-          <div class="pending-alert">
-            <i class="fa fa-info-circle"></i>
-            <div class="alert-content">
-              <p>Las programaciones se guardarán en el servidor al confirmar.</p>
-            </div>
+        <div v-if="pendingProgramaciones.length > 0" class="space-y-4">
+          <div class="alert alert-info">
+            <i class="fa fa-info-circle" />
+            <p>Las programaciones se guardarán en el servidor al confirmar.</p>
           </div>
 
           <!-- Resumen de programaciones pendientes -->
-          <div class="pending-stats">
+          <div class="grid grid-cols-3 gap-3">
             <div class="stat-card">
-              <i class="fa fa-calendar-check-o"></i>
-              <div class="stat-info">
+              <i class="fa fa-calendar-check-o text-primary-400 text-xl" />
+              <div class="flex flex-col">
                 <span class="stat-value">{{ getPendingDaysCount() }}</span>
                 <span class="stat-label">Días</span>
               </div>
             </div>
             <div class="stat-card">
-              <i class="fa fa-music"></i>
-              <div class="stat-info">
+              <i class="fa fa-music text-success-400 text-xl" />
+              <div class="flex flex-col">
                 <span class="stat-value">{{ getPendingSpotsCount() }}</span>
                 <span class="stat-label">Spots únicos</span>
               </div>
             </div>
             <div class="stat-card">
-              <i class="fa fa-list"></i>
-              <div class="stat-info">
+              <i class="fa fa-list text-info-400 text-xl" />
+              <div class="flex flex-col">
                 <span class="stat-value">{{ pendingProgramaciones.length }}</span>
                 <span class="stat-label">Programaciones</span>
               </div>
@@ -420,42 +425,46 @@
           </div>
 
           <!-- Lista de programaciones pendientes -->
-          <div class="pending-list-container">
-            <h4 class="list-title">
-              <i class="fa fa-list-ul"></i>
+          <div>
+            <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
+              <i class="fa fa-list-ul" />
               Todas las programaciones ({{ pendingProgramaciones.length }})
             </h4>
-            <div class="pending-list-scroll" @scroll="handlePendingScroll">
+            <div class="max-h-64 overflow-y-auto space-y-2" @scroll="handlePendingScroll">
               <div
                 v-for="(prog, index) in displayedPendingProgramaciones"
                 :key="`pending-${index}`"
-                class="pending-item-card"
+                class="flex items-center gap-3 p-3 bg-dark-secondary rounded-lg border border-dark-border"
               >
-                <div class="item-index">{{ index + 1 }}</div>
-                <div class="item-details">
-                  <span class="item-day">{{ getWeekDayName(prog.clprsp_numeroDia) }}</span>
-                  <span class="item-time">
-                    <i class="fa fa-clock-o"></i>
+                <div class="w-8 h-8 flex items-center justify-center bg-dark-tertiary rounded-full text-xs font-bold text-text-secondary">
+                  {{ index + 1 }}
+                </div>
+                <div class="flex items-center gap-3 flex-1">
+                  <span class="badge badge-info">{{ getWeekDayName(prog.clprsp_numeroDia) }}</span>
+                  <span class="flex items-center gap-1 text-sm text-text-secondary">
+                    <i class="fa fa-clock-o" />
                     {{ prog.clprsp_horaDesde.slice(0, 5) }}
                   </span>
-                  <span class="item-slot" v-if="prog.clprsp_orden">
-                    <i class="fa fa-layer-group"></i>
+                  <span v-if="prog.clprsp_orden" class="flex items-center gap-1 text-xs text-text-tertiary">
+                    <i class="fa fa-layer-group" />
                     Slot {{ prog.clprsp_orden }}
                   </span>
                 </div>
-                <div class="item-spot">{{ prog._spot?.spo_nombre || 'Spot' }}</div>
+                <div class="text-sm font-medium text-text-primary truncate max-w-[150px]">
+                  {{ prog._spot?.spo_nombre || 'Spot' }}
+                </div>
               </div>
 
               <!-- Indicador de carga de más items pendientes -->
-              <div v-if="hasMorePendingItems" class="pending-scroll-loader">
-                <div class="loader-spinner"></div>
-                <span>Cargando más programaciones...</span>
+              <div v-if="hasMorePendingItems" class="flex items-center justify-center gap-2 py-3 text-text-secondary">
+                <div class="spinner" />
+                <span class="text-sm">Cargando más programaciones...</span>
               </div>
 
               <!-- Mensaje cuando se han cargado todos los items pendientes -->
-              <div v-else-if="pendingProgramaciones.length > 0" class="pending-scroll-end-message">
-                <i class="fa fa-check-circle"></i>
-                <span>Has visto todas las {{ pendingProgramaciones.length }} programaciones pendientes</span>
+              <div v-else-if="pendingProgramaciones.length > 0" class="flex items-center justify-center gap-2 py-3 text-success-400">
+                <i class="fa fa-check-circle" />
+                <span class="text-sm">Has visto todas las {{ pendingProgramaciones.length }} programaciones pendientes</span>
               </div>
             </div>
           </div>
@@ -464,24 +473,18 @@
 
       <template #footer>
         <button
-          @click="
-            clearPendingProgramaciones();
-            showPendingModal = false
-          "
-          class="btn btn-outline"
+          class="btn btn-secondary"
+          @click="clearPendingProgramaciones(); showPendingModal = false"
         >
-          <i class="fa fa-trash"></i>
+          <i class="fa fa-trash" />
           Limpiar Todo
         </button>
         <button
-          @click="
-            openConfirmModal();
-            showPendingModal = false
-          "
           class="btn btn-primary"
           :disabled="isSaving || !codigoProgramacion"
+          @click="openConfirmModal(); showPendingModal = false"
         >
-          <i class="fa fa-check"></i>
+          <i class="fa fa-check" />
           Confirmar y Guardar ({{ pendingProgramaciones.length }})
         </button>
       </template>
@@ -490,59 +493,37 @@
     <!-- Modal de filtros y configuración -->
     <Modal v-model="showFiltersModal" size="md" :closable="true">
       <template #header>
-        <div class="modal-title-group">
-          <i class="fa fa-cog"></i>
-          <h3>Configuración de Programación</h3>
+        <div class="flex items-center gap-3">
+          <i class="fa fa-cog text-primary-400" />
+          <h3 class="text-lg font-semibold text-text-primary">Configuración de Programación</h3>
         </div>
       </template>
 
       <template #default>
-        <div>
+        <div class="space-y-4">
           <!-- Configuración de reproductor -->
-
-          <!-- Acciones del calendario -->
-          <!-- <div class="form-section">
-            <div class="calendar-actions">
-              <button
-                @click="showCalendar = true"
-                class="btn btn-outline"
-                aria-label="Ver calendario semanal"
-              >
-                <i class="fa fa-calendar"></i>
-                Ver Calendario
-              </button>
-              <button
-                @click="showCalendar = false"
-                class="btn btn-outline"
-                aria-label="Ver programaciones activas"
-              >
-                <i class="fa fa-list"></i>
-                Ver Lista
-              </button>
-            </div>
-          </div> -->
         </div>
       </template>
 
       <template #footer>
         <button
-          @click="clearAllFilters"
-          class="btn btn-outline"
+          class="btn btn-secondary"
           aria-label="Limpiar todos los filtros"
+          @click="clearAllFilters"
         >
-          <i class="fa fa-trash"></i>
+          <i class="fa fa-trash" />
           Limpiar Filtros
         </button>
-        <div class="modal-actions-right">
-          <button @click="showFiltersModal = false" class="btn btn-outline" aria-label="Cancelar">
+        <div class="flex items-center gap-2">
+          <button class="btn btn-ghost" aria-label="Cancelar" @click="showFiltersModal = false">
             Cancelar
           </button>
           <button
-            @click="showFiltersModal = false"
             class="btn btn-primary"
             aria-label="Aplicar configuración"
+            @click="showFiltersModal = false"
           >
-            <i class="fa fa-check"></i>
+            <i class="fa fa-check" />
             Aplicar
           </button>
         </div>
@@ -550,101 +531,95 @@
     </Modal>
 
     <!-- Programaciones existentes -->
-    <div class="programming-results">
-      <div class="results-header">
-        <h3 class="results-title">Programaciones Publicitarias</h3>
-        <div v-if="hasActiveFilters" class="active-filters">
-          <div class="filters-summary">
-            <i class="fa fa-filter"></i>
-            <span class="filters-count"
-              >{{ activeFiltersCount }} filtro{{ activeFiltersCount > 1 ? 's' : '' }} activo{{
-                activeFiltersCount > 1 ? 's' : ''
-              }}</span
-            >
+    <div class="card mt-6">
+      <div class="flex-between mb-4">
+        <h3 class="text-xl font-semibold text-text-primary">Programaciones Publicitarias</h3>
+        <div v-if="hasActiveFilters" class="flex items-center gap-3">
+          <div class="flex items-center gap-2 text-sm text-text-secondary">
+            <i class="fa fa-filter" />
+            <span>{{ activeFiltersCount }} filtro{{ activeFiltersCount > 1 ? 's' : '' }} activo{{ activeFiltersCount > 1 ? 's' : '' }}</span>
           </div>
-          <button @click="clearAllFilters" class="btn btn-outline btn-sm clear-filters-btn">
-            <i class="fa fa-times"></i>
+          <button class="btn btn-ghost btn-sm" @click="clearAllFilters">
+            <i class="fa fa-times" />
             Limpiar filtros
           </button>
         </div>
       </div>
 
       <!-- Sección de filtros -->
-      <div class="filters-section">
-        <div class="filters-container">
-          <div class="filter-group">
-            <label class="filter-label">
-              <i class="fa fa-clock-o"></i>
-              Filtrar por Rango Horario
-            </label>
-            <div class="time-range-filter">
-              <div class="time-input-wrapper">
-                <label class="time-label">Desde:</label>
-                <input
-                  v-model="filterStartTime"
-                  type="time"
-                  class="time-input"
-                  placeholder="HH:MM"
-                  aria-label="Hora de inicio del filtro"
-                />
-              </div>
-              <span class="time-separator">—</span>
-              <div class="time-input-wrapper">
-                <label class="time-label">Hasta:</label>
-                <input
-                  v-model="filterEndTime"
-                  type="time"
-                  class="time-input"
-                  placeholder="HH:MM"
-                  aria-label="Hora de fin del filtro"
-                />
-              </div>
-              <button
-                v-if="filterStartTime || filterEndTime"
-                @click="clearTimeFilter"
-                class="btn-clear-time"
-                aria-label="Limpiar filtro de horario"
+      <div class="p-4 bg-dark-secondary rounded-lg border border-dark-border mb-4">
+        <div class="form-group">
+          <label class="label flex items-center gap-2">
+            <i class="fa fa-clock-o" />
+            Filtrar por Rango Horario
+          </label>
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex items-center gap-2">
+              <label class="text-xs text-text-tertiary">Desde:</label>
+              <input
+                v-model="filterStartTime"
+                type="time"
+                class="input w-auto"
+                placeholder="HH:MM"
+                aria-label="Hora de inicio del filtro"
               >
-                <i class="fa fa-times"></i>
-              </button>
             </div>
-            <small v-if="filterStartTime && filterEndTime" class="filter-hint">
-              <i class="fa fa-info-circle"></i>
-              Mostrando programaciones entre {{ filterStartTime }} y {{ filterEndTime }}
-            </small>
+            <span class="text-text-tertiary">—</span>
+            <div class="flex items-center gap-2">
+              <label class="text-xs text-text-tertiary">Hasta:</label>
+              <input
+                v-model="filterEndTime"
+                type="time"
+                class="input w-auto"
+                placeholder="HH:MM"
+                aria-label="Hora de fin del filtro"
+              >
+            </div>
+            <button
+              v-if="filterStartTime || filterEndTime"
+              class="btn btn-ghost btn-sm btn-icon"
+              aria-label="Limpiar filtro de horario"
+              @click="clearTimeFilter"
+            >
+              <i class="fa fa-times" />
+            </button>
           </div>
+          <small v-if="filterStartTime && filterEndTime" class="text-xs text-info-400 mt-2 flex items-center gap-1">
+            <i class="fa fa-info-circle" />
+            Mostrando programaciones entre {{ filterStartTime }} y {{ filterEndTime }}
+          </small>
         </div>
       </div>
 
       <!-- Mensaje cuando no hay programaciones -->
-      <div v-if="filteredProgramaciones.length === 0" class="no-results">
-        <div class="no-results-icon">
-          <i class="fa fa-calendar-times-o" style="font-size: 3rem; color: #6b7280"></i>
+      <div v-if="filteredProgramaciones.length === 0" class="text-center py-12">
+        <div class="mb-4">
+          <i class="fa fa-calendar-times-o text-5xl text-text-tertiary" />
         </div>
-        <div class="no-results-text">
-          No hay programaciones
-          {{ hasActiveFilters ? 'que coincidan con los filtros' : 'disponibles' }}
+        <div class="text-lg text-text-secondary mb-2">
+          No hay programaciones {{ hasActiveFilters ? 'que coincidan con los filtros' : 'disponibles' }}
         </div>
-        <div class="no-results-hint">
+        <div class="text-sm text-text-tertiary">
           <span v-if="hasActiveFilters">
             Intenta ajustar los filtros o
-            <button @click="clearAllFilters" class="btn-link">limpiar todos los filtros</button>
+            <button class="text-primary-400 hover:text-primary-300 underline" @click="clearAllFilters">limpiar todos los filtros</button>
           </span>
-          <span v-else> Comienza creando una programación usando el panel superior </span>
+          <span v-else>Comienza creando una programación usando el panel superior</span>
         </div>
       </div>
 
-      <div v-else class="table-container" ref="tableContainer" @scroll="handleScroll">
-        <table class="tabla-categorias" role="table" aria-label="Programaciones activas">
+      <div v-else ref="tableContainer" class="table-container" @scroll="handleScroll">
+        <table class="table" role="table" aria-label="Programaciones activas">
           <thead>
             <tr>
-              <th scope="col">
+              <th scope="col" class="w-10">
                 <input
                   type="checkbox"
                   :checked="isAllSelected"
-                  @change="toggleSelectAll"
+                  class="checkbox"
                   aria-label="Seleccionar todas las programaciones"
-                />
+                  @change="toggleSelectAll"
+                >
               </th>
               <th scope="col">Día / Horario</th>
               <th scope="col">Slot</th>
@@ -657,40 +632,38 @@
             <tr
               v-for="programacion in displayedProgramaciones"
               :key="programacion.clprsp_codigo"
-              :class="{ 'is-selected': isSelected(programacion) }"
+              class="cursor-pointer"
+              :class="{ 'bg-primary-500/10': isSelected(programacion) }"
               @click="toggleSelection(programacion)"
             >
               <td>
                 <input
                   type="checkbox"
                   :checked="isSelected(programacion)"
-                  @change="toggleSelection(programacion)"
+                  class="checkbox"
                   aria-label="Seleccionar programación"
-                />
+                  @change="toggleSelection(programacion)"
+                >
               </td>
               <td>
-                <div class="programacion-datetime">
-                  <span class="badge badge-dark">
+                <div class="flex items-center gap-2">
+                  <span class="badge badge-info">
                     {{ getDayName(programacion.clprsp_numeroDia) }}
                   </span>
-                  <span class="programacion-time">
-                    <i class="fa fa-clock-o"></i>
-                    {{
-                      programacion.clprsp_horaDesde ? programacion.clprsp_horaDesde.slice(0, 5) : ''
-                    }}
+                  <span class="flex items-center gap-1 text-sm text-text-secondary">
+                    <i class="fa fa-clock-o" />
+                    {{ programacion.clprsp_horaDesde ? programacion.clprsp_horaDesde.slice(0, 5) : '' }}
                   </span>
                 </div>
               </td>
               <td>
-                <span class="badge badge-slot" :class="getSlotClass(programacion.clprsp_orden)">
-                  <i class="fa fa-layer-group"></i>
+                <span class="badge" :class="getSlotClass(programacion.clprsp_orden)">
+                  <i class="fa fa-layer-group" />
                   Slot {{ programacion.clprsp_orden || 0 }}
                 </span>
               </td>
               <td>
-                <div class="spot-info">
-                  <span class="spot-name">{{ programacion.spo_nombre }}</span>
-                </div>
+                <span class="text-sm font-medium text-text-primary">{{ programacion.spo_nombre }}</span>
               </td>
               <td>
                 <span :class="`badge badge-${getCategoryVariant(programacion.spo_tipo)}`">
@@ -698,7 +671,7 @@
                 </span>
               </td>
               <td>
-                <span class="badge badge-outline">
+                <span class="text-sm text-text-secondary">
                   {{ getTargetName(programacion.clprsp_usuario) }}
                 </span>
               </td>
@@ -707,108 +680,117 @@
         </table>
 
         <!-- Indicador de carga de más items -->
-        <div v-if="hasMoreItems" class="scroll-loader">
-          <div class="loader-spinner"></div>
-          <span>Cargando más programaciones...</span>
+        <div v-if="hasMoreItems" class="flex items-center justify-center gap-2 py-4 text-text-secondary">
+          <div class="spinner" />
+          <span class="text-sm">Cargando más programaciones...</span>
         </div>
 
         <!-- Mensaje cuando se han cargado todos los items -->
-        <div v-else-if="filteredProgramaciones.length > 0" class="scroll-end-message">
-          <i class="fa fa-check-circle"></i>
-          <span>Has visto todas las {{ filteredProgramaciones.length }} programaciones</span>
+        <div v-else-if="filteredProgramaciones.length > 0" class="flex items-center justify-center gap-2 py-4 text-success-400">
+          <i class="fa fa-check-circle" />
+          <span class="text-sm">Has visto todas las {{ filteredProgramaciones.length }} programaciones</span>
         </div>
       </div>
 
-      <div v-if="selectedProgramaciones.length > 0" class="bulk-actions">
+      <div v-if="selectedProgramaciones.length > 0" class="mt-4 p-3 bg-dark-secondary rounded-lg flex items-center justify-between">
+        <span class="text-sm text-text-secondary">{{ selectedProgramaciones.length }} programación(es) seleccionada(s)</span>
         <button
-          @click="deleteSelectedProgramaciones"
           class="btn btn-danger btn-sm"
           aria-label="Eliminar programaciones seleccionadas"
+          @click="deleteSelectedProgramaciones"
         >
-          <i class="icon delete"></i>
-          Eliminar Programación
+          <i class="fa fa-trash" />
+          Eliminar Seleccionadas
         </button>
       </div>
     </div>
 
     <!-- Mensaje cuando no hay resultados -->
-    <div v-if="spotSearch && filteredSpots.length === 0" class="no-results">
-      <div class="no-results-icon">🔍</div>
-      <div class="no-results-text">No se encontraron spots para "{{ spotSearch }}"</div>
-      <div class="no-results-hint">Intenta con otros términos de búsqueda</div>
+    <div v-if="spotSearch && filteredSpots.length === 0" class="card mt-4 text-center py-8">
+      <div class="text-4xl mb-3">🔍</div>
+      <div class="text-lg text-text-secondary mb-1">No se encontraron spots para "{{ spotSearch }}"</div>
+      <div class="text-sm text-text-tertiary">Intenta con otros términos de búsqueda</div>
     </div>
 
     <!-- Modal de Confirmación de Guardado -->
     <Modal v-model="showConfirmModal" size="md" :closable="true" @close="closeConfirmModal">
       <template #header>
-        <div class="modal-title-group">
-          <i class="fa fa-question-circle"></i>
-          <h3>Confirmar Guardado de Programaciones</h3>
+        <div class="flex items-center gap-3">
+          <i class="fa fa-question-circle text-primary-400" />
+          <h3 class="text-lg font-semibold text-text-primary">Confirmar Guardado de Programaciones</h3>
         </div>
       </template>
 
       <template #default>
-        <div class="confirm-info">
-          <i class="fa fa-info-circle"></i>
-          <p>
-            Estás a punto de guardar <strong>{{ pendingProgramaciones.length }}</strong>
-            programación(es) en el servidor.
-          </p>
-        </div>
-
-
-        <div class="confirm-summary">
-          <div class="summary-row">
-            <span class="summary-label">Total de programaciones:</span>
-            <span class="summary-value">{{ pendingProgramaciones.length }}</span>
+        <div class="space-y-4">
+          <div class="alert alert-info">
+            <i class="fa fa-info-circle" />
+            <p>
+              Estás a punto de guardar <strong>{{ pendingProgramaciones.length }}</strong>
+              programación(es) en el servidor.
+            </p>
           </div>
-          <div class="summary-row">
-            <span class="summary-label">Días involucrados:</span>
-            <span class="summary-value">{{ getPendingDaysCount() }}</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Spots únicos:</span>
-            <span class="summary-value">{{ getPendingSpotsCount() }}</span>
+
+          <div class="p-4 bg-dark-secondary rounded-lg space-y-2">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-text-secondary">Total de programaciones:</span>
+              <span class="font-semibold text-text-primary">{{ pendingProgramaciones.length }}</span>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-text-secondary">Días involucrados:</span>
+              <span class="font-semibold text-text-primary">{{ getPendingDaysCount() }}</span>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-text-secondary">Spots únicos:</span>
+              <span class="font-semibold text-text-primary">{{ getPendingSpotsCount() }}</span>
+            </div>
           </div>
         </div>
       </template>
 
       <template #footer>
-        <button @click="closeConfirmModal" class="btn btn-outline">
-          <i class="fa fa-times"></i>
+        <button class="btn btn-ghost" @click="closeConfirmModal">
+          <i class="fa fa-times" />
           Cancelar
         </button>
-        <button @click="confirmAndSaveProgramaciones" class="btn btn-primary">
-          <i class="fa fa-check"></i>
+        <button class="btn btn-primary" @click="confirmAndSaveProgramaciones">
+          <i class="fa fa-check" />
           Confirmar y Guardar
         </button>
       </template>
     </Modal>
 
     <!-- Indicador de Progreso de Guardado -->
-    <div v-if="isSaving" class="saving-overlay">
-      <div class="saving-container">
-        <div class="saving-header">
-          <i class="fa fa-spinner fa-spin"></i>
-          <h3>Guardando Programaciones...</h3>
-        </div>
+    <teleport to="body">
+      <transition name="fade">
+        <div v-if="isSaving" class="fixed inset-0 z-modal bg-black/70 flex items-center justify-center" style="pointer-events: auto;">
+          <div class="bg-dark-tertiary rounded-2xl border border-dark-border shadow-2xl p-6 w-full max-w-md mx-4">
+            <div class="flex items-center gap-3 mb-4">
+              <i class="fa fa-spinner fa-spin text-primary-400 text-xl" />
+              <h3 class="text-lg font-semibold text-text-primary">Guardando Programaciones...</h3>
+            </div>
 
-        <div class="saving-progress">
-          <div class="progress-bar">
-            <div class="progress-fill" :style="{ width: savingProgress + '%' }"></div>
-          </div>
-          <div class="progress-text">
-            <span class="progress-percentage">{{ savingProgress }}%</span>
-            <span class="progress-count">{{ savedCount }} / {{ totalToSave }}</span>
-          </div>
-        </div>
+            <div class="space-y-3">
+              <div class="h-2 bg-dark-secondary rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-primary-500 rounded-full transition-all duration-300"
+                  :style="{ width: savingProgress + '%' }"
+                />
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="font-semibold text-primary-400">{{ savingProgress }}%</span>
+                <span class="text-text-secondary">{{ savedCount }} / {{ totalToSave }}</span>
+              </div>
+            </div>
 
-        <div class="saving-info">
-          <i class="fa fa-info-circle"></i>
-          <p>Guardando programaciones... Por favor espera.</p>
+            <div class="mt-4 flex items-center gap-2 text-sm text-text-secondary">
+              <i class="fa fa-info-circle" />
+              <p>Guardando programaciones... Por favor espera.</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </transition>
+    </teleport>
   </div>
 </template>
 
@@ -909,85 +891,13 @@ export default {
       configLoading: false
     }
   },
-  watch: {
-    spotSearch(newVal) {
-      if (newVal === '') {
-        this.showSpotsDropdown = false
-      }
-    },
-    selectedReproductor() {
-      // Limpiar selección de programaciones al cambiar filtros
-      this.selectedProgramaciones = []
-      this.resetDisplayedItems()
-
-      // Emitir evento de cambio de filtros
-      this.emitFilterChange()
-    },
-    selectedDays: {
-      handler() {
-        // Limpiar selección al cambiar días seleccionados
-        this.selectedProgramaciones = []
-        this.resetDisplayedItems()
-
-        // Emitir evento de cambio de filtros
-        this.emitFilterChange()
-      },
-      deep: true
-    },
-    startTime() {
-      // Limpiar selección al cambiar rango horario
-      this.selectedProgramaciones = []
-      this.resetDisplayedItems()
-
-      // Emitir evento de cambio de filtros
-      this.emitFilterChange()
-    },
-    endTime() {
-      // Limpiar selección al cambiar rango horario
-      this.selectedProgramaciones = []
-      this.resetDisplayedItems()
-
-      // Emitir evento de cambio de filtros
-      this.emitFilterChange()
-    },
-    filterStartTime() {
-      // Resetear scroll al cambiar filtro de inicio
-      this.resetDisplayedItems()
-    },
-    filterEndTime() {
-      // Resetear scroll al cambiar filtro de fin
-      this.resetDisplayedItems()
-    },
-    programaciones: {
-      handler(newVal, oldVal) {
-        console.log('🔄 ProgrammingInterface: Programaciones watcher triggered')
-        console.log('🔄 ProgrammingInterface: Valor anterior:', oldVal?.length || 0, 'programaciones')
-        console.log('🔄 ProgrammingInterface: Valor nuevo:', newVal?.length || 0, 'programaciones')
-        console.log('🔄 ProgrammingInterface: Datos recibidos:', newVal)
-
-        if (Array.isArray(newVal) && newVal.length > 0) {
-          console.log('✅ ProgrammingInterface: Programaciones recibidas correctamente')
-          console.log('📋 ProgrammingInterface: Primera programación:', newVal[0])
-        } else if (Array.isArray(newVal) && newVal.length === 0) {
-          console.warn('⚠️ ProgrammingInterface: Array de programaciones vacío')
-        } else {
-          console.error('❌ ProgrammingInterface: Programaciones no es un array válido:', newVal)
-        }
-
-        // Limpiar selección al actualizar programaciones
-        this.selectedProgramaciones = []
-      },
-      immediate: true,
-      deep: true
-    }
-  },
 
   computed: {
     // Días hábiles configurados por el cliente
     diasHabiles() {
       return this.clientConfig?.details?.dias || []
     },
-
+    
     // Horario hábil configurado por el cliente
     horarioHabil() {
       return this.clientConfig?.details?.horario || null
@@ -1387,6 +1297,115 @@ export default {
     // Verificar si es la hora actual
     // NOTA: Este computed fue removido y movido a methods
   },
+  watch: {
+    spotSearch(newVal) {
+      if (newVal === '') {
+        this.showSpotsDropdown = false
+      }
+    },
+    selectedReproductor() {
+      // Limpiar selección de programaciones al cambiar filtros
+      this.selectedProgramaciones = []
+      this.resetDisplayedItems()
+
+      // Emitir evento de cambio de filtros
+      this.emitFilterChange()
+    },
+    selectedDays: {
+      handler() {
+        // Limpiar selección al cambiar días seleccionados
+        this.selectedProgramaciones = []
+        this.resetDisplayedItems()
+
+        // Emitir evento de cambio de filtros
+        this.emitFilterChange()
+      },
+      deep: true
+    },
+    startTime() {
+      // Limpiar selección al cambiar rango horario
+      this.selectedProgramaciones = []
+      this.resetDisplayedItems()
+
+      // Emitir evento de cambio de filtros
+      this.emitFilterChange()
+    },
+    endTime() {
+      // Limpiar selección al cambiar rango horario
+      this.selectedProgramaciones = []
+      this.resetDisplayedItems()
+
+      // Emitir evento de cambio de filtros
+      this.emitFilterChange()
+    },
+    filterStartTime() {
+      // Resetear scroll al cambiar filtro de inicio
+      this.resetDisplayedItems()
+    },
+    filterEndTime() {
+      // Resetear scroll al cambiar filtro de fin
+      this.resetDisplayedItems()
+    },
+    programaciones: {
+      handler(newVal, oldVal) {
+        console.log('🔄 ProgrammingInterface: Programaciones watcher triggered')
+        console.log('🔄 ProgrammingInterface: Valor anterior:', oldVal?.length || 0, 'programaciones')
+        console.log('🔄 ProgrammingInterface: Valor nuevo:', newVal?.length || 0, 'programaciones')
+        console.log('🔄 ProgrammingInterface: Datos recibidos:', newVal)
+
+        if (Array.isArray(newVal) && newVal.length > 0) {
+          console.log('✅ ProgrammingInterface: Programaciones recibidas correctamente')
+          console.log('📋 ProgrammingInterface: Primera programación:', newVal[0])
+        } else if (Array.isArray(newVal) && newVal.length === 0) {
+          console.warn('⚠️ ProgrammingInterface: Array de programaciones vacío')
+        } else {
+          console.error('❌ ProgrammingInterface: Programaciones no es un array válido:', newVal)
+        }
+
+        // Limpiar selección al actualizar programaciones
+        this.selectedProgramaciones = []
+      },
+      immediate: true,
+      deep: true
+    }
+  },
+
+  async mounted() {
+    // Conectar SignalR para notificaciones en tiempo real
+    if (this.signalR && !this.signalR.isConnected.value) {
+      try {
+        const hubUrl = import.meta.env.VITE_API_BASE_URL_WS + 'hubs/notifications'
+        await this.signalR.connect(hubUrl)
+        console.log('[ProgrammingInterface] ✅ SignalR conectado')
+      } catch (error) {
+        console.warn('[ProgrammingInterface] ⚠️ Error conectando SignalR:', error)
+      }
+    }
+
+    // Cargar configuración del cliente
+    await this.loadClientConfiguration()
+
+    // Inicializar filtros
+    this.initializeFilters()
+
+    // Si el usuario es reproductor, setear automáticamente su usuario
+    if (this.isReproductor) {
+      this.selectedReproductor = this.reproductorUsername
+      console.log('👤 Usuario reproductor detectado:', this.reproductorUsername)
+      console.log(
+        '🔒 Campo de reproductor bloqueado - Solo puede crear programaciones para sí mismo'
+      )
+      console.log('👁️ Puede ver todas las programaciones del cliente al que pertenece')
+    }
+  },
+
+  beforeUnmount() {
+    // Desconectar SignalR al desmontar el componente
+    if (this.signalR && this.signalR.isConnected.value) {
+      this.signalR.disconnect()
+      console.log('[ProgrammingInterface] 👋 SignalR desconectado')
+    }
+  },
 
   methods: {
     // ===== MÉTODOS PARA SELECTOR DE MÚLTIPLES MINUTOS =====
@@ -1512,6 +1531,8 @@ export default {
         this.$toast('No hay programaciones pendientes para confirmar', 'warning')
         return
       }
+      // Resetear el contador de items mostrados para empezar desde el inicio
+      this.displayedPendingCount = 20
       this.showConfirmModal = true
     },
 
@@ -1523,6 +1544,7 @@ export default {
     // Limpiar todas las programaciones pendientes
     clearPendingProgramaciones() {
       this.pendingProgramaciones = []
+      this.displayedPendingCount = 20 // Resetear contador
       this.$toast('Programaciones pendientes limpiadas', 'info')
     },
 
@@ -1920,63 +1942,98 @@ export default {
 
         let result
 
-        // Si hay más de 50 programaciones, guardar en lotes de 10 (transparente para el usuario)
-        if (normalizedProgramaciones.length > 50) {
-          console.log(
-            `📦 Guardando ${normalizedProgramaciones.length} programaciones en lotes de 10...`
+        try {
+          // Si hay más de 50 programaciones, guardar en lotes de 10 (transparente para el usuario)
+          if (normalizedProgramaciones.length > 50) {
+            console.log(
+              `📦 Guardando ${normalizedProgramaciones.length} programaciones en lotes de 10...`
+            )
+            result = await this.saveProgramacionesInBatches(
+              normalizedProgramaciones,
+              10,
+              showProgress
+            )
+          } else {
+            // Guardar todas directamente
+            console.log(
+              `💾 Guardando ${normalizedProgramaciones.length} programaciones directamente...`
+            )
+            result = await this.saveProgramacionesDirect(normalizedProgramaciones, showProgress)
+          }
+
+          // ===== POST-GUARDADO =====
+          console.log('✅ Programaciones guardadas exitosamente:', result)
+
+          // Limpiar programaciones pendientes si se solicitó
+          if (clearPending) {
+            this.pendingProgramaciones = []
+            this.displayedPendingCount = 20 // Resetear contador
+          }
+
+          // Notificar éxito ANTES de operaciones que pueden fallar
+          this.$toast(
+            `✅ ${normalizedProgramaciones.length} programación(es) guardada(s) exitosamente`,
+            'success'
           )
-          result = await this.saveProgramacionesInBatches(
-            normalizedProgramaciones,
-            10,
-            showProgress
-          )
-        } else {
-          // Guardar todas directamente
-          console.log(
-            `💾 Guardando ${normalizedProgramaciones.length} programaciones directamente...`
-          )
-          result = await this.saveProgramacionesDirect(normalizedProgramaciones, showProgress)
+
+        } finally {
+          // Resetear el estado de guardado SIEMPRE antes de operaciones post-guardado
+          if (showProgress) {
+            this.isSaving = false
+            this.savingProgress = 0
+            this.totalToSave = 0
+            this.savedCount = 0
+          }
         }
 
-        // ===== POST-GUARDADO =====
-        console.log('✅ Programaciones guardadas exitosamente:', result)
+        // ===== OPERACIONES POST-GUARDADO (no bloquean UI) =====
+        // Estas operaciones se ejecutan después de cerrar el overlay
 
-        // Limpiar programaciones pendientes si se solicitó
-        if (clearPending) {
-          this.pendingProgramaciones = []
-        }
+        // Usar nextTick para permitir que Vue actualice el DOM
+        this.$nextTick(async () => {
+          try {
+            // Recargar programaciones desde el servidor para ver los cambios
+            console.log('🔄 Recargando programaciones desde el servidor...')
+            await this.reloadProgramacionesFromServer()
 
-        // Recargar programaciones desde el servidor para ver los cambios
-        console.log('🔄 Recargando programaciones desde el servidor...')
-        await this.reloadProgramacionesFromServer()
+            // ===== NOTIFICAR A REPRODUCTORES POR SIGNALR (con timeout) =====
+            console.log('📡 Notificando a reproductores por SignalR...')
 
-        // ===== NOTIFICAR A REPRODUCTORES POR SIGNALR =====
-        // Enviar notificación para que actualicen sus spots
-        console.log('📡 Notificando a reproductores por SignalR...')
-        await this.notifyReproductoresNewSpots({
-          count: normalizedProgramaciones.length,
-          spots: programaciones, // Usar las programaciones originales que tienen info de spots
-          targetReproductor: this.effectiveReproductor
+            // Usar Promise.race con timeout para evitar bloqueos
+            const notifyPromise = this.notifyReproductoresNewSpots({
+              count: normalizedProgramaciones.length,
+              spots: programaciones,
+              targetReproductor: this.effectiveReproductor
+            })
+
+            const timeoutPromise = new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Timeout notificando reproductores')), 5000)
+            )
+
+            await Promise.race([notifyPromise, timeoutPromise]).catch(err => {
+              console.warn('⚠️ Notificación SignalR timeout o error:', err.message)
+            })
+
+          } catch (postError) {
+            console.warn('⚠️ Error en operaciones post-guardado:', postError)
+            // No propagamos el error para no afectar la experiencia del usuario
+          }
         })
-
-        // Notificar éxito
-        this.$toast(
-          `✅ ${normalizedProgramaciones.length} programación(es) guardada(s) exitosamente`,
-          'success'
-        )
 
         return result
       } catch (error) {
         console.error('❌ Error enviando programaciones al servidor:', error)
         this.$toast('Error al guardar programaciones: ' + (error.message || error), 'error')
-        throw error
-      } finally {
+
+        // Asegurar que el overlay se cierre en caso de error
         if (showProgress) {
           this.isSaving = false
           this.savingProgress = 0
           this.totalToSave = 0
           this.savedCount = 0
         }
+
+        throw error
       }
     },
 
@@ -2045,8 +2102,9 @@ export default {
 
     /**
      * Recargar programaciones desde el servidor
+     * @param {boolean} emitEvent - Si emitir evento al padre (default: false para evitar doble carga)
      */
-    async reloadProgramacionesFromServer() {
+    async reloadProgramacionesFromServer(emitEvent = false) {
       try {
         const programacionSpotsStore = useProgramacionSpotsStore()
         const codigoProgramacion = this.getCurrentProgramacionCode()
@@ -2062,8 +2120,10 @@ export default {
 
         console.log('✅ Programaciones recargadas correctamente')
 
-        // Emitir evento para que el padre también se entere del refresh
-        this.$emit('refresh-programaciones')
+        // Solo emitir si se solicita explícitamente (evita doble carga)
+        if (emitEvent) {
+          this.$emit('refresh-programaciones')
+        }
       } catch (error) {
         console.error('❌ Error recargando programaciones:', error)
       }
@@ -2183,8 +2243,9 @@ export default {
       const scrollPosition = container.scrollTop + container.clientHeight
       const scrollHeight = container.scrollHeight
 
-      // Cargar más items cuando estamos cerca del final (90% del scroll)
-      if (scrollPosition >= scrollHeight * 0.9 && this.hasMoreItems) {
+      // Cargar más items cuando estamos cerca del final (50px del fondo o 80%)
+      const threshold = Math.min(scrollHeight * 0.8, scrollHeight - 50)
+      if (scrollPosition >= threshold && this.hasMoreItems) {
         this.loadMoreItems()
       }
     },
@@ -2205,8 +2266,9 @@ export default {
       const scrollPosition = container.scrollTop + container.clientHeight
       const scrollHeight = container.scrollHeight
 
-      // Cargar más items cuando estamos cerca del final (90% del scroll)
-      if (scrollPosition >= scrollHeight * 0.9 && this.hasMorePendingItems) {
+      // Cargar más items cuando estamos cerca del final (50px del fondo o 80%)
+      const threshold = Math.min(scrollHeight * 0.8, scrollHeight - 50)
+      if (scrollPosition >= threshold && this.hasMorePendingItems) {
         this.displayedPendingCount += this.pendingIncrement
       }
     },
@@ -2451,2285 +2513,65 @@ export default {
         duration: 3000
       })
     }
-  },
-
-  async mounted() {
-    // Conectar SignalR para notificaciones en tiempo real
-    if (this.signalR && !this.signalR.isConnected.value) {
-      try {
-        const hubUrl = import.meta.env.VITE_API_BASE_URL_WS + 'hubs/notifications'
-        await this.signalR.connect(hubUrl)
-        console.log('[ProgrammingInterface] ✅ SignalR conectado')
-      } catch (error) {
-        console.warn('[ProgrammingInterface] ⚠️ Error conectando SignalR:', error)
-      }
-    }
-
-    // Cargar configuración del cliente
-    await this.loadClientConfiguration()
-
-    // Inicializar filtros
-    this.initializeFilters()
-
-    // Si el usuario es reproductor, setear automáticamente su usuario
-    if (this.isReproductor) {
-      this.selectedReproductor = this.reproductorUsername
-      console.log('👤 Usuario reproductor detectado:', this.reproductorUsername)
-      console.log(
-        '🔒 Campo de reproductor bloqueado - Solo puede crear programaciones para sí mismo'
-      )
-      console.log('👁️ Puede ver todas las programaciones del cliente al que pertenece')
-    }
-  },
-
-  beforeUnmount() {
-    // Desconectar SignalR al desmontar el componente
-    if (this.signalR && this.signalR.isConnected.value) {
-      this.signalR.disconnect()
-      console.log('[ProgrammingInterface] 👋 SignalR desconectado')
-    }
   }
 }
 </script>
 
 <style scoped>
-/* ===== PREMIUM PROGRAMMING INTERFACE ===== */
-
-.programming-interface {
-  min-height: 100vh;
-  padding: var(--spacing-6);
-  background: linear-gradient(135deg, #0f1419 0%, #1a1d24 100%);
-}
-
-/* ===== ALERT NO PROGRAMACION ===== */
-.alert-no-programacion {
-  background: rgba(239, 68, 68, 0.1);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: var(--radius-2xl);
-  padding: var(--spacing-8);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-5);
-  margin-bottom: var(--spacing-6);
-  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
-}
-
-.alert-no-programacion i {
-  font-size: 3rem;
-  color: #f87171;
-  filter: drop-shadow(0 0 10px rgba(248, 113, 113, 0.5));
-}
-
-.alert-content h4 {
-  margin: 0 0 var(--spacing-2) 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #f87171;
-}
-
-.alert-content p {
-  margin: 0;
-  color: #9ca3af;
-}
-
-/* ===== PROGRAMMING PANEL ===== */
-.programming-panel {
-  background: rgba(26, 26, 26, 0.6);
-  backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-2xl);
-  margin-bottom: var(--spacing-6);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-}
-
-.panel-header {
-  padding: var(--spacing-6) var(--spacing-8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent);
-}
-
-.panel-title {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #ffffff 0%, #60a5fa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ===== FORM SECTIONS ===== */
-.form-section {
-  padding: var(--spacing-6) var(--spacing-8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.form-section:last-child {
-  border-bottom: none;
-}
-
-.form-label {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  margin-bottom: var(--spacing-3);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #e5e7eb;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.form-label i {
-  color: #60a5fa;
-}
-
-.form-input,
-.form-select {
-  width: 100%;
-  padding: var(--spacing-4) var(--spacing-5);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-xl);
-  font-size: 0.875rem;
-  color: #e5e7eb;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  outline: none;
-}
-
-.form-input::placeholder {
-  color: #6b7280;
-}
-
-.form-input:focus,
-.form-select:focus {
-  border-color: #3b82f6;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-}
-
-.form-select {
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2360a5fa' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  padding-right: 3rem;
-}
-
-/* ===== SPOTS SELECTOR ===== */
-.spots-selector {
-  margin-bottom: var(--spacing-4);
-}
-
-.selected-spots {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-2);
-  margin-bottom: var(--spacing-4);
-}
-
-.selected-spot-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-4);
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: var(--radius-lg);
-  color: #60a5fa;
-  font-size: 0.875rem;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.selected-spot-tag:hover {
-  background: rgba(59, 130, 246, 0.25);
-  transform: translateY(-2px);
-}
-
-.remove-spot-btn {
-  background: none;
-  border: none;
-  color: #60a5fa;
-  font-size: 1.25rem;
-  cursor: pointer;
-  padding: 0;
-  width: 1.25rem;
-  height: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  transition: all 0.2s ease;
-}
-
-.remove-spot-btn:hover {
-  background: rgba(248, 113, 113, 0.2);
-  color: #f87171;
-  transform: rotate(90deg);
-}
-
-/* ===== SPOTS COUNTER ===== */
-.spots-counter {
-  padding: var(--spacing-4);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-xl);
-  margin-bottom: var(--spacing-4);
-}
-
-.spots-counter.exceeds-limit {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-}
-
-.counter-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-2);
-}
-
-.counter-label {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #9ca3af;
-}
-
-.counter-values {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.current-spots {
-  color: #60a5fa;
-}
-
-.counter-separator {
-  color: #6b7280;
-}
-
-.spots-limit {
-  color: #9ca3af;
-}
-
-.exceeds-limit .current-spots {
-  color: #f87171;
-}
-
-.remaining-spots,
-.limit-warning {
-  font-size: 0.8125rem;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-.remaining-text {
-  color: #6b7280;
-}
-
-.warning-text {
-  color: #f87171;
-  font-weight: 600;
-}
-
-/* ===== SPOTS DROPDOWN ===== */
-.spots-dropdown-container {
-  position: relative;
-}
-
-.spots-dropdown {
-  position: absolute;
-  top: calc(100% + var(--spacing-2));
-  left: 0;
-  right: 0;
-  background: rgba(26, 26, 26, 0.98);
-  backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: var(--radius-xl);
-  max-height: 400px;
-  overflow-y: auto;
-  z-index: 1000;
-  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
-  animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.category-group {
-  padding: var(--spacing-3);
-}
-
-.category-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--spacing-2) var(--spacing-3);
-  margin-bottom: var(--spacing-2);
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: var(--radius-md);
-}
-
-.category-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.category-inst {
-  color: #60a5fa;
-}
-.category-prom {
-  color: #a78bfa;
-}
-.category-noti {
-  color: #34d399;
-}
-
-.category-count {
-  font-size: 0.75rem;
-  color: #6b7280;
-}
-
-.dropdown-item {
-  padding: var(--spacing-3) var(--spacing-4);
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: var(--radius-md);
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  margin-bottom: var(--spacing-1);
-}
-
-.dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateX(4px);
-}
-
-.spot-name {
-  color: #e5e7eb;
-  font-weight: 500;
-}
-
-.spot-category-badge {
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.spot-category-badge.category-inst {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.spot-category-badge.category-prom {
-  background: rgba(167, 139, 250, 0.15);
-  color: #a78bfa;
-  border: 1px solid rgba(167, 139, 250, 0.3);
-}
-
-.spot-category-badge.category-noti {
-  background: rgba(52, 211, 153, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.3);
-}
-
-/* ===== DAYS SELECTOR ===== */
-.days-selector {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: var(--spacing-3);
-  margin-bottom: var(--spacing-4);
-}
-
-.day-option {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-4);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.day-option:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(59, 130, 246, 0.3);
-  transform: translateY(-2px);
-}
-
-.day-option.selected {
-  background: rgba(59, 130, 246, 0.15);
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
-}
-
-.day-checkbox {
-  width: 1.25rem;
-  height: 1.25rem;
-  cursor: pointer;
-}
-
-.day-label {
-  font-weight: 500;
-  color: #e5e7eb;
-  cursor: pointer;
-  user-select: none;
-}
-
-.selected-days-summary {
-  margin-top: var(--spacing-2);
-}
-
-.text-muted {
-  color: #6b7280;
-  font-size: 0.875rem;
-}
-
-/* ===== BUTTONS ===== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-6);
-  font-size: 0.875rem;
-  font-weight: 600;
-  border-radius: var(--radius-lg);
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  outline: none;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-}
-
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: #e5e7eb;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-}
-
-.btn-outline {
-  background: transparent;
-  color: #e5e7eb;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.btn-outline:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-.btn-link {
-  background: none;
-  border: none;
-  color: #60a5fa;
-  padding: 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  transition: color 0.2s ease;
-}
-
-.btn-link:hover {
-  color: #93c5fd;
-}
-
-.btn-sm {
-  padding: var(--spacing-2) var(--spacing-4);
-  font-size: 0.8125rem;
-}
-
-.btn-generate {
-  width: 100%;
-  padding: var(--spacing-4);
-  font-size: 1rem;
-}
-
-/* ===== TABLES ===== */
-.programming-results {
-  background: rgba(26, 26, 26, 0.6);
-  backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-2xl);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-}
-
-.results-header {
-  padding: var(--spacing-6) var(--spacing-8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent);
-}
-
-.results-title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #e5e7eb;
-}
-
-/* ===== FILTERS SECTION ===== */
-.filters-section {
-  padding: var(--spacing-6) var(--spacing-8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.filters-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-4);
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-3);
-}
-
-.filter-label {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #e5e7eb;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.filter-label i {
-  color: #60a5fa;
-  font-size: 1rem;
-}
-
-.time-range-filter {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4);
-  flex-wrap: wrap;
-}
-
-.time-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-.time-label {
-  font-size: 0.875rem;
-  color: #9ca3af;
-  font-weight: 500;
-  min-width: 50px;
-}
-
-.time-input {
-  padding: var(--spacing-3) var(--spacing-4);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
-  font-size: 0.875rem;
-  color: #e5e7eb;
-  font-family: 'Courier New', monospace;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  outline: none;
-  min-width: 120px;
-}
-
-.time-input:focus {
-  border-color: #3b82f6;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-}
-
-.time-separator {
-  color: #6b7280;
-  font-size: 1.25rem;
-  font-weight: 600;
-  padding: 0 var(--spacing-2);
-}
-
-.btn-clear-time {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-3);
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: var(--radius-lg);
-  color: #f87171;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  outline: none;
-}
-
-.btn-clear-time:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.5);
-  transform: scale(1.05);
-}
-
-.btn-clear-time i {
-  font-size: 1rem;
-}
-
-.filter-hint {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  color: #6b7280;
-  font-size: 0.8125rem;
-  padding: var(--spacing-2) var(--spacing-4);
-  background: rgba(59, 130, 246, 0.05);
-  border-left: 3px solid rgba(59, 130, 246, 0.4);
-  border-radius: var(--radius-md);
-}
-
-.filter-hint i {
-  color: #60a5fa;
-}
-
-/* Estilos para active filters (ya existentes, mejorados) */
-.active-filters {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-4);
-}
-
-.filters-summary {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-4);
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: var(--radius-lg);
-}
-
-.filters-summary i {
-  color: #60a5fa;
-  font-size: 0.875rem;
-}
-
-.filters-count {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #93c5fd;
-}
-
-.clear-filters-btn {
-  white-space: nowrap;
-}
-
+/* Table Container - Scrollable */
 .table-container {
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: 600px;
-  position: relative;
+  @apply max-h-[60vh] overflow-y-auto overflow-x-auto;
+  @apply rounded-xl border border-dark-border;
+  @apply bg-dark-tertiary;
 }
 
-.tabla-categorias {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+.light .table-container {
+  @apply border-light-border bg-light-elevated;
 }
 
-.tabla-categorias th {
-  background: rgba(255, 255, 255, 0.03);
-  padding: var(--spacing-4) var(--spacing-6);
-  text-align: left;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+/* Make thead sticky */
+.table-container .table thead {
+  @apply sticky top-0 z-10;
 }
 
-.tabla-categorias td {
-  padding: var(--spacing-4) var(--spacing-6);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  color: #e5e7eb;
-  font-size: 0.875rem;
+.table-container .table th {
+  @apply bg-dark-secondary;
 }
 
-.tabla-categorias tr:last-child td {
-  border-bottom: none;
+.light .table-container .table th {
+  @apply bg-light-secondary;
 }
 
-.tabla-categorias tr:hover td {
-  background: rgba(255, 255, 255, 0.05);
+/* Fade Transition - Optimizado para evitar bloqueo de render */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 200ms ease-out;
+  will-change: opacity;
 }
 
-.tabla-categorias tr.is-selected td {
-  background: rgba(59, 130, 246, 0.1);
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
-/* ===== BADGES ===== */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--spacing-1) var(--spacing-3);
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
 }
 
-.badge-dark {
-  background: rgba(255, 255, 255, 0.1);
-  color: #e5e7eb;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* Spinner animation - GPU accelerated */
+.fa-spin {
+  animation: fa-spin 1s linear infinite;
+  will-change: transform;
 }
 
-.badge-outline {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #9ca3af;
-}
-
-/* ===== SLOT BADGES ===== */
-.badge-slot {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-3);
-  border-radius: var(--radius-lg);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 1.5px solid;
-  transition: all 0.2s ease;
-}
-
-.badge-slot i {
-  font-size: 0.875rem;
-}
-
-/* Colores para cada slot */
-.badge-slot.slot-0 {
-  background: rgba(107, 114, 128, 0.15);
-  border-color: rgba(107, 114, 128, 0.3);
-  color: #9ca3af;
-}
-
-.badge-slot.slot-1 {
-  background: rgba(59, 130, 246, 0.15);
-  border-color: rgba(59, 130, 246, 0.4);
-  color: #60a5fa;
-}
-
-.badge-slot.slot-2 {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.4);
-  color: #34d399;
-}
-
-.badge-slot.slot-3 {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.4);
-  color: #fbbf24;
-}
-
-.badge-slot.slot-4 {
-  background: rgba(236, 72, 153, 0.15);
-  border-color: rgba(236, 72, 153, 0.4);
-  color: #f472b6;
-}
-
-.badge-slot.slot-5 {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: rgba(139, 92, 246, 0.4);
-  color: #a78bfa;
-}
-
-/* ===== PROGRAMACION DATETIME ===== */
-.programacion-datetime {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-}
-
-.programacion-time {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #60a5fa;
-  font-family: 'Courier New', monospace;
-}
-
-.programacion-time i {
-  font-size: 0.75rem;
-  opacity: 0.7;
-}
-
-.multiple-slots-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-1) var(--spacing-3);
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: var(--radius-md);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: #93c5fd;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.multiple-slots-indicator i {
-  font-size: 0.75rem;
-  color: #60a5fa;
-}
-
-/* ===== SPOT INFO ===== */
-.spot-info {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-1);
-}
-
-.spot-name {
-  font-weight: 500;
-  color: #e5e7eb;
-}
-
-/* ===== SCROLL INFINITO ===== */
-.scroll-loader {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-3);
-  padding: var(--spacing-6);
-  color: #9ca3af;
-  font-size: 0.875rem;
-}
-
-.loader-spinner {
-  width: 1.5rem;
-  height: 1.5rem;
-  border: 2px solid rgba(59, 130, 246, 0.2);
-  border-top-color: #3b82f6;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
+@keyframes fa-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
     transform: rotate(360deg);
   }
 }
-
-.scroll-end-message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-6);
-  color: #6b7280;
-  font-size: 0.875rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.scroll-end-message i {
-  color: #10b981;
-  font-size: 1rem;
-}
-
-/* Estilos personalizados para la barra de scroll del contenedor de tabla */
-.table-container::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-.table-container::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: var(--radius-md);
-}
-
-.table-container::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3);
-  border-radius: var(--radius-md);
-  transition: background 0.2s ease;
-}
-
-.table-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.5);
-}
-
-/* ===== MODALS ===== */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(15, 20, 25, 0.85);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: var(--spacing-4);
-}
-
-.modal-content,
-.modal-container {
-  background: rgba(26, 26, 26, 0.95);
-  backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-2xl);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-header {
-  padding: var(--spacing-6);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent);
-}
-
-.modal-title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #e5e7eb;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-}
-
-.modal-close-btn {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #9ca3af;
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.modal-close-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #f87171;
-}
-
-.modal-body {
-  padding: var(--spacing-6);
-  overflow-y: auto;
-  flex: 1;
-}
-
-.modal-body::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-body::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-.modal-body::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3);
-  border-radius: 4px;
-}
-
-.modal-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.5);
-}
-
-.modal-footer {
-  padding: var(--spacing-6);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  gap: var(--spacing-3);
-  justify-content: flex-end;
-  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.02));
-}
-
-/* ===== MANUAL MODE - HOUR SELECTOR IMPROVED ===== */
-.hour-day-selector {
-  margin-bottom: var(--spacing-5);
-}
-
-.hour-day-selector .input-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-3);
-}
-
-.hour-day-selector .input-label {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #e5e7eb;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.hour-day-selector .form-select {
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-  padding: var(--spacing-4) var(--spacing-5);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-xl);
-  color: #60a5fa;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.hour-day-selector .form-select:hover {
-  border-color: rgba(59, 130, 246, 0.4);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.hour-day-selector .form-select option {
-  background: #1a1d24;
-  color: #e5e7eb;
-  padding: var(--spacing-3);
-  font-weight: 500;
-}
-
-/* ===== PAGINATION STYLES ===== */
-.pagination-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-6);
-  padding: var(--spacing-6);
-  background: rgba(26, 26, 26, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-xl);
-  margin-top: var(--spacing-6);
-  flex-wrap: wrap;
-}
-
-.pagination-info {
-  font-size: 0.875rem;
-  color: #9ca3af;
-  font-weight: 500;
-}
-
-.filter-indicator {
-  color: #60a5fa;
-  font-size: 0.8125rem;
-  margin-left: var(--spacing-2);
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-}
-
-.pagination-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-4);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
-  color: #e5e7eb;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(59, 130, 246, 0.5);
-  color: #60a5fa;
-  transform: translateY(-1px);
-}
-
-.pagination-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.pagination-pages {
-  display: flex;
-  gap: var(--spacing-2);
-}
-
-.pagination-page {
-  min-width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
-  color: #9ca3af;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.pagination-page:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: #60a5fa;
-}
-
-.pagination-page.active {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  border-color: #3b82f6;
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.pagination-options {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-}
-
-.pagination-options label {
-  font-size: 0.875rem;
-  color: #9ca3af;
-  font-weight: 500;
-}
-
-.pagination-select {
-  padding: var(--spacing-2) var(--spacing-3);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
-  color: #e5e7eb;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.pagination-select:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-
-.pagination-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-}
-
-/* ===== FLOATING PENDING BUTTON ===== */
-.floating-pending-btn {
-  position: fixed;
-  bottom: 32px;
-  right: 32px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-4);
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  border: none;
-  border-radius: var(--radius-2xl);
-  box-shadow:
-    0 8px 24px rgba(59, 130, 246, 0.4),
-    0 0 0 1px rgba(59, 130, 246, 0.2);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 999;
-}
-
-.floating-pending-btn:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5);
-}
-
-.floating-pending-btn.pulse {
-  animation: pulse-btn 2s ease-in-out infinite;
-}
-
-@keyframes pulse-btn {
-  0%,
-  100% {
-    box-shadow:
-      0 8px 24px rgba(59, 130, 246, 0.4),
-      0 0 0 1px rgba(59, 130, 246, 0.2);
-  }
-  50% {
-    box-shadow:
-      0 8px 32px rgba(59, 130, 246, 0.6),
-      0 0 0 8px rgba(59, 130, 246, 0.1);
-  }
-}
-
-.floating-btn-content {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  color: white;
-}
-
-.floating-btn-content i {
-  font-size: 1.5rem;
-}
-
-.floating-btn-count {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  min-width: 24px;
-  text-align: center;
-}
-
-.floating-btn-label {
-  color: white;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* ===== PENDING MODAL ===== */
-.pending-modal {
-  max-width: 800px;
-  max-height: 90vh;
-}
-
-.modal-title-group {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-}
-
-.pending-badge {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-}
-
-.pending-alert {
-  display: flex;
-  gap: var(--spacing-4);
-  padding: var(--spacing-4);
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: var(--radius-xl);
-  margin-bottom: var(--spacing-6);
-}
-
-.pending-alert i {
-  font-size: 1.5rem;
-  color: #60a5fa;
-  flex-shrink: 0;
-}
-
-.alert-content {
-  flex: 1;
-}
-
-.alert-content p {
-  margin: 0;
-  color: #e5e7eb;
-  font-size: 0.875rem;
-  line-height: 1.6;
-}
-
-.batch-warning {
-  margin-top: var(--spacing-2);
-  padding-top: var(--spacing-2);
-  border-top: 1px solid rgba(59, 130, 246, 0.2);
-  color: #fbbf24;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-.pending-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-6);
-}
-
-.stat-card {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-  padding: var(--spacing-4);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-xl);
-  transition: all 0.2s ease;
-}
-
-.stat-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(59, 130, 246, 0.3);
-}
-
-.stat-card i {
-  font-size: 1.5rem;
-  color: #60a5fa;
-}
-
-.stat-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #e5e7eb;
-  line-height: 1;
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-top: 4px;
-}
-
-.pending-list-container {
-  margin-top: var(--spacing-6);
-}
-
-.list-title {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  margin: 0 0 var(--spacing-4) 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.pending-list-scroll {
-  max-height: 300px;
-  overflow-y: auto;
-  padding-right: var(--spacing-2);
-}
-
-.pending-list-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.pending-list-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 3px;
-}
-
-.pending-list-scroll::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3);
-  border-radius: 3px;
-}
-
-.pending-list-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.5);
-}
-
-.pending-item-card {
-  display: grid;
-  grid-template-columns: 40px 1fr auto;
-  gap: var(--spacing-4);
-  align-items: center;
-  padding: var(--spacing-3) var(--spacing-4);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--spacing-2);
-  transition: all 0.2s ease;
-}
-
-.pending-item-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(59, 130, 246, 0.3);
-  transform: translateX(4px);
-}
-
-.item-index {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(59, 130, 246, 0.15);
-  border-radius: 8px;
-  color: #60a5fa;
-  font-size: 0.875rem;
-  font-weight: 700;
-}
-
-.item-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-2);
-  align-items: center;
-}
-
-.item-day {
-  padding: 2px 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #e5e7eb;
-}
-
-.item-time {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.75rem;
-  color: #60a5fa;
-  font-family: 'Courier New', monospace;
-  font-weight: 600;
-}
-
-.item-slot {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  background: rgba(139, 92, 246, 0.15);
-  border-radius: 6px;
-  font-size: 0.75rem;
-  color: #a78bfa;
-  font-weight: 600;
-}
-
-.item-spot {
-  font-size: 0.875rem;
-  color: #e5e7eb;
-  font-weight: 500;
-  text-align: right;
-}
-
-.pending-scroll-loader {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-3);
-  padding: var(--spacing-4);
-  margin-top: var(--spacing-2);
-  color: #9ca3af;
-  font-size: 0.875rem;
-}
-
-.pending-scroll-end-message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-4);
-  margin-top: var(--spacing-2);
-  color: #6b7280;
-  font-size: 0.875rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* ===== RESPONSIVE ===== */
-@media (min-width: 768px) {
-  .programming-interface {
-    padding: var(--spacing-4);
-  }
-
-  .panel-header,
-  .form-section,
-  .results-header {
-    padding: var(--spacing-4);
-  }
-
-  .programming-mode-selector {
-    grid-template-columns: 1fr;
-  }
-
-  .days-selector {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .modal-footer {
-    flex-direction: column-reverse;
-  }
-
-  .automatic-config-row {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-4);
-  }
-
-  .time-range-inline {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .time-input-compact {
-    text-align: center;
-    width: 100%;
-  }
-
-  .time-separator-compact {
-    text-align: center;
-  }
-
-  .modal-footer .btn {
-    width: 100%;
-  }
-
-  /* Paginación responsive */
-  .pagination-container {
-    flex-direction: column;
-    gap: var(--spacing-4);
-  }
-
-  .pagination-controls {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .pagination-pages {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .pagination-btn,
-  .pagination-options {
-    width: 100%;
-    justify-content: center;
-  }
-
-  /* Botón flotante responsive */
-  .floating-pending-btn {
-    bottom: 16px;
-    right: 16px;
-    padding: var(--spacing-3);
-  }
-
-  .floating-btn-content i {
-    font-size: 1.25rem;
-  }
-
-  /* Modal pendiente responsive */
-  .pending-stats {
-    grid-template-columns: 1fr;
-  }
-
-  .pending-item-card {
-    grid-template-columns: 32px 1fr;
-    gap: var(--spacing-2);
-  }
-
-  .item-spot {
-    grid-column: 2;
-    text-align: left;
-    margin-top: var(--spacing-1);
-  }
-}
-
-/* ===== MULTI-MINUTE SECTION STYLING ===== */
-.multi-minute-section {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.03), rgba(139, 92, 246, 0.03));
-  border: 1px solid rgba(59, 130, 246, 0.15) !important;
-  border-radius: var(--radius-2xl);
-  margin-bottom: var(--spacing-6);
-  overflow: hidden;
-}
-
-.multi-minute-section .section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-4);
-  padding-bottom: var(--spacing-4);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.multi-minute-section .section-description {
-  color: #9ca3af;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  margin-bottom: var(--spacing-3);
-}
-
-.btn-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-4);
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: var(--radius-lg);
-  color: #60a5fa;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-toggle:hover {
-  background: rgba(59, 130, 246, 0.2);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
-}
-
-.btn-toggle.active {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: rgba(59, 130, 246, 0.5);
-}
-
-.multi-minute-content {
-  animation: slideDownFade 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes slideDownFade {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.selected-days-info {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-3);
-  padding: var(--spacing-4);
-  background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: var(--radius-xl);
-  margin-bottom: var(--spacing-5);
-  color: #e5e7eb;
-  font-size: 0.9375rem;
-}
-
-.selected-days-info i {
-  color: #60a5fa;
-  font-size: 1.125rem;
-}
-
-.selected-days-info strong {
-  color: #60a5fa;
-  font-weight: 700;
-}
-
-/* Minutes Selector Container */
-.minutes-selector {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-2xl);
-  padding: var(--spacing-6);
-  margin-bottom: var(--spacing-5);
-}
-
-/* Minutes Header */
-.minutes-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-5);
-  padding-bottom: var(--spacing-4);
-  border-bottom: 2px solid rgba(59, 130, 246, 0.2);
-}
-
-.minutes-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #e5e7eb;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-.minutes-title::before {
-  content: '⏰';
-  font-size: 1.25rem;
-}
-
-.minutes-stats {
-  display: flex;
-  gap: var(--spacing-5);
-  align-items: center;
-}
-
-.stat-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  font-size: 0.875rem;
-  color: #9ca3af;
-  padding: var(--spacing-2) var(--spacing-4);
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.stat-item i {
-  color: #60a5fa;
-  font-size: 1rem;
-}
-
-.stat-item strong {
-  color: #60a5fa;
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-/* Minutes Grid - IMPROVED */
-.minutes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-  gap: var(--spacing-3);
-  margin-bottom: var(--spacing-6);
-  padding: var(--spacing-4);
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: var(--radius-xl);
-}
-
-.minute-option {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-4);
-  min-height: 70px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  overflow: hidden;
-}
-
-.minute-option::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, transparent, rgba(59, 130, 246, 0.1));
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.minute-option:hover::before {
-  opacity: 1;
-}
-
-.minute-option.available {
-  border-color: rgba(59, 130, 246, 0.3);
-  cursor: pointer;
-}
-
-.minute-option.available:hover {
-  background: rgba(59, 130, 246, 0.15);
-  border-color: rgba(59, 130, 246, 0.5);
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
-}
-
-.minute-option.selected {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
-  border-color: rgba(59, 130, 246, 0.7);
-  box-shadow:
-    0 8px 20px rgba(59, 130, 246, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transform: scale(1.05);
-}
-
-.minute-option.selected::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.4), transparent 70%);
-}
-
-.minute-option.programmed {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.minute-option.programmed:hover {
-  transform: none;
-  box-shadow: none;
-}
-
-.minute-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-  color: #e5e7eb;
-  position: relative;
-  z-index: 1;
-  transition: all 0.3s ease;
-}
-
-.minute-option.selected .minute-value {
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
-  transform: scale(1.15);
-}
-
-.minute-option.programmed .minute-value {
-  color: #9ca3af;
-  text-decoration: line-through;
-}
-
-.minute-icon {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  font-size: 0.875rem;
-  opacity: 0.7;
-  z-index: 1;
-}
-
-.minute-option.selected .minute-icon {
-  color: #ffffff;
-  opacity: 1;
-  animation: checkPulse 0.5s ease-in-out;
-}
-
-.minute-option.programmed .minute-icon {
-  color: #f87171;
-}
-
-/* Minuto con slots parcialmente ocupados */
-.minute-option.partial {
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.3);
-}
-
-.minute-option.partial:hover {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.5);
-}
-
-.slots-info {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: rgba(245, 158, 11, 0.2);
-  color: #fbbf24;
-  font-size: 0.625rem;
-  font-weight: 700;
-  padding: 2px 4px;
-  border-radius: 4px;
-  line-height: 1;
-}
-
-@keyframes checkPulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.3);
-  }
-}
-
-/* Minutes Controls */
-.minutes-controls {
-  display: flex;
-  gap: var(--spacing-3);
-  justify-content: center;
-  margin-bottom: var(--spacing-5);
-  flex-wrap: wrap;
-}
-
-.minutes-controls .btn {
-  flex: 1;
-  min-width: 200px;
-}
-
-/* Minutes Preview */
-.minutes-preview {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
-  border: 1px solid rgba(59, 130, 246, 0.25);
-  border-radius: var(--radius-xl);
-  padding: var(--spacing-5);
-  margin-bottom: var(--spacing-5);
-  animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.preview-header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  margin-bottom: var(--spacing-3);
-  color: #60a5fa;
-  font-size: 0.875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.preview-header i {
-  font-size: 1rem;
-}
-
-.preview-text {
-  color: #e5e7eb;
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  margin-bottom: var(--spacing-3);
-}
-
-.preview-text strong {
-  color: #60a5fa;
-  font-weight: 700;
-}
-
-.preview-total {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-4);
-  background: rgba(59, 130, 246, 0.15);
-  border-radius: var(--radius-lg);
-  color: #e5e7eb;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  margin-bottom: var(--spacing-4);
-}
-
-.preview-total i {
-  color: #60a5fa;
-}
-
-.preview-total strong {
-  color: #60a5fa;
-  font-size: 1.125rem;
-  font-weight: 700;
-}
-
-.preview-times {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-2);
-}
-
-.time-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--spacing-2) var(--spacing-4);
-  background: rgba(59, 130, 246, 0.2);
-  border: 1px solid rgba(59, 130, 246, 0.4);
-  border-radius: var(--radius-md);
-  color: #60a5fa;
-  font-size: 0.875rem;
-  font-weight: 700;
-  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-  transition: all 0.2s ease;
-}
-
-.time-badge:hover {
-  background: rgba(59, 130, 246, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-}
-
-.time-badge.more {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.4);
-  color: #a78bfa;
-}
-
-/* Button to program minutes */
-.btn-program-minutes {
-  width: 100%;
-  padding: var(--spacing-5);
-  font-size: 1.0625rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
-  border: none;
-  border-radius: var(--radius-xl);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-program-minutes::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
-}
-
-.btn-program-minutes:hover::before {
-  left: 100%;
-}
-
-.btn-program-minutes:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(59, 130, 246, 0.5);
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: var(--spacing-10);
-  color: #9ca3af;
-}
-
-.empty-state i {
-  font-size: 4rem;
-  color: #6b7280;
-  margin-bottom: var(--spacing-4);
-  opacity: 0.5;
-}
-
-.empty-state p {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #9ca3af;
-}
-
-/* Responsive adjustments for minutes grid */
-@media (min-width: 1024px) {
-  .minutes-grid {
-    grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
-    gap: var(--spacing-2);
-  }
-
-  .minute-option {
-    min-height: 60px;
-    padding: var(--spacing-3);
-  }
-
-  .minute-value {
-    font-size: 1.125rem;
-  }
-}
-
-@media (min-width: 768px) {
-  .minutes-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--spacing-3);
-  }
-
-  .minutes-stats {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .minutes-grid {
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: var(--spacing-2);
-  }
-
-  .minute-option {
-    min-height: 55px;
-    padding: var(--spacing-2);
-  }
-
-  .minute-value {
-    font-size: 1rem;
-  }
-
-  .minutes-controls {
-    flex-direction: column;
-  }
-
-  .minutes-controls .btn {
-    width: 100%;
-    min-width: auto;
-  }
-
-  .preview-times {
-    justify-content: center;
-  }
-}
-
-@media (min-width: 480px) {
-  .minutes-grid {
-    grid-template-columns: repeat(6, 1fr);
-    gap: var(--spacing-1);
-  }
-
-  .minute-option {
-    min-height: 50px;
-    padding: var(--spacing-1);
-  }
-
-  .minute-value {
-    font-size: 0.875rem;
-  }
-
-  .stat-item {
-    font-size: 0.75rem;
-    padding: var(--spacing-1) var(--spacing-2);
-  }
-}
-
-/* ===== ESTILOS PARA VALIDACIÓN DE CONFIGURACIÓN ===== */
-
-/* Advertencia de validación de configuración */
-.config-validation-warning {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 1rem;
-  margin-top: 0.75rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 0.5rem;
-  color: #f87171;
-  font-size: 0.875rem;
-  animation: slideDown 0.3s ease-out;
-}
-
-.config-validation-warning i {
-  flex-shrink: 0;
-  margin-top: 0.125rem;
-  font-size: 1rem;
-}
-
-/* Días deshabilitados */
-.day-option.invalid-day {
-  opacity: 0.5;
-  cursor: not-allowed;
-  background: rgba(239, 68, 68, 0.1) !important;
-  border-color: rgba(239, 68, 68, 0.3) !important;
-}
-
-.day-option.disabled {
-  pointer-events: none;
-}
-
-.day-option.invalid-day .day-checkbox {
-  cursor: not-allowed;
-}
-
-/* Badge para indicar solo días hábiles */
-.badge-info {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  background: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: 9999px;
-  color: #60a5fa;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-/* Animación para advertencias */
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 </style>
+

@@ -3,9 +3,11 @@
     <div class="config-blocker-modal">
       <div class="config-blocker-header">
         <div class="blocker-icon">
-          <i class="fas fa-exclamation-triangle"></i>
+          <i class="fas fa-exclamation-triangle" />
         </div>
-        <h2 class="blocker-title">Configuración Incompleta</h2>
+        <h2 class="blocker-title">
+Configuración Incompleta
+</h2>
         <p class="blocker-subtitle">
           Debes completar la configuración inicial antes de acceder a esta sección
         </p>
@@ -23,14 +25,14 @@
               class="progress-fill"
               :style="{ width: completionPercentage + '%' }"
               :class="getProgressClass(completionPercentage)"
-            ></div>
+            />
           </div>
         </div>
 
         <!-- Missing Items List -->
         <div class="missing-items-section">
           <h3 class="section-title">
-            <i class="fas fa-list-check"></i>
+            <i class="fas fa-list-check" />
             Configuraciones Requeridas
           </h3>
 
@@ -42,18 +44,21 @@
               :class="{ 'completed': item.isComplete, 'missing': !item.isComplete }"
             >
               <div class="check-icon">
-                <i :class="item.isComplete ? 'fas fa-check-circle' : 'fas fa-times-circle'"></i>
+                <i :class="item.isComplete ? 'fas fa-check-circle' : 'fas fa-times-circle'" />
               </div>
               <div class="check-content">
                 <span class="check-label">{{ item.label }}</span>
-                <span v-if="!item.isComplete" class="check-description">{{ item.description }}</span>
+                <span
+v-if="!item.isComplete"
+class="check-description"
+>{{ item.description }}</span>
               </div>
               <button
                 v-if="!item.isComplete && item.route"
-                @click="navigateTo(item.route)"
                 class="btn-configure"
+                @click="navigateTo(item.route)"
               >
-                <i class="fas fa-arrow-right"></i>
+                <i class="fas fa-arrow-right" />
                 Configurar
               </button>
             </div>
@@ -63,10 +68,12 @@
         <!-- Info Box -->
         <div class="info-box">
           <div class="info-icon">
-            <i class="fas fa-info-circle"></i>
+            <i class="fas fa-info-circle" />
           </div>
           <div class="info-content">
-            <p class="info-title">¿Por qué necesito configurar esto?</p>
+            <p class="info-title">
+¿Por qué necesito configurar esto?
+</p>
             <p class="info-text">
               La configuración completa es necesaria para crear sucursales funcionales.
               Cada sucursal requiere programaciones de música y spots, horarios y días de operación.
@@ -77,17 +84,17 @@
 
       <div class="config-blocker-footer">
         <button
-          @click="goToConfiguration"
           class="btn-primary"
+          @click="goToConfiguration"
         >
-          <i class="fas fa-cog"></i>
+          <i class="fas fa-cog" />
           Ir a Configuración
         </button>
         <button
-          @click="goBack"
           class="btn-secondary"
+          @click="goBack"
         >
-          <i class="fas fa-arrow-left"></i>
+          <i class="fas fa-arrow-left" />
           Volver al Dashboard
         </button>
       </div>
@@ -169,351 +176,270 @@ const goBack = () => {
 </script>
 
 <style scoped>
+/* ===== OVERLAY ===== */
 .config-blocker-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 1.5rem;
+  @apply fixed inset-0 z-modal;
+  @apply bg-black/70 backdrop-blur-sm;
+  @apply flex items-center justify-center;
+  @apply p-4;
 }
 
+/* ===== MODAL ===== */
 .config-blocker-modal {
-  background: linear-gradient(135deg, rgba(26, 26, 64, 0.98) 0%, rgba(15, 15, 35, 0.98) 100%);
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  max-width: 700px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  @apply w-full max-w-2xl max-h-[90vh];
+  @apply bg-dark-tertiary rounded-2xl;
+  @apply border border-dark-border shadow-2xl;
+  @apply overflow-hidden flex flex-col;
 }
 
+.light .config-blocker-modal {
+  @apply bg-light-elevated border-light-border;
+}
+
+/* ===== HEADER ===== */
 .config-blocker-header {
-  padding: 2rem;
-  text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  @apply px-6 py-6 text-center;
+  @apply bg-gradient-to-b from-warning-500/10 to-transparent;
+  @apply border-b border-dark-border;
+}
+
+.light .config-blocker-header {
+  @apply border-light-border;
 }
 
 .blocker-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 1.5rem;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  color: white;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 20px rgba(245, 158, 11, 0);
-  }
+  @apply w-16 h-16 mx-auto mb-4;
+  @apply flex items-center justify-center;
+  @apply bg-warning-500/20 rounded-full;
+  @apply text-warning-400 text-3xl;
 }
 
 .blocker-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: white;
-  margin: 0 0 0.5rem 0;
+  @apply text-xl font-bold text-text-primary mb-2;
+}
+
+.light .blocker-title {
+  @apply text-text-light-primary;
 }
 
 .blocker-subtitle {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0;
+  @apply text-sm text-text-secondary;
 }
 
+.light .blocker-subtitle {
+  @apply text-text-light-secondary;
+}
+
+/* ===== BODY ===== */
 .config-blocker-body {
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  @apply px-6 py-4 space-y-6 overflow-y-auto flex-1;
 }
 
-/* Progress Section */
+/* ===== PROGRESS SECTION ===== */
 .progress-section {
-  background: rgba(255, 255, 255, 0.03);
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  @apply space-y-2;
 }
 
 .progress-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  @apply flex items-center justify-between;
 }
 
 .progress-label {
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  @apply text-sm font-medium text-text-secondary;
+}
+
+.light .progress-label {
+  @apply text-text-light-secondary;
 }
 
 .progress-percentage {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #f59e0b;
+  @apply text-sm font-bold text-text-primary;
+}
+
+.light .progress-percentage {
+  @apply text-text-light-primary;
 }
 
 .progress-bar {
-  height: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  overflow: hidden;
+  @apply h-3 bg-dark-secondary rounded-full overflow-hidden;
+}
+
+.light .progress-bar {
+  @apply bg-light-secondary;
 }
 
 .progress-fill {
-  height: 100%;
-  border-radius: 6px;
-  transition: width 0.5s ease, background 0.3s ease;
+  @apply h-full rounded-full transition-all duration-500 ease-apple;
 }
 
-.progress-low {
-  background: linear-gradient(90deg, #ef4444, #dc2626);
+.progress-fill.progress-low {
+  @apply bg-danger-500;
 }
 
-.progress-medium {
-  background: linear-gradient(90deg, #f59e0b, #d97706);
+.progress-fill.progress-medium {
+  @apply bg-warning-500;
 }
 
-.progress-high {
-  background: linear-gradient(90deg, #10b981, #059669);
+.progress-fill.progress-high {
+  @apply bg-success-500;
 }
 
-/* Missing Items Section */
+/* ===== MISSING ITEMS SECTION ===== */
 .missing-items-section {
-  background: rgba(255, 255, 255, 0.02);
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  @apply space-y-3;
 }
 
 .section-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: white;
-  margin: 0 0 1.5rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  @apply flex items-center gap-2;
+  @apply text-sm font-semibold text-text-primary;
+}
+
+.light .section-title {
+  @apply text-text-light-primary;
 }
 
 .section-title i {
-  color: #667eea;
+  @apply text-primary-400;
 }
 
+/* ===== CHECKLIST ===== */
 .checklist {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  @apply space-y-2;
 }
 
 .checklist-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s ease;
+  @apply flex items-center gap-3;
+  @apply p-3 rounded-lg;
+  @apply border border-dark-border;
+  @apply transition-all duration-200;
+}
+
+.light .checklist-item {
+  @apply border-light-border;
 }
 
 .checklist-item.completed {
-  border-color: rgba(16, 185, 129, 0.3);
-  background: rgba(16, 185, 129, 0.05);
+  @apply bg-success-500/5 border-success-500/30;
 }
 
 .checklist-item.missing {
-  border-color: rgba(239, 68, 68, 0.3);
+  @apply bg-dark-secondary;
 }
 
-.checklist-item.missing:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(239, 68, 68, 0.4);
+.light .checklist-item.missing {
+  @apply bg-light-secondary;
 }
 
 .check-icon {
-  font-size: 1.5rem;
-  flex-shrink: 0;
+  @apply flex-shrink-0 text-lg;
 }
 
 .checklist-item.completed .check-icon {
-  color: #10b981;
+  @apply text-success-400;
 }
 
 .checklist-item.missing .check-icon {
-  color: #ef4444;
+  @apply text-danger-400;
 }
 
 .check-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  @apply flex-1 min-w-0;
 }
 
 .check-label {
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.95rem;
+  @apply block text-sm font-medium text-text-primary;
+}
+
+.light .check-label {
+  @apply text-text-light-primary;
 }
 
 .check-description {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  @apply block text-xs text-text-tertiary mt-0.5;
+}
+
+.light .check-description {
+  @apply text-text-light-tertiary;
 }
 
 .btn-configure {
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  @apply flex items-center gap-2;
+  @apply px-3 py-1.5 rounded-lg;
+  @apply text-xs font-medium;
+  @apply bg-primary-600 text-white;
+  @apply hover:bg-primary-500;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500;
 }
 
-.btn-configure:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
-}
-
-/* Info Box */
+/* ===== INFO BOX ===== */
 .info-box {
-  display: flex;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: 12px;
+  @apply flex items-start gap-3;
+  @apply p-4 rounded-lg;
+  @apply bg-info-500/10 border border-info-500/30;
 }
 
 .info-icon {
-  font-size: 1.5rem;
-  color: #3b82f6;
-  flex-shrink: 0;
+  @apply flex-shrink-0 text-info-400 text-lg;
 }
 
 .info-content {
-  flex: 1;
+  @apply flex-1;
 }
 
 .info-title {
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0 0 0.5rem 0;
+  @apply text-sm font-semibold text-info-300 mb-1;
+}
+
+.light .info-title {
+  @apply text-info-700;
 }
 
 .info-text {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0;
-  line-height: 1.5;
+  @apply text-xs text-info-300/80;
 }
 
-/* Footer */
+.light .info-text {
+  @apply text-info-600;
+}
+
+/* ===== FOOTER ===== */
 .config-blocker-footer {
-  padding: 1.5rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+  @apply px-6 py-4;
+  @apply border-t border-dark-border;
+  @apply flex flex-col sm:flex-row items-center justify-center gap-3;
 }
 
-.btn-primary, .btn-secondary {
-  flex: 1;
-  padding: 0.875rem 1.5rem;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  min-width: 200px;
+.light .config-blocker-footer {
+  @apply border-light-border;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  @apply inline-flex items-center justify-center gap-2;
+  @apply w-full sm:w-auto px-6 py-2.5 rounded-lg;
+  @apply text-sm font-medium;
+  @apply bg-primary-600 text-white;
+  @apply hover:bg-primary-500;
+  @apply transition-all duration-200 ease-apple;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500;
+  @apply active:scale-[0.98];
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  @apply inline-flex items-center justify-center gap-2;
+  @apply w-full sm:w-auto px-6 py-2.5 rounded-lg;
+  @apply text-sm font-medium;
+  @apply bg-dark-elevated text-text-primary;
+  @apply border border-dark-border;
+  @apply hover:bg-dark-hover hover:border-dark-hover;
+  @apply transition-all duration-200 ease-apple;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-dark-border;
+  @apply active:scale-[0.98];
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-  .config-blocker-overlay {
-    padding: 1rem;
-  }
-
-  .blocker-title {
-    font-size: 1.5rem;
-  }
-
-  .blocker-subtitle {
-    font-size: 0.9rem;
-  }
-
-  .config-blocker-body {
-    padding: 1.5rem;
-    gap: 1.5rem;
-  }
-
-  .checklist-item {
-    flex-wrap: wrap;
-  }
-
-  .btn-configure {
-    width: 100%;
-    margin-top: 0.5rem;
-  }
-
-  .config-blocker-footer {
-    flex-direction: column;
-  }
-
-  .btn-primary, .btn-secondary {
-    min-width: 100%;
-  }
+.light .btn-secondary {
+  @apply bg-light-secondary text-text-light-primary border-light-border;
+  @apply hover:bg-light-hover;
 }
 </style>
+

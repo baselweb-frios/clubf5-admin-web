@@ -1,40 +1,63 @@
 <template>
-  <div v-if="show && pendingInvoices.length > 0" class="invoices-alert">
-    <div class="invoices-alert-content">
-      <div class="invoices-alert-header">
-        <div class="invoices-alert-icon" :class="{ 'icon-urgent': hasOverdueInvoices }">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-          </svg>
+  <div
+ v-if="show && pendingInvoices.length > 0"
+ class="alert"
+ :class="hasOverdueInvoices ? 'alert-danger' : 'alert-warning'"
+ >
+    <div class="flex-between">
+      <div class="flex items-start gap-3">
+        <div class="text-warning-500">
+          <i class="fas fa-exclamation-triangle" />
         </div>
-        <div class="invoices-alert-text">
-          <h3 class="invoices-alert-title">
-            {{ hasOverdueInvoices ? 'Facturas Vencidas' : 'Facturas Pendientes de Pago' }}
+        <div>
+          <h3 class="text-lg font-semibold">
+            {{ hasOverdueInvoices ? 'Recibos Vencidas' : 'Recibos Pendientes de Pago' }}
           </h3>
-          <p class="invoices-alert-description">
-            Tienes {{ pendingInvoices.length }} factura{{ pendingInvoices.length > 1 ? 's' : '' }}
+          <p class="text-text-secondary">
+            Tienes {{ pendingInvoices.length }} recibo{{ pendingInvoices.length > 1 ? 's' : '' }}
             {{ hasOverdueInvoices ? 'que requieren atención inmediata' : 'pendientes de pago' }}
           </p>
         </div>
-        <button @click="dismiss" class="invoices-alert-close" title="Cerrar">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
       </div>
+      <button
+ class="btn-icon"
+ title="Cerrar"
+ @click="dismiss"
+ >
+        <svg
+ class="w-5 h-5"
+ fill="none"
+ stroke="currentColor"
+ viewBox="0 0 24 24"
+ >
+          <path
+ stroke-linecap="round"
+ stroke-linejoin="round"
+ stroke-width="2"
+ d="M6 18L18 6M6 6l12 12"
+ />
+        </svg>
+      </button>
+    </div>
 
-      <div class="invoices-summary">
-        <div class="summary-item">
-          <span class="summary-label">Total a Pagar</span>
-          <span class="summary-value">{{ formatCurrency(totalAmount) }}</span>
+      <div class="grid grid-cols-3 gap-4 mt-4">
+        <div class="text-center">
+          <span class="text-xs text-text-secondary block">Total a Pagar</span>
+          <span class="text-lg font-semibold">{{ formatCurrency(totalAmount) }}</span>
         </div>
-        <div v-if="overdueCount > 0" class="summary-item summary-overdue">
-          <span class="summary-label">Vencidas</span>
-          <span class="summary-value">{{ overdueCount }}</span>
+        <div
+ v-if="overdueCount > 0"
+ class="text-center"
+ >
+          <span class="text-xs text-text-secondary block">Vencidas</span>
+          <span class="text-lg font-semibold text-danger-400">{{ overdueCount }}</span>
         </div>
-        <div v-if="upcomingCount > 0" class="summary-item">
-          <span class="summary-label">Por Vencer</span>
-          <span class="summary-value">{{ upcomingCount }}</span>
+        <div
+ v-if="upcomingCount > 0"
+ class="text-center"
+ >
+          <span class="text-xs text-text-secondary block">Por Vencer</span>
+          <span class="text-lg font-semibold">{{ upcomingCount }}</span>
         </div>
       </div>
 
@@ -47,38 +70,50 @@
         >
           <div class="invoice-info">
             <span class="invoice-number">{{ invoice.fac_numero }}</span>
+            <hr>
             <span class="invoice-date">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
+              <i class="fas fa-calendar-alt" />
               {{ formatDate(invoice.fac_vencimiento) }}
             </span>
           </div>
           <div class="invoice-amount">
             <span class="amount-value">{{ formatCurrency(invoice.fac_total) }}</span>
-            <span v-if="isOverdue(invoice)" class="overdue-badge">Vencida</span>
-            <span v-else-if="isDueSoon(invoice)" class="due-soon-badge">Por vencer</span>
+            <span
+v-if="isOverdue(invoice)"
+class="overdue-badge"
+>Vencida</span>
+            <span
+v-else-if="isDueSoon(invoice)"
+class="due-soon-badge"
+>Por vencer</span>
           </div>
         </div>
-        <div v-if="pendingInvoices.length > maxDisplay" class="invoices-more">
-          +{{ pendingInvoices.length - maxDisplay }} factura{{ pendingInvoices.length - maxDisplay > 1 ? 's' : '' }} más
+        <div
+v-if="pendingInvoices.length > maxDisplay"
+class="invoices-more"
+>
+          +{{ pendingInvoices.length - maxDisplay }} recibo{{ pendingInvoices.length - maxDisplay > 1 ? 's' : '' }} más
         </div>
       </div>
 
       <div class="invoices-alert-actions">
-        <button @click="goToInvoices" class="invoices-btn-primary">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-          </svg>
-          Ver Facturas
-        </button>
-        <button @click="remindLater" class="invoices-btn-secondary">
+        <button
+class="invoices-btn-primary"
+@click="goToInvoices"
+>
+          <i class="fas fa-file-invoice-dollar" />
+          Ver Recibos 
+        </button> 
+        <hr>
+        <button
+class="invoices-btn-secondary"
+@click="remindLater"
+>
+          <i class="fas fa-clock" />
           Recordar más tarde
         </button>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>
@@ -167,7 +202,7 @@ const remindLater = () => {
 
 const goToInvoices = () => {
   emit('view-invoices')
-  router.push('/facturas')
+  router.push('/Recibos')
 }
 
 onMounted(() => {
@@ -184,301 +219,162 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.invoices-alert {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
-  animation: slideDown 0.4s ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.invoices-alert-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.invoices-alert-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.invoices-alert-icon {
-  flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
-  background: rgba(239, 68, 68, 0.2);
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ef4444;
-}
-
-.invoices-alert-icon.icon-urgent {
-  background: rgba(239, 68, 68, 0.3);
-  animation: pulse-urgent 2s infinite;
-}
-
-@keyframes pulse-urgent {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
-  }
-}
-
-.invoices-alert-text {
-  flex: 1;
-}
-
-.invoices-alert-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary, #e5e7eb);
-  margin: 0 0 0.375rem 0;
-}
-
-.invoices-alert-description {
-  font-size: 0.875rem;
-  color: var(--text-secondary, #9ca3af);
-  margin: 0;
-}
-
-.invoices-alert-close {
-  flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-  padding: 0.5rem;
-  cursor: pointer;
-  color: var(--text-secondary, #9ca3af);
-  transition: all 0.2s ease;
-}
-
-.invoices-alert-close:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #ef4444;
-}
-
-.invoices-summary {
-  display: flex;
-  gap: 1.5rem;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.summary-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.summary-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary, #9ca3af);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.summary-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text-primary, #e5e7eb);
-}
-
-.summary-overdue .summary-value {
-  color: #ef4444;
-}
-
+/* ===== INVOICES LIST ===== */
 .invoices-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  @apply mt-4 space-y-2;
 }
 
+/* Invoice Item */
 .invoice-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.875rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0.625rem;
-  transition: all 0.2s ease;
+  @apply flex items-center justify-between;
+  @apply p-3 rounded-lg;
+  @apply bg-dark-secondary/50;
+  @apply border border-dark-border;
+  @apply transition-all duration-200;
+}
+
+.light .invoice-item {
+  @apply bg-light-secondary/50 border-light-border;
 }
 
 .invoice-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.1);
+  @apply bg-dark-hover;
 }
 
+.light .invoice-item:hover {
+  @apply bg-light-hover;
+}
+
+/* Overdue Invoice */
 .invoice-item.invoice-overdue {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.2);
+  @apply bg-danger-500/10 border-danger-500/30;
 }
 
+.invoice-item.invoice-overdue:hover {
+  @apply bg-danger-500/20;
+}
+
+/* Invoice Info */
 .invoice-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  @apply flex items-center gap-3;
+}
+
+.invoice-info hr {
+  @apply hidden;
 }
 
 .invoice-number {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary, #e5e7eb);
-  font-family: monospace;
+  @apply text-sm font-semibold text-text-primary;
+}
+
+.light .invoice-number {
+  @apply text-text-light-primary;
 }
 
 .invoice-date {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
-  color: var(--text-secondary, #9ca3af);
+  @apply flex items-center gap-1.5;
+  @apply text-xs text-text-tertiary;
 }
 
-.invoice-date svg {
-  width: 0.875rem;
-  height: 0.875rem;
+.light .invoice-date {
+  @apply text-text-light-tertiary;
 }
 
+.invoice-date i {
+  @apply text-xs;
+}
+
+/* Invoice Amount */
 .invoice-amount {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  @apply flex items-center gap-2;
 }
 
 .amount-value {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary, #e5e7eb);
+  @apply text-sm font-bold text-text-primary;
 }
 
+.light .amount-value {
+  @apply text-text-light-primary;
+}
+
+/* Badges */
 .overdue-badge {
-  display: inline-flex;
-  padding: 0.25rem 0.625rem;
-  background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: #f87171;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  @apply px-2 py-0.5 rounded-full;
+  @apply text-xs font-medium;
+  @apply bg-danger-500/20 text-danger-400;
 }
 
 .due-soon-badge {
-  display: inline-flex;
-  padding: 0.25rem 0.625rem;
-  background: rgba(245, 158, 11, 0.2);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  border-radius: 9999px;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: #fbbf24;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  @apply px-2 py-0.5 rounded-full;
+  @apply text-xs font-medium;
+  @apply bg-warning-500/20 text-warning-400;
 }
 
+/* More Invoices */
 .invoices-more {
-  text-align: center;
-  font-size: 0.8125rem;
-  color: var(--text-secondary, #9ca3af);
-  padding: 0.5rem;
+  @apply text-center py-2;
+  @apply text-xs text-text-tertiary;
 }
 
+.light .invoices-more {
+  @apply text-text-light-tertiary;
+}
+
+/* ===== ACTIONS ===== */
 .invoices-alert-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  @apply flex items-center gap-3 mt-4 pt-4;
+  @apply border-t border-dark-border/50;
 }
 
-.invoices-btn-primary,
-.invoices-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  border: none;
+.light .invoices-alert-actions {
+  @apply border-light-border/50;
 }
 
+.invoices-alert-actions hr {
+  @apply hidden;
+}
+
+/* Primary Button */
 .invoices-btn-primary {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  @apply inline-flex items-center gap-2;
+  @apply px-4 py-2 rounded-lg;
+  @apply text-sm font-medium;
+  @apply bg-primary-600 text-white;
+  @apply hover:bg-primary-500;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500;
+  @apply active:scale-[0.98];
 }
 
-.invoices-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-}
-
+/* Secondary Button */
 .invoices-btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-secondary, #9ca3af);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  @apply inline-flex items-center gap-2;
+  @apply px-4 py-2 rounded-lg;
+  @apply text-sm font-medium;
+  @apply bg-dark-elevated text-text-secondary;
+  @apply hover:bg-dark-hover hover:text-text-primary;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-dark-border;
+  @apply active:scale-[0.98];
 }
 
-.invoices-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: var(--text-primary, #e5e7eb);
+.light .invoices-btn-secondary {
+  @apply bg-light-secondary text-text-light-secondary;
+  @apply hover:bg-light-hover hover:text-text-light-primary;
 }
 
-@media (max-width: 640px) {
-  .invoices-alert {
-    padding: 1rem;
-  }
+/* ===== DISMISS BUTTON ===== */
+.btn-icon {
+  @apply p-2 rounded-lg;
+  @apply text-text-tertiary;
+  @apply hover:bg-dark-hover hover:text-text-primary;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500;
+}
 
-  .invoices-summary {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .invoices-alert-actions {
-    flex-direction: column;
-  }
-
-  .invoices-btn-primary,
-  .invoices-btn-secondary {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .invoice-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-
-  .invoice-amount {
-    width: 100%;
-    justify-content: space-between;
-  }
+.light .btn-icon {
+  @apply text-text-light-tertiary;
+  @apply hover:bg-light-hover hover:text-text-light-primary;
 }
 </style>
+

@@ -7,6 +7,7 @@ import LoginLayout from '@/layouts/LoginLayout.vue'
 import DynamicLayout from '@/layouts/DynamicLayout.vue'
 
 // Import pages
+import LandingPage from '@/pages/LandingPage.vue'
 import Login from '@/pages/Login.vue'
 import ForgotPassword from '@/pages/ForgotPassword.vue'
 import ResetPassword from '@/pages/ResetPassword.vue'
@@ -16,14 +17,14 @@ import NotFound from '@/pages/NotFound.vue'
 // Import route definitions
 import clienteRoutes from './routes/cliente'
 import administradorRoutes from './routes/administrador'
-import operadorRoutes from './routes/operador'
+
 import reproductorRoutes from './routes/reproductor'
 
 /**
  * Combine and deduplicate routes from all roles
  */
 const getAllUniqueRoutes = () => {
-  const allRoutes = [...clienteRoutes, ...administradorRoutes, ...operadorRoutes, ...reproductorRoutes]
+  const allRoutes = [...clienteRoutes, ...administradorRoutes, ...reproductorRoutes]
   const uniqueRoutes = []
   const seenPaths = new Set()
 
@@ -41,7 +42,14 @@ const getAllUniqueRoutes = () => {
  * Static routes configuration
  */
 const routes = [
-  // Login route
+  // Landing Page - Public home (shown when not authenticated)
+  {
+    path: '/inicio',
+    name: 'Landing',
+    component: LandingPage,
+    meta: { requiresAuth: false, title: 'Inicio' }
+  },
+  // Login route (kept for direct access)
   {
     path: '/login',
     component: LoginLayout,
@@ -94,7 +102,7 @@ const routes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: Dashboard,
-        meta: { requiresAuth: true, roles: ['Administrador', 'Cliente', 'Operador', 'Reproductor'] }
+        meta: { requiresAuth: true, roles: ['Administrador', 'Cliente', 'Reproductor'] }
       },
       ...getAllUniqueRoutes()
     ]
@@ -135,13 +143,13 @@ router.beforeEach(async (to, from, next) => {
   // If trying to access a protected route without authentication
   if (requiresAuth && !authStore.isAuthenticated) {
     return next({
-      name: 'Login',
+      name: 'Landing',
       query: { redirect: to.fullPath }
     })
   }
 
-  // If authenticated user tries to access login page
-  if (to.name === 'Login' && authStore.isAuthenticated) {
+  // If authenticated user tries to access login page or landing page
+  if ((to.name === 'Login' || to.name === 'Landing') && authStore.isAuthenticated) {
     return next({ name: 'Dashboard' })
   }
 

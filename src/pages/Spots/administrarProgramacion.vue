@@ -1,119 +1,252 @@
 <template>
-  <div >
-
-
-    <b-form-group label="Sucursales">
-      <b-form-select v-model="datosProgSpot.usuario"  class="mb-3">
+  <div>
+<b-form-group label="Sucursales">
+      <b-form-select
+v-model="datosProgSpot.usuario"
+class="mb-3"
+>
       <b-form-select-option :value="currentUserName">
-        <p v-if="datosProgSpot.usuario==currentUserName">Usuario elegido: {{currentUserName}}</p>
-        <p v-if="datosProgSpot.usuario!=currentUserName">Programar para: {{currentUserName}}</p>
+        <p v-if="datosProgSpot.usuario==currentUserName">
+Usuario elegido: {{ currentUserName }}
+</p>
+        <p v-if="datosProgSpot.usuario!=currentUserName">
+Programar para: {{ currentUserName }}
+</p>
       </b-form-select-option>
 
-    <b-form-select-option v-for="(sucu,ix) in listaSucursales" :key="ix+1" :value="sucu.usuario" >
-      <p v-if="datosProgSpot.usuario==sucu.usuario">Usuario elegido: {{datosProgSpot.usuario}}</p>
-      <p v-if="datosProgSpot.usuario!=sucu.usuario">Programar para: {{sucu.usuario}}</p>  </b-form-select-option>
+    <b-form-select-option
+v-for="(sucu,ix) in listaSucursales"
+:key="ix+1"
+:value="sucu.usuario"
+>
+      <p v-if="datosProgSpot.usuario==sucu.usuario">
+Usuario elegido: {{ datosProgSpot.usuario }}
+</p>
+      <p v-if="datosProgSpot.usuario!=sucu.usuario">
+Programar para: {{ sucu.usuario }}
+</p>
+</b-form-select-option>
     </b-form-select>
     </b-form-group>
     <b-card-group deck>
-     <b-card title="Programación pautas publicitarias" class="p-2" style="width: 15px;" v-if="showFormPauta">
-      <b-form-group label="Tipos de spot publicitario" class="p-2">
+     <b-card
+v-if="showFormPauta"
+title="Programación pautas publicitarias"
+class="p-2"
+style="width: 15px;"
+>
+      <b-form-group
+label="Tipos de spot publicitario"
+class="p-2"
+>
       <b-form-radio-group
         id="radio-tipo-spot"
         v-model="tipoSelected"
         :options="tipoSpot"
 
         name="spot-tipo-options"
-      ></b-form-radio-group>
+      />
     </b-form-group>
-    <b-form-group label="Spots disponibles" v-if="datosProgSpot.numeroDia.length>0">
-      <TagSpot :options="getSpotDisponibles" :tipoSpot="tipoSelected"  :horadesde="datosProgSpot.horasDesde" @remove-codspot="removeCodSpot" @update-codspot="updateCodSpot" @set-spot="setSpot" ></TagSpot>
+    <b-form-group
+v-if="datosProgSpot.numeroDia.length>0"
+label="Spots disponibles"
+>
+      <TagSpot
+:options="getSpotDisponibles"
+:tipo-spot="tipoSelected"
+:horadesde="datosProgSpot.horasDesde"
+@remove-codspot="removeCodSpot"
+@update-codspot="updateCodSpot"
+@set-spot="setSpot"
+/>
     </b-form-group>
-      <b-form-group v-if="programacion.length>0" label="Días de la semana">
+      <b-form-group
+v-if="programacion.length>0"
+label="Días de la semana"
+>
         <b-form-checkbox-group
-          label="Días de la semana"
           id="dias-semana"
           v-model="datosProgSpot.numeroDia"
+          label="Días de la semana"
           :options="filtroSemana"
           :aria-describedby="ariaDescribedby"
           name="dias-semana"
-        ></b-form-checkbox-group>
+        />
       </b-form-group>
 
-    <b-form-group label="Hora desde:"
+    <b-form-group
+v-if="programacion.length>0"
+      label="Hora desde:"
       label-class="font-weight-bold pt-0"
-      v-if="programacion.length>0"
       >
-     <b-form-input class="form-control-sm bg-dark" v-model="datosProgSpot.horasDesde" @keypress.enter="setAddHoraDesde" id="horadesde" type="time"  min="00:00" max="23:55" step="2"></b-form-input>
-    <b-button @click="addCadaXtime"><b-icon-clock></b-icon-clock> Agregar cada 5 minutos</b-button>
+     <b-form-input
+id="horadesde"
+v-model="datosProgSpot.horasDesde"
+class="form-control-sm bg-dark"
+type="time"
+min="00:00"
+max="23:55"
+step="2"
+@keypress.enter="setAddHoraDesde"
+/>
+    <b-button @click="addCadaXtime">
+<b-icon-clock /> Agregar cada 5 minutos
+</b-button>
     </b-form-group>
-
-
-
-
-        </b-card>
+</b-card>
         <b-card title="Detalle de la programación">
           <b-card-header>
             <b-row class="p-2">
-  <b-button-toolbar key-nav aria-label="acciones">
-                    <b-button-group class="mx-1" v-if="progSpots.filter(prog=>prog.codPautaSpot==-1).length>0">
-                      <b-button size="sm" title="Confirmar todos" @click="confirmar(progSpots)">
-                        <b-icon icon="cloud-upload" aria-hidden="true">Confirmar</b-icon>
+  <b-button-toolbar
+key-nav
+aria-label="acciones"
+>
+                    <b-button-group
+v-if="progSpots.filter(prog=>prog.codPautaSpot==-1).length>0"
+class="mx-1"
+>
+                      <b-button
+size="sm"
+title="Confirmar todos"
+@click="confirmar(progSpots)"
+>
+                        <b-icon
+icon="cloud-upload"
+aria-hidden="true"
+>
+Confirmar
+</b-icon>
                       </b-button>
-                      <b-button size="sm" title="Eliminar todos" @click="progSpots=[]">
-                        <b-icon icon="trash-fill" aria-hidden="true">Eliminar</b-icon>
+                      <b-button
+size="sm"
+title="Eliminar todos"
+@click="progSpots=[]"
+>
+                        <b-icon
+icon="trash-fill"
+aria-hidden="true"
+>
+Eliminar
+</b-icon>
                       </b-button>
                     </b-button-group>
                   </b-button-toolbar>
                   <b-button-group class="mx-1">
-                      <b-button size="sm" title="Agregar" @click="showFormPauta=!showFormPauta">
-                        <b-icon icon="plus-circle" aria-hidden="true">Confirmar</b-icon>
+                      <b-button
+size="sm"
+title="Agregar"
+@click="showFormPauta=!showFormPauta"
+>
+                        <b-icon
+icon="plus-circle"
+aria-hidden="true"
+>
+Confirmar
+</b-icon>
                       </b-button>
                       <!-- <b-button size="sm" title="Eliminar todos" @click="">
                         <b-icon icon="trash-fill" aria-hidden="true">Eliminar</b-icon>
                       </b-button> -->
                     </b-button-group>
-
 </b-row>
           </b-card-header>
-          <b-table-simple  hover small head-variant="light" caption-top
-            responsive sticky-header="500px" id="prog-spots" class="table tablesorter table-bordered">
-            <b-thead >
+          <b-table-simple
+id="prog-spots"
+hover
+small
+head-variant="light"
+            caption-top
+responsive
+sticky-header="500px"
+class="table tablesorter table-bordered"
+>
+            <b-thead>
               <b-tr>
-
-                <b-th scope="col" class="text-center" variant="dark" >Horarios</b-th>
-                <b-th scope="col" class="text-center" variant="dark" v-for="dia in filtroSemana" :key="dia.value">{{dia.text.substring(0,2)}}</b-th>
-                <b-th scope="col" class="text-center" variant="dark" >Quitar</b-th>
+<b-th
+scope="col"
+class="text-center"
+variant="dark"
+>
+Horarios
+</b-th>
+                <b-th
+v-for="dia in filtroSemana"
+:key="dia.value"
+scope="col"
+class="text-center"
+variant="dark"
+>
+{{ dia.text.substring(0,2) }}
+</b-th>
+                <b-th
+scope="col"
+class="text-center"
+variant="dark"
+>
+Quitar
+</b-th>
               </b-tr>
             </b-thead>
             <b-tbody>
-              <b-tr style="height: 10vh;" v-for="(detalle,hora) in generarDetalle" :key="hora">
+              <b-tr
+v-for="(detalle,hora) in generarDetalle"
+:key="hora"
+style="height: 10vh;"
+>
+<b-td
+class="text-center bg-dark"
+:sticky-column="true"
+>
+<h5 style="color: white;">
+{{ hora }}
+</h5>
+</b-td>
 
-                      <b-td class="text-center bg-dark" :stickyColumn="true"><h5 style="color: white;">{{ hora }}</h5></b-td>
-
-                      <b-td  v-for="dia in filtroSemana" :key="dia.text">
+                      <b-td
+v-for="dia in filtroSemana"
+:key="dia.text"
+>
                         <div class="d-flex flex-row">
-                          <div class="p-2 m-2 border border-light" v-for="spot in detalle[dia.value]" :key="spot.codSpot" :class="spot.classTipo" >
-                            <h5 style="color: white;"><strong>{{ spot.nombreSpot }}</strong></h5>
+                          <div
+v-for="spot in detalle[dia.value]"
+:key="spot.codSpot"
+class="p-2 m-2 border border-light"
+:class="spot.classTipo"
+>
+                            <h5 style="color: white;">
+<strong>{{ spot.nombreSpot }}</strong>
+</h5>
                           </div>
                         </div>
                       </b-td>
 
 
-<b-td scope="col" class="text-center">
-  <b-button-toolbar key-nav aria-label="Acciones" >
+<b-td
+scope="col"
+class="text-center"
+>
+  <b-button-toolbar
+key-nav
+aria-label="Acciones"
+>
     <b-button-group class="mx-1">
-      <b-button size="sm" title="Eliminar" @click="eliminarProgSpot()">
-        <b-icon icon="trash-fill" aria-hidden="true"></b-icon>
+      <b-button
+size="sm"
+title="Eliminar"
+@click="eliminarProgSpot()"
+>
+        <b-icon
+icon="trash-fill"
+aria-hidden="true"
+/>
       </b-button>
     </b-button-group>
   </b-button-toolbar>
-
-  </b-td>
+</b-td>
 </b-tr>
             </b-tbody>
             </b-table-simple>
-
-        </b-card>
+</b-card>
       </b-card-group>
 
 
@@ -126,7 +259,13 @@
 
 
 
-    <loading-overlay :show="isLoading" opacity="0.4" color="#1d8cf8" height="95px" text="Cargando programación..." />
+    <loading-overlay
+:show="isLoading"
+opacity="0.4"
+color="#1d8cf8"
+height="95px"
+text="Cargando programación..."
+/>
   </div>
 </template>
 
@@ -235,6 +374,97 @@ export default {
       currentCliente: null,
       usuariOrigen: ''
     }
+  },
+  computed: {
+    generarDetalle() {
+      if(this.progSpots.length==0) return {};
+
+      const groupSpot = Object.groupBy(this.progSpots,({horaDesde})=>horaDesde)
+      const horarios = Object.keys(groupSpot)
+      let detalle = {}
+      for (let hora of horarios) {
+        const spots = groupSpot[hora]
+        let result = []
+        for (const spotprog of spots){
+          const spot = this.spotsDisponibles.find(spo=>spo.codSpot==spotprog.codigoSpot)
+          if(spot==undefined){
+            console.warn(`Spot con código ${spotprog.codigoSpot} no encontrado en spotsDisponibles`)
+            continue;
+          }
+          const tipoSpotObj = this.tipoSpot.find(t=>t.value==spot.tipo)
+          if(!tipoSpotObj){
+            console.warn(`Tipo de spot ${spot.tipo} no encontrado`)
+            continue;
+          }
+          result.push({
+            ...spot,
+            classTipo: tipoSpotObj.class,
+            dia:spotprog.numeroDia,
+            horarios: hora
+          })
+        }
+        detalle[hora]=Object.groupBy(result,({dia})=>dia)
+      }
+      return detalle
+    },
+    getSpotDisponibles(){
+
+      return this.spotsDisponibles.filter(spot=>spot.tipo==this.tipoSelected)
+    },
+    isValidForm() {
+      const isSelectedDiaSemana = this.datosProgSpot.numeroDia.length>0
+      const isSelectedSpot = this.datosProgSpot.codSpot.length>0
+      return isSelectedDiaSemana&&isSelectedHora&&isSelectedSpot
+    },
+
+    ExistCopy(){
+      return this.copiaPautados.filter(cp=>cp.clprsp_numeroDia!=this.datosProgSpot.numeroDia).length>0
+    }
+    ,
+    filterSpots() {
+      return this.spotsDisponibles.filter((spot) => { return (spot.nombreSpot.toLowerCase().includes(this.searchNameSpot.toLowerCase()) && spot.tipo == this.tipoSelected) })
+    }
+  },
+  watch: {
+
+
+    'datosProgSpot.codSpot'(codeSpots){
+     if(codeSpots.length==0) return;
+     this.datosProgSpot.totalminutos=codeSpots.map(code=>this.spotsDisponibles.find(spo=>spo.codSpot==code).duracion).reduce((sum,valCurrent)=>sum+valCurrent,0)
+
+    },
+    'datosProgSpot.totalminutos'(val){
+     const step = (val>5)?val:5
+     this.horaFinal = moment(this.horaInicial,'HH:mm').add(step,'minutes').format("HH:mm")
+
+    },
+    'datosProgSpot.numeroDia'(val){
+     const step = (val>5)?val:5
+     this.updateCodSpot(this.programacion)
+
+    },
+
+    progSpots(){
+      this.tableView = Object.groupBy(this.progSpots,({horaDesde})=>horaDesde)
+    },
+    horaInicial(){
+      const step = (this.datosProgSpot.totalminutos>5)?this.datosProgSpot.totalminutos:5
+     this.horaFinal = moment(this.horaInicial,'HH:mm').add(step,'minutes').format("HH:mm")
+
+    }
+
+
+  },
+
+  created() {
+    this.getCurrentUser()
+    this.verificarParametros()
+    this.inicializar()
+
+  },
+
+
+  mounted() {
   },
 
   methods: {
@@ -665,97 +895,6 @@ this.updateCodSpot(auxProg)
     },
 
 
-  },
-
-  created() {
-    this.getCurrentUser()
-    this.verificarParametros()
-    this.inicializar()
-
-  },
-
-
-  mounted() {
-  },
-  watch: {
-
-
-    'datosProgSpot.codSpot'(codeSpots){
-     if(codeSpots.length==0) return;
-     this.datosProgSpot.totalminutos=codeSpots.map(code=>this.spotsDisponibles.find(spo=>spo.codSpot==code).duracion).reduce((sum,valCurrent)=>sum+valCurrent,0)
-
-    },
-    'datosProgSpot.totalminutos'(val){
-     const step = (val>5)?val:5
-     this.horaFinal = moment(this.horaInicial,'HH:mm').add(step,'minutes').format("HH:mm")
-
-    },
-    'datosProgSpot.numeroDia'(val){
-     const step = (val>5)?val:5
-     this.updateCodSpot(this.programacion)
-
-    },
-
-    progSpots(){
-      this.tableView = Object.groupBy(this.progSpots,({horaDesde})=>horaDesde)
-    },
-    horaInicial(){
-      const step = (this.datosProgSpot.totalminutos>5)?this.datosProgSpot.totalminutos:5
-     this.horaFinal = moment(this.horaInicial,'HH:mm').add(step,'minutes').format("HH:mm")
-
-    }
-
-
-  },
-  computed: {
-    generarDetalle() {
-      if(this.progSpots.length==0) return {};
-
-      const groupSpot = Object.groupBy(this.progSpots,({horaDesde})=>horaDesde)
-      const horarios = Object.keys(groupSpot)
-      let detalle = {}
-      for (let hora of horarios) {
-        const spots = groupSpot[hora]
-        let result = []
-        for (const spotprog of spots){
-          const spot = this.spotsDisponibles.find(spo=>spo.codSpot==spotprog.codigoSpot)
-          if(spot==undefined){
-            console.warn(`Spot con código ${spotprog.codigoSpot} no encontrado en spotsDisponibles`)
-            continue;
-          }
-          const tipoSpotObj = this.tipoSpot.find(t=>t.value==spot.tipo)
-          if(!tipoSpotObj){
-            console.warn(`Tipo de spot ${spot.tipo} no encontrado`)
-            continue;
-          }
-          result.push({
-            ...spot,
-            classTipo: tipoSpotObj.class,
-            dia:spotprog.numeroDia,
-            horarios: hora
-          })
-        }
-        detalle[hora]=Object.groupBy(result,({dia})=>dia)
-      }
-      return detalle
-    },
-    getSpotDisponibles(){
-
-      return this.spotsDisponibles.filter(spot=>spot.tipo==this.tipoSelected)
-    },
-    isValidForm() {
-      const isSelectedDiaSemana = this.datosProgSpot.numeroDia.length>0
-      const isSelectedSpot = this.datosProgSpot.codSpot.length>0
-      return isSelectedDiaSemana&&isSelectedHora&&isSelectedSpot
-    },
-
-    ExistCopy(){
-      return this.copiaPautados.filter(cp=>cp.clprsp_numeroDia!=this.datosProgSpot.numeroDia).length>0
-    }
-    ,
-    filterSpots() {
-      return this.spotsDisponibles.filter((spot) => { return (spot.nombreSpot.toLowerCase().includes(this.searchNameSpot.toLowerCase()) && spot.tipo == this.tipoSelected) })
-    }
   }
 }
 </script>

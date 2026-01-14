@@ -177,7 +177,8 @@ userService.toggleActivarUsuario = async function(userId, activo) {
  */
 userService.requestPasswordReset = async function(email) {
   try {
-    const response = await api.post('/Admin/solicitar-recuperacion', { email })
+    const UrlResetPassword = import.meta.env.VITE_RESET_PASSWORD_URL || 'https://localhost:3000/reset-password'
+    const response = await api.post('/Admin/solicitar-recuperacion', { email , UrlResetPassword})
     return response.data
   } catch (error) {
     console.error('Error solicitando recuperación de contraseña:', error)

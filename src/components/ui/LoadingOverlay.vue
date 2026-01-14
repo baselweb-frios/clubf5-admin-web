@@ -1,7 +1,11 @@
 <template>
   <div class="overlay-container">
     <transition name="fade">
-      <div v-if="show" class="overlay" :style="overlayStyle">
+      <div
+v-if="show"
+class="overlay"
+:style="overlayStyle"
+>
         <div class="overlay-content">
           <slot name="overlay">
             <loading-spinner
@@ -56,64 +60,43 @@ const overlayStyle = computed(() => {
 </script>
 
 <style scoped>
-/* ===== PREMIUM LOADING OVERLAY - DARK MODE ===== */
+/* Container */
 .overlay-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
+  @apply relative;
 }
 
+/* Overlay */
 .overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(10, 10, 10, 0.95);
-  backdrop-filter: blur(20px) saturate(180%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: var(--z-modal);
-  pointer-events: auto;
-  animation: fadeIn 0.2s ease-out;
+  @apply absolute inset-0 z-50;
+  @apply bg-dark-primary/90 backdrop-blur-sm;
+  @apply flex items-center justify-center;
+  @apply rounded-xl;
 }
 
+.light .overlay {
+  @apply bg-light-primary/90;
+}
+
+/* Content */
 .overlay-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background: rgba(26, 26, 26, 0.8);
-  backdrop-filter: blur(40px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-2xl);
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    0 25px 50px -12px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(59, 130, 246, 0.2);
+  @apply flex flex-col items-center justify-center gap-3;
+  @apply p-4;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
+/* Fade Transition */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  @apply transition-opacity duration-300 ease-apple;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-  opacity: 0;
+  @apply opacity-0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  @apply opacity-100;
 }
 </style>
+

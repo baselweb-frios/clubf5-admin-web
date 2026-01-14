@@ -1,164 +1,258 @@
 <template>
-  <div class="config-cliente-container">
+  <div class="page-wrapper">
     <!-- Alert Notifications -->
-    <div v-if="alertMsg" class="notification-container">
-      <div :class="['notification', alertType]">
-        <div class="notification-content">
-          <i :class="getAlertIcon(alertType)" class="notification-icon"></i>
-          <span class="notification-text">{{ alertMsg }}</span>
-        </div>
-        <button class="notification-close" @click="alertMsg = ''" aria-label="Cerrar notificación">
-          <i class="fas fa-times"></i>
+    <div
+v-if="alertMsg"
+class="fixed top-4 left-1/2 -translate-x-1/2 z-50"
+>
+      <div
+:class="['alert p-4 rounded-lg border', 
+        alertType === 'notification-success' ? 'alert-success' : 
+        alertType === 'notification-danger' ? 'alert-danger' :
+        alertType === 'notification-warning' ? 'alert-warning' : 'alert-info']"
+>
+        <i :class="getAlertIcon(alertType)" />
+        <span>{{ alertMsg }}</span>
+        <button
+class="ml-auto"
+aria-label="Cerrar notificación"
+@click="alertMsg = ''"
+>
+          <i class="fas fa-times" />
         </button>
       </div>
     </div>
 
     <!-- Header -->
-    <div class="config-header">
-      <div class="header-content">
-        <div class="header-icon">
-          <i class="fas fa-cog"></i>
+    <div class="page-header bg-gradient-to-r from-primary-600 to-primary-700 text-white p-6 sm:p-8 rounded-xl mb-6 sm:mb-8">
+      <div class="flex items-start gap-4">
+        <div class="text-3xl sm:text-4xl">
+          <i class="fas fa-cog" />
         </div>
-        <div class="header-text">
-          <h1 class="header-title">Configuración del Cliente</h1>
-          <p class="header-subtitle">Configure horarios, días disponibles y tipo de empresa</p>
+        <div>
+          <h1 class="text-3xl sm:text-4xl font-bold">
+Configuración del Cliente
+</h1>
+          <p class="text-primary-100 mt-2">
+Configure horarios, días disponibles y tipo de empresa
+</p>
         </div>
       </div>
     </div>
 
     <!-- Loading State -->
-    <loading-spinner v-if="loading" :loading="true" text="Cargando configuración..." />
+    <loading-spinner
+v-if="loading"
+:loading="true"
+text="Cargando configuración..."
+/>
 
     <!-- Content -->
-    <div v-else class="config-content">
+    <div
+v-else
+class="page-content"
+>
       <!-- Sección: Horarios Disponibles -->
-      <div class="config-card">
-        <div class="card-header">
-          <div class="card-title-section">
-            <i class="fas fa-clock"></i>
-            <h2 class="card-title">Horarios Disponibles</h2>
+      <div class="card mb-6">
+        <div class="border-b border-dark-border pb-4 mb-4 flex-between">
+          <div class="flex items-center gap-3">
+            <i class="fas fa-clock text-primary-400 text-lg" />
+            <h2 class="text-xl font-semibold text-text-primary">
+Horarios Disponibles
+</h2>
           </div>
           <button
             v-if="!hasHorario"
-            @click="showHorarioForm = true"
             class="btn btn-primary btn-sm"
+            @click="showHorarioForm = true"
           >
-            <i class="fas fa-plus"></i>
+            <i class="fas fa-plus" />
             Configurar Horario
           </button>
         </div>
 
-        <div v-if="hasHorario" class="card-body">
-          <div class="info-row">
-            <div class="info-item">
-              <span class="info-label">Hora Inicio:</span>
-              <span class="info-value">{{ horario.cliHor_horaDesde }}</span>
+        <div
+v-if="hasHorario"
+class="space-y-4"
+>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-text-secondary mb-1">
+Hora Inicio:
+</p>
+              <p class="text-lg font-semibold text-text-primary">
+{{ horario.cliHor_horaDesde }}
+</p>
             </div>
-            <div class="info-item">
-              <span class="info-label">Hora Fin:</span>
-              <span class="info-value">{{ horario.cliHor_horaHasta }}</span>
+            <div>
+              <p class="text-sm text-text-secondary mb-1">
+Hora Fin:
+</p>
+              <p class="text-lg font-semibold text-text-primary">
+{{ horario.cliHor_horaHasta }}
+</p>
             </div>
-            <button @click="showHorarioForm = true" class="btn btn-outline btn-sm">
-              <i class="fas fa-edit"></i>
+          </div>
+          <div class="flex gap-2">
+            <button
+class="btn btn-secondary btn-sm"
+@click="showHorarioForm = true"
+>
+              <i class="fas fa-edit" />
               Editar
             </button>
           </div>
         </div>
 
-        <div v-else class="card-empty">
-          <i class="fas fa-clock-o"></i>
-          <p>No hay horarios configurados</p>
-          <button @click="showHorarioForm = true" class="btn btn-primary">
-            <i class="fas fa-plus"></i>
+        <div
+v-else
+class="flex flex-col items-center justify-center py-8 text-center"
+>
+          <i class="fas fa-clock text-3xl text-text-tertiary mb-3" />
+          <p class="text-text-secondary mb-4">
+No hay horarios configurados
+</p>
+          <button
+class="btn btn-primary"
+@click="showHorarioForm = true"
+>
+            <i class="fas fa-plus" />
             Configurar Ahora
           </button>
         </div>
       </div>
 
       <!-- Sección: Días Disponibles -->
-      <div class="config-card">
-        <div class="card-header">
-          <div class="card-title-section">
-            <i class="fas fa-calendar"></i>
-            <h2 class="card-title">Días Disponibles</h2>
+      <div class="card mb-6">
+        <div class="border-b border-dark-border pb-4 mb-4 flex-between">
+          <div class="flex items-center gap-3">
+            <i class="fas fa-calendar text-primary-400 text-lg" />
+            <h2 class="text-xl font-semibold text-text-primary">
+Días Disponibles
+</h2>
           </div>
           <button
             v-if="!hasDias"
-            @click="showDiasForm = true"
             class="btn btn-primary btn-sm"
+            @click="showDiasForm = true"
           >
-            <i class="fas fa-plus"></i>
+            <i class="fas fa-plus" />
             Configurar Días
           </button>
         </div>
 
-        <div v-if="hasDias" class="card-body">
-          <div class="dias-grid">
+        <div
+v-if="hasDias"
+class="space-y-4"
+>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2">
             <div
               v-for="dia in diasSemana"
               :key="dia.value"
-              :class="['dia-chip', { 'active': isDiaSeleccionado(dia.value) }]"
+              :class="['px-3 py-2 rounded-lg font-medium text-sm flex items-center justify-center transition-all', 
+                isDiaSeleccionado(dia.value) 
+                  ? 'bg-success-600 text-white' 
+                  : 'bg-dark-secondary text-text-secondary border border-dark-border']"
             >
-              <i class="fas fa-check-circle" v-if="isDiaSeleccionado(dia.value)"></i>
+              <i
+v-if="isDiaSeleccionado(dia.value)"
+class="fas fa-check-circle mr-1"
+/>
               {{ dia.text }}
             </div>
           </div>
-          <button @click="showDiasForm = true" class="btn btn-outline btn-sm mt-3">
-            <i class="fas fa-edit"></i>
+          <button
+class="btn btn-secondary btn-sm"
+@click="showDiasForm = true"
+>
+            <i class="fas fa-edit" />
             Editar
           </button>
         </div>
 
-        <div v-else class="card-empty">
-          <i class="fas fa-calendar-o"></i>
-          <p>No hay días configurados</p>
-          <button @click="showDiasForm = true" class="btn btn-primary">
-            <i class="fas fa-plus"></i>
+        <div
+v-else
+class="flex flex-col items-center justify-center py-8 text-center"
+>
+          <i class="fas fa-calendar text-3xl text-text-tertiary mb-3" />
+          <p class="text-text-secondary mb-4">
+No hay días configurados
+</p>
+          <button
+class="btn btn-primary"
+@click="showDiasForm = true"
+>
+            <i class="fas fa-plus" />
             Configurar Ahora
           </button>
         </div>
       </div>
 
       <!-- Sección: Tipo de Empresa -->
-      <div class="config-card">
-        <div class="card-header">
-          <div class="card-title-section">
-            <i class="fas fa-building"></i>
-            <h2 class="card-title">Tipo de Empresa</h2>
+      <div class="card mb-6">
+        <div class="border-b border-dark-border pb-4 mb-4 flex-between">
+          <div class="flex items-center gap-3">
+            <i class="fas fa-building text-primary-400 text-lg" />
+            <h2 class="text-xl font-semibold text-text-primary">
+Tipo de Empresa
+</h2>
           </div>
           <button
             v-if="!hasTipoEmpresa"
-            @click="showTipoEmpresaForm = true"
             class="btn btn-primary btn-sm"
+            @click="showTipoEmpresaForm = true"
           >
-            <i class="fas fa-plus"></i>
+            <i class="fas fa-plus" />
             Configurar Tipo
           </button>
         </div>
 
-        <div v-if="hasTipoEmpresa && tiposEmpresa.length > 0" class="card-body">
-          <div class="tipo-empresa-display">
-            <div class="tipo-empresa-info">
-              <div class="tipo-empresa-badge">
-                <i class="fas fa-tag"></i>
-                <div class="tipo-empresa-details">
-                  <span class="tipo-empresa-nombre">{{ tiposEmpresa[0].tipEmp_nombre }}</span>
-                  <span class="tipo-empresa-grupo">{{ getGrupoNombre(tiposEmpresa[0].tipEmp_codigoTipoEmpGrupo) }}</span>
-                </div>
+        <div
+v-if="hasTipoEmpresa && tiposEmpresa.length > 0"
+class="space-y-4"
+>
+          <div class="bg-dark-secondary rounded-lg p-4 border border-dark-border">
+            <div class="flex items-center gap-3">
+              <div class="badge badge-primary text-base p-3 rounded-lg">
+                <i class="fas fa-tag text-lg" />
+              </div>
+              <div>
+                <p class="text-sm text-text-secondary">
+Tipo de Empresa
+</p>
+                <p class="text-lg font-semibold text-text-primary">
+{{ tiposEmpresa[0].tipEmp_nombre }}
+</p>
+                <p class="text-xs text-text-tertiary mt-1">
+{{ getGrupoNombre(tiposEmpresa[0].tipEmp_codigoTipoEmpGrupo) }}
+</p>
               </div>
             </div>
-            <button @click="editarTipoEmpresa" class="btn btn-outline btn-sm">
-              <i class="fas fa-edit"></i>
+          </div>
+          <div>
+            <button
+class="btn btn-secondary btn-sm"
+@click="editarTipoEmpresa"
+>
+              <i class="fas fa-edit" />
               Editar
             </button>
           </div>
         </div>
 
-        <div v-else class="card-empty">
-          <i class="fas fa-building-o"></i>
-          <p>No hay tipos de empresa configurados</p>
-          <button @click="showTipoEmpresaForm = true" class="btn btn-primary">
-            <i class="fas fa-plus"></i>
+        <div
+v-else
+class="flex flex-col items-center justify-center py-8 text-center"
+>
+          <i class="fas fa-building text-3xl text-text-tertiary mb-3" />
+          <p class="text-text-secondary mb-4">
+No hay tipos de empresa configurados
+</p>
+          <button
+class="btn btn-primary"
+@click="showTipoEmpresaForm = true"
+>
+            <i class="fas fa-plus" />
             Configurar Ahora
           </button>
         </div>
@@ -167,50 +261,67 @@
 
     <!-- Modal: Configurar Horario -->
     <transition name="modal-fade">
-      <div v-if="showHorarioForm" class="modal-overlay" @click.self="closeHorarioForm">
-        <div class="modal-content">
+      <div
+v-if="showHorarioForm"
+class="modal-backdrop"
+@click.self="closeHorarioForm"
+>
+        <div class="modal">
           <div class="modal-header">
-            <h3 class="modal-title">
-              <i class="fas fa-clock"></i>
+            <h3 class="text-lg font-semibold text-text-primary">
+              <i class="fas fa-clock" />
               Configurar Horarios
             </h3>
-            <button @click="closeHorarioForm" class="modal-close">
-              <i class="fas fa-times"></i>
+            <button
+class="btn btn-ghost btn-icon"
+@click="closeHorarioForm"
+>
+              <i class="fas fa-times" />
             </button>
           </div>
           <div class="modal-body">
             <div class="form-group">
-              <label class="form-label">
-                <i class="fas fa-sun"></i>
+              <label class="label">
+                <i class="fas fa-sun" />
                 Hora de Inicio
               </label>
               <input
                 v-model="formHorario.horaDesde"
                 type="time"
-                class="form-input"
+                class="input"
                 required
-              />
+              >
             </div>
             <div class="form-group">
-              <label class="form-label">
-                <i class="fas fa-moon"></i>
+              <label class="label">
+                <i class="fas fa-moon" />
                 Hora de Fin
               </label>
               <input
                 v-model="formHorario.horaHasta"
                 type="time"
-                class="form-input"
+                class="input"
                 required
-              />
+              >
             </div>
           </div>
           <div class="modal-footer">
-            <button @click="closeHorarioForm" class="btn btn-secondary">
-              <i class="fas fa-times"></i>
+            <button
+class="btn btn-secondary"
+@click="closeHorarioForm"
+>
+              <i class="fas fa-times" />
               Cancelar
             </button>
-            <button @click="guardarHorario" class="btn btn-primary" :disabled="saving">
-              <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+            <button
+class="btn btn-primary"
+:disabled="saving"
+@click="guardarHorario"
+>
+              <i
+class="fas"
+:class="saving ? 'fa-spinner fa-spin' : 'fa-save'"
+/>
               {{ saving ? 'Guardando...' : 'Guardar' }}
             </button>
           </div>
@@ -220,44 +331,62 @@
 
     <!-- Modal: Configurar Días -->
     <transition name="modal-fade">
-      <div v-if="showDiasForm" class="modal-overlay" @click.self="closeDiasForm">
-        <div class="modal-content">
+      <div
+v-if="showDiasForm"
+class="modal-backdrop"
+@click.self="closeDiasForm"
+>
+        <div class="modal">
           <div class="modal-header">
-            <h3 class="modal-title">
-              <i class="fas fa-calendar"></i>
+            <h3 class="text-lg font-semibold text-text-primary">
+              <i class="fas fa-calendar" />
               Configurar Días Disponibles
             </h3>
-            <button @click="closeDiasForm" class="modal-close">
-              <i class="fas fa-times"></i>
+            <button
+class="btn btn-ghost btn-icon"
+@click="closeDiasForm"
+>
+              <i class="fas fa-times" />
             </button>
           </div>
           <div class="modal-body">
-            <p class="modal-hint">
-              <i class="fas fa-info-circle"></i>
+            <p class="alert alert-info mb-4">
+              <i class="fas fa-info-circle" />
               Seleccione los días en los que su negocio está operativo
             </p>
-            <div class="dias-selector">
+            <div class="space-y-3">
               <label
                 v-for="dia in diasSemana"
                 :key="dia.value"
-                class="dia-checkbox"
+                class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-dark-hover transition-colors"
               >
                 <input
+                  v-model="formDias.diasSeleccionados"
                   type="checkbox"
                   :value="dia.value"
-                  v-model="formDias.diasSeleccionados"
-                />
-                <span class="dia-label">{{ dia.text }}</span>
+                  class="checkbox"
+                >
+                <span class="text-text-primary">{{ dia.text }}</span>
               </label>
             </div>
           </div>
           <div class="modal-footer">
-            <button @click="closeDiasForm" class="btn btn-secondary">
-              <i class="fas fa-times"></i>
+            <button
+class="btn btn-secondary"
+@click="closeDiasForm"
+>
+              <i class="fas fa-times" />
               Cancelar
             </button>
-            <button @click="guardarDias" class="btn btn-primary" :disabled="saving || formDias.diasSeleccionados.length === 0">
-              <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+            <button
+class="btn btn-primary"
+:disabled="saving || formDias.diasSeleccionados.length === 0"
+@click="guardarDias"
+>
+              <i
+class="fas"
+:class="saving ? 'fa-spinner fa-spin' : 'fa-save'"
+/>
               {{ saving ? 'Guardando...' : 'Guardar' }}
             </button>
           </div>
@@ -267,33 +396,51 @@
 
     <!-- Modal: Configurar Tipo de Empresa -->
     <transition name="modal-fade">
-      <div v-if="showTipoEmpresaForm" class="modal-overlay" @click.self="closeTipoEmpresaForm">
-        <div class="modal-content">
+      <div
+v-if="showTipoEmpresaForm"
+class="modal-backdrop"
+@click.self="closeTipoEmpresaForm"
+>
+        <div class="modal">
           <div class="modal-header">
-            <h3 class="modal-title">
-              <i class="fas fa-building"></i>
+            <h3 class="text-lg font-semibold text-text-primary">
+              <i class="fas fa-building" />
               {{ isEditingTipoEmpresa ? 'Editar Tipo de Empresa' : 'Configurar Tipo de Empresa' }}
             </h3>
-            <button @click="closeTipoEmpresaForm" class="modal-close">
-              <i class="fas fa-times"></i>
+            <button
+class="btn btn-ghost btn-icon"
+@click="closeTipoEmpresaForm"
+>
+              <i class="fas fa-times" />
             </button>
           </div>
           <div class="modal-body">
-            <p v-if="isEditingTipoEmpresa" class="modal-hint modal-hint-warning">
-              <i class="fas fa-exclamation-triangle"></i>
+            <p
+v-if="isEditingTipoEmpresa"
+class="alert alert-warning mb-4"
+>
+              <i class="fas fa-exclamation-triangle" />
               Al guardar, se reemplazará el tipo de empresa actual
             </p>
-            <p v-else class="modal-hint">
-              <i class="fas fa-info-circle"></i>
+            <p
+v-else
+class="alert alert-info mb-4"
+>
+              <i class="fas fa-info-circle" />
               Seleccione el tipo de empresa que mejor describa su negocio
             </p>
               <div class="form-group">
-              <label class="form-label">
-                <i class="fas fa-layer-group"></i>
+              <label class="label">
+                <i class="fas fa-layer-group" />
                 Grupo de Empresa
               </label>
-              <select v-model="formTipoEmpresa.grupoSeleccionado" class="form-select">
-                <option value="">Seleccione un grupo</option>
+              <select
+v-model="formTipoEmpresa.grupoSeleccionado"
+class="select"
+>
+                <option value="">
+Seleccione un grupo
+</option>
                 <option
                   v-for="grupo in gruposEmpresaDisponibles"
                   :key="grupo.tiemgr_codigo"
@@ -304,12 +451,17 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">
-                <i class="fas fa-list"></i>
+              <label class="label">
+                <i class="fas fa-list" />
                 Tipo de Empresa
               </label>
-              <select v-model="formTipoEmpresa.tipoSeleccionado" class="form-select">
-                <option value="">Seleccione un tipo</option>
+              <select
+v-model="formTipoEmpresa.tipoSeleccionado"
+class="select"
+>
+                <option value="">
+Seleccione un tipo
+</option>
                 <option
                   v-for="tipo in tiposEmpresaDisponiblesGet"
                   :key="tipo.tipEmp_codigo"
@@ -319,19 +471,24 @@
                 </option>
               </select>
             </div>
-          
-          </div>
+</div>
           <div class="modal-footer">
-            <button @click="closeTipoEmpresaForm" class="btn btn-secondary">
-              <i class="fas fa-times"></i>
+            <button
+class="btn btn-secondary"
+@click="closeTipoEmpresaForm"
+>
+              <i class="fas fa-times" />
               Cancelar
             </button>
             <button
-              @click="guardarTipoEmpresa"
               class="btn btn-primary"
               :disabled="saving || !formTipoEmpresa.tipoSeleccionado || !formTipoEmpresa.grupoSeleccionado"
+              @click="guardarTipoEmpresa"
             >
-              <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-save'"></i>
+              <i
+class="fas"
+:class="saving ? 'fa-spinner fa-spin' : 'fa-save'"
+/>
               {{ saving ? 'Guardando...' : 'Guardar' }}
             </button>
           </div>
@@ -607,608 +764,3 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-/* Variables CSS */
-:root {
-  --color-bg-primary: #0f1419;
-  --color-bg-secondary: #16181d;
-  --color-surface: #1c1f26;
-  --color-border: rgba(255, 255, 255, 0.08);
-  --color-text-primary: #e5e7eb;
-  --color-text-secondary: #9ca3af;
-  --color-primary: #3b82f6;
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-}
-
-.config-cliente-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, var(--color-bg-primary) 0%, var(--color-bg-secondary) 100%);
-  color: var(--color-text-primary);
-  padding: 2rem;
-}
-
-/* Notifications */
-.notification-container {
-  position: fixed;
-  top: 2rem;
-  right: 2rem;
-  z-index: 9999;
-  max-width: 400px;
-}
-
-.notification {
-  background: var(--color-surface);
-  border-radius: 0.75rem;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--color-border);
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-.notification-success {
-  border-color: rgba(34, 197, 94, 0.3);
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), var(--color-surface));
-}
-
-.notification-info {
-  border-color: rgba(59, 130, 246, 0.3);
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), var(--color-surface));
-}
-
-.notification-warning {
-  border-color: rgba(245, 158, 11, 0.3);
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), var(--color-surface));
-}
-
-.notification-danger {
-  border-color: rgba(239, 68, 68, 0.3);
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), var(--color-surface));
-}
-
-.notification-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex: 1;
-}
-
-.notification-icon {
-  font-size: 1.25rem;
-  color: var(--color-text-secondary);
-}
-
-.notification-success .notification-icon { color: var(--color-success); }
-.notification-info .notification-icon { color: var(--color-primary); }
-.notification-warning .notification-icon { color: var(--color-warning); }
-.notification-danger .notification-icon { color: var(--color-danger); }
-
-.notification-text {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.notification-close {
-  background: none;
-  border: none;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.25rem;
-  transition: all 0.2s;
-}
-
-.notification-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--color-text-primary);
-}
-
-/* Header */
-.config-header {
-  background: var(--color-surface);
-  border-radius: 1rem;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  border: 1px solid var(--color-border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.header-icon {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, var(--color-primary), #2563eb);
-  border-radius: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.75rem;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.header-title {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-
-.header-subtitle {
-  margin: 0;
-  font-size: 0.9375rem;
-  color: var(--color-text-secondary);
-}
-
-/* Config Content */
-.config-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 1.5rem;
-}
-
-/* Config Card */
-.config-card {
-  background: var(--color-surface);
-  border-radius: 1rem;
-  border: 1px solid var(--color-border);
-  overflow: hidden;
-  transition: all 0.3s;
-}
-
-.config-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
-}
-
-.card-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.card-title-section {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.card-title-section i {
-  font-size: 1.25rem;
-  color: var(--color-primary);
-}
-
-.card-title {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.card-body {
-  padding: 1.5rem;
-}
-
-.card-empty {
-  padding: 3rem 1.5rem;
-  text-align: center;
-  color: var(--color-text-secondary);
-}
-
-.card-empty i {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.card-empty p {
-  margin: 0 0 1.5rem 0;
-  font-size: 1rem;
-}
-
-/* Info Row */
-.info-row {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.info-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-secondary);
-  font-weight: 600;
-}
-
-.info-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-primary);
-}
-
-/* Días Grid */
-.dias-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.dia-chip {
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--color-border);
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.dia-chip.active {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: var(--color-primary);
-}
-
-.dia-chip i {
-  font-size: 1rem;
-}
-
-/* Tipo de Empresa Display */
-.tipo-empresa-display {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.tipo-empresa-info {
-  flex: 1;
-  min-width: 200px;
-}
-
-.tipo-empresa-badge {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
-  border: 1px solid rgba(34, 197, 94, 0.2);
-  border-radius: 0.75rem;
-  transition: all 0.3s;
-}
-
-.tipo-empresa-badge:hover {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.08));
-  border-color: rgba(34, 197, 94, 0.3);
-}
-
-.tipo-empresa-badge i {
-  font-size: 1.5rem;
-  color: var(--color-success);
-}
-
-.tipo-empresa-details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.tipo-empresa-nombre {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.tipo-empresa-grupo {
-  font-size: 0.8125rem;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-/* Buttons */
-.btn {
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border: none;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--color-primary), #2563eb);
-  color: white;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-}
-
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-}
-
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
-}
-
-.btn-outline:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.15);
-}
-
-.btn-sm {
-  padding: 0.5rem 1rem;
-  font-size: 0.8125rem;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.mt-3 {
-  margin-top: 1rem;
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 1rem;
-}
-
-.modal-content {
-  background: var(--color-surface);
-  border-radius: 1rem;
-  max-width: 600px;
-  width: 100%;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--color-border);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-}
-
-.modal-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent);
-}
-
-.modal-title {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.modal-close {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.modal-close:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: var(--color-danger);
-  color: var(--color-danger);
-}
-
-.modal-body {
-  padding: 1.5rem;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.modal-hint {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 0.5rem;
-  color: var(--color-primary);
-  font-size: 0.875rem;
-  margin-bottom: 1.5rem;
-}
-
-.modal-hint-warning {
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: var(--color-warning);
-}
-
-.modal-footer {
-  padding: 1.5rem;
-  border-top: 1px solid var(--color-border);
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  background: rgba(0, 0, 0, 0.2);
-}
-
-/* Form */
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.form-label i {
-  color: var(--color-primary);
-  font-size: 0.875rem;
-}
-
-.form-input,
-.form-select {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  color: var(--color-text-primary);
-  font-size: 0.9375rem;
-  transition: all 0.2s;
-}
-
-.form-input:focus,
-.form-select:focus {
-  border-color: var(--color-primary);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-  outline: none;
-}
-
-/* Días Selector */
-.dias-selector {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.75rem;
-}
-
-.dia-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.dia-checkbox:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.dia-checkbox input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--color-primary);
-}
-
-.dia-label {
-  font-size: 0.875rem;
-  color: var(--color-text-primary);
-  font-weight: 500;
-}
-
-/* Transitions */
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .config-cliente-container {
-    padding: 1rem;
-  }
-
-  .config-content {
-    grid-template-columns: 1fr;
-  }
-
-  .notification-container {
-    left: 1rem;
-    right: 1rem;
-    max-width: none;
-  }
-
-  .modal-footer {
-    flex-direction: column-reverse;
-  }
-
-  .modal-footer .btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .dias-selector {
-    grid-template-columns: 1fr;
-  }
-}
-</style>

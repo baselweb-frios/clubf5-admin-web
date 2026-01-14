@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen p-6" >
+  <div class="page-wrapper">
     <!-- Radio List -->
     <radio-list
       :radios="radios"

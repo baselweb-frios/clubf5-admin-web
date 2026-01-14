@@ -1,7 +1,7 @@
 <template>
   <div class="notification-template">
     <div class="notification-icon">
-      <i :class="icon || 'fas fa-info-circle'"></i>
+      <i :class="icon || 'fas fa-info-circle'" />
     </div>
     <div class="notification-content">
       <slot>{{ message }}</slot>
@@ -23,22 +23,20 @@ defineProps({
 </script>
 
 <style scoped>
+/* Notification Template */
 .notification-template {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  @apply flex items-start gap-3;
 }
 
+/* Icon */
 .notification-icon {
-  font-size: 24px;
-  color: #1d8cf8;
+  @apply flex-shrink-0;
+  @apply text-lg;
 }
 
+/* Content */
 .notification-content {
-  flex: 1;
+  @apply flex-1 min-w-0;
+  @apply text-sm;
 }
 </style>

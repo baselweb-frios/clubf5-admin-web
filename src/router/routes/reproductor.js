@@ -24,29 +24,5 @@ export default [
     name: 'Programaciones de spot',
     component: () => import('@/pages/Spots/administrarProgramacion.vue'),
     meta: { requiresAuth: true, roles: ['Reproductor'], title: 'Programar Spots' }
-  },
-  {
-    path: 'altaProgramacionSpots',
-    name: 'Nueva programación de spot',
-    component: () => import('@/pages/Spots/altaProgramacionSpots.vue'),
-    meta: { requiresAuth: true, roles: ['Reproductor'], title: 'Nueva Programación' }
-  },
-  {
-    path: 'pedidoSpot',
-    name: 'Pedidos de Spot',
-    component: () => import('@/pages/Spots/pedidoSpot.vue'),
-    meta: { requiresAuth: true, roles: ['Reproductor'], title: 'Pedidos de Spots' }
-  },
-  {
-    path: 'altaPedidoSpot',
-    name: 'Nuevo Pedido de Spot',
-    component: () => import('@/pages/Spots/altaPedidoSpot.vue'),
-    meta: { requiresAuth: true, roles: ['Reproductor'], title: 'Nuevo Pedido' }
-  },
-  {
-    path: 'resumenSpot',
-    name: 'Resumen de Spot',
-    component: () => import('@/pages/Spots/resumenSpot.vue'),
-    meta: { requiresAuth: true, roles: ['Reproductor'], title: 'Resumen Spot' }
   }
 ]

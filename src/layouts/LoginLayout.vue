@@ -1,7 +1,16 @@
 <template>
-  <div class="login-layout">
-    <div class="login-background"></div>
-    <div class="login-container">
+  <div class="min-h-screen bg-dark-primary relative overflow-hidden">
+    <!-- Background Effects -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <!-- Gradient Orbs -->
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary-500/20 rounded-full blur-3xl" />
+      <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-accent-purple/20 rounded-full blur-3xl" />
+      <!-- Grid Pattern -->
+      <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 min-h-screen flex items-center justify-center p-4">
       <router-view />
     </div>
   </div>
@@ -12,68 +21,5 @@
 </script>
 
 <style scoped>
-/* ===== PREMIUM LOGIN LAYOUT - DARK MODE ===== */
-.login-layout {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #0a0a0a 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Animated Background Pattern */
-.login-background {
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 60%);
-  pointer-events: none;
-  animation: breathe 8s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0%, 100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-}
-
-.login-container {
-  width: 100%;
-  max-width: 28rem;
-  position: relative;
-  z-index: 1;
-  animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-  .login-layout {
-    padding: 1rem;
-  }
-
-  .login-container {
-    max-width: 100%;
-  }
-}
+/* No custom styles needed */
 </style>

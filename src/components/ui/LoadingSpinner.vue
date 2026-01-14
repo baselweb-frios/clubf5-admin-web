@@ -1,14 +1,25 @@
 <template>
-  <div v-if="loading" class="loading-spinner-container">
+  <div
+v-if="loading"
+class="loading-spinner-container"
+>
     <div class="spinner-wrapper">
-      <div class="spinner" :style="spinnerStyle">
-        <div class="spinner-ring"></div>
-        <div class="spinner-ring"></div>
-        <div class="spinner-ring"></div>
-        <div class="spinner-ring"></div>
+      <div
+class="spinner"
+:style="spinnerStyle"
+>
+        <div class="spinner-ring" />
+        <div class="spinner-ring" />
+        <div class="spinner-ring" />
+        <div class="spinner-ring" />
       </div>
     </div>
-    <p v-if="text" class="loading-text">{{ text }}</p>
+    <p
+v-if="text"
+class="loading-text"
+>
+{{ text }}
+</p>
   </div>
 </template>
 
@@ -43,66 +54,54 @@ const spinnerStyle = computed(() => {
 </script>
 
 <style scoped>
-/* ===== PREMIUM LOADING SPINNER - DARK MODE ===== */
+/* Container */
 .loading-spinner-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  gap: 1rem;
+  @apply flex flex-col items-center justify-center gap-3;
 }
 
+/* Wrapper for centering */
 .spinner-wrapper {
-  position: relative;
-  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.3));
+  @apply flex items-center justify-center;
 }
 
+/* Spinner */
 .spinner {
-  width: var(--spinner-size, 48px);
-  height: var(--spinner-size, 48px);
-  position: relative;
+  --spinner-size: 48px;
+  --spinner-color: theme('colors.primary.500');
+
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  @apply relative;
 }
 
+/* Spinner Rings */
 .spinner-ring {
-  box-sizing: border-box;
-  display: block;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border: 3px solid transparent;
-  border-radius: 50%;
-  animation: spinner-rotate 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  border-top-color: var(--spinner-color, var(--color-primary-500));
+  @apply absolute inset-0 rounded-full;
+  border: calc(var(--spinner-size) * 0.08) solid transparent;
+  border-top-color: var(--spinner-color);
+  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
 
 .spinner-ring:nth-child(1) {
   animation-delay: -0.45s;
-  border-top-color: var(--spinner-color, var(--color-primary-500));
-  border-width: 3px;
 }
 
 .spinner-ring:nth-child(2) {
   animation-delay: -0.3s;
-  border-top-color: var(--spinner-color, var(--color-primary-400));
-  opacity: 0.7;
-  border-width: 3px;
+  @apply opacity-80;
 }
 
 .spinner-ring:nth-child(3) {
   animation-delay: -0.15s;
-  border-top-color: var(--spinner-color, var(--color-primary-400));
-  opacity: 0.5;
-  border-width: 2.5px;
+  @apply opacity-60;
 }
 
 .spinner-ring:nth-child(4) {
-  border-top-color: var(--spinner-color, var(--color-primary-500));
-  opacity: 0.3;
-  border-width: 2px;
+  animation-delay: 0s;
+  @apply opacity-40;
 }
 
-@keyframes spinner-rotate {
+@keyframes spin {
   0% {
     transform: rotate(0deg);
   }
@@ -111,12 +110,14 @@ const spinnerStyle = computed(() => {
   }
 }
 
+/* Loading Text */
 .loading-text {
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  text-align: center;
-  letter-spacing: var(--letter-spacing-wide);
+  @apply text-sm text-text-secondary;
+  @apply animate-pulse;
+}
+
+.light .loading-text {
+  @apply text-text-light-secondary;
 }
 </style>
+

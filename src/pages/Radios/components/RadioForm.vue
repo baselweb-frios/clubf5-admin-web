@@ -1,113 +1,196 @@
 <template>
-  <modal v-model="localShow" :title="isEditing ? 'Editar Radio' : 'Nueva Radio'" size="lg" @close="handleClose">
-    <form @submit.prevent="handleSubmit" class="space-y-6">
+  <div
+v-if="localShow"
+class="modal-backdrop"
+@click.self="handleClose"
+>
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-text-primary">
+{{ isEditing ? 'Editar Radio' : 'Nueva Radio' }}
+</h3>
+        <button
+class="btn btn-ghost btn-icon"
+@click="handleClose"
+>
+          <i class="fas fa-times" />
+        </button>
+      </div>
+      <form
+class="modal-body space-y-6"
+@submit.prevent="handleSubmit"
+>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Nombre -->
-        <base-input
-          v-model="formData.rad_nombre"
-          label="Nombre"
-          placeholder="Ingrese el nombre de la radio"
-          required
-          :error="errors.rad_nombre"
-        />
+        <div class="form-group">
+          <label class="label">Nombre</label>
+          <input
+            v-model="formData.rad_nombre"
+            placeholder="Ingrese el nombre de la radio"
+            required
+            class="input"
+            :class="{ 'input-error': errors.rad_nombre }"
+          >
+          <span
+v-if="errors.rad_nombre"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_nombre }}</span>
+        </div>
 
         <!-- Identificador -->
-        <base-input
-          v-model="formData.rad_identi"
-          label="Identificador"
-          placeholder="ID único de la radio"
-          hint="Se genera automáticamente desde el nombre, pero puedes editarlo"
-          :error="errors.rad_identi"
-        />
+        <div class="form-group">
+          <label class="label">Identificador</label>
+          <input
+            v-model="formData.rad_identi"
+            placeholder="ID único de la radio"
+            class="input"
+            :class="{ 'input-error': errors.rad_identi }"
+          >
+          <p class="text-text-tertiary text-xs mt-1">
+Se genera automáticamente desde el nombre, pero puedes editarlo
+</p>
+          <span
+v-if="errors.rad_identi"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_identi }}</span>
+        </div>
 
         <!-- Estado -->
-        <base-select
-          v-model="formData.rad_estado"
-          label="Estado"
-          required
-          :error="errors.rad_estado"
-          :options="estadoOptions"
-          value-key="value"
-          label-key="label"
-        />
+        <div class="form-group">
+          <label class="label">Estado</label>
+          <select
+            v-model="formData.rad_estado"
+            required
+            class="select"
+            :class="{ 'input-error': errors.rad_estado }"
+          >
+            <option value="A">
+Activo
+</option>
+            <option value="I">
+Inactivo
+</option>
+          </select>
+          <span
+v-if="errors.rad_estado"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_estado }}</span>
+        </div>
 
         <!-- Descripción -->
-        <div class="md:col-span-2">
-          <base-input
+        <div class="md:col-span-2 form-group">
+          <label class="label">Descripción</label>
+          <input
             v-model="formData.rad_descri"
-            label="Descripción"
             placeholder="Descripción de la radio"
             required
-            :error="errors.rad_descri"
-          />
+            class="input"
+            :class="{ 'input-error': errors.rad_descri }"
+          >
+          <span
+v-if="errors.rad_descri"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_descri }}</span>
         </div>
 
         <!-- URL de Imagen -->
-        <div class="md:col-span-2">
-          <base-input
+        <div class="md:col-span-2 form-group">
+          <label class="label">URL de Imagen</label>
+          <input
             v-model="formData.rad_imagen"
-            label="URL de Imagen"
             placeholder="https://ejemplo.com/imagen.jpg"
-            :error="errors.rad_imagen"
-          />
-          <div v-if="formData.rad_imagen" class="mt-2">
+            class="input"
+            :class="{ 'input-error': errors.rad_imagen }"
+          >
+          <div
+v-if="formData.rad_imagen"
+class="mt-2"
+>
             <img
               :src="formData.rad_imagen"
               alt="Preview"
               class="h-20 w-20 rounded object-cover"
               @error="handleImageError"
-            />
+            >
           </div>
+          <span
+v-if="errors.rad_imagen"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_imagen }}</span>
         </div>
 
         <!-- Enlace -->
-        <div class="md:col-span-2">
-          <base-input
+        <div class="md:col-span-2 form-group">
+          <label class="label">Enlace Web</label>
+          <input
             v-model="formData.rad_enlace"
-            label="Enlace Web"
             placeholder="https://ejemplo.com"
-            :error="errors.rad_enlace"
-          />
+            class="input"
+            :class="{ 'input-error': errors.rad_enlace }"
+          >
+          <span
+v-if="errors.rad_enlace"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_enlace }}</span>
         </div>
 
-
         <!-- Imagen Alternativa 1 -->
-        <base-input
-          v-model="formData.rad_imgal1"
-          label="Imagen Alternativa 1"
-          placeholder="URL de imagen alternativa"
-          :error="errors.rad_imgal1"
-        />
+        <div class="form-group">
+          <label class="label">Imagen Alternativa 1</label>
+          <input
+            v-model="formData.rad_imgal1"
+            placeholder="URL de imagen alternativa"
+            class="input"
+            :class="{ 'input-error': errors.rad_imgal1 }"
+          >
+          <span
+v-if="errors.rad_imgal1"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_imgal1 }}</span>
+        </div>
 
         <!-- Imagen Alternativa 2 -->
-        <base-input
-          v-model="formData.rad_imgal2"
-          label="Imagen Alternativa 2"
-          placeholder="URL de imagen alternativa"
-          :error="errors.rad_imgal2"
-        />
+        <div class="form-group">
+          <label class="label">Imagen Alternativa 2</label>
+          <input
+            v-model="formData.rad_imgal2"
+            placeholder="URL de imagen alternativa"
+            class="input"
+            :class="{ 'input-error': errors.rad_imgal2 }"
+          >
+          <span
+v-if="errors.rad_imgal2"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_imgal2 }}</span>
+        </div>
       </div>
-    </form>
+      </form>
 
-    <template #footer>
-      <base-button variant="secondary" @click="handleClose">
-        Cancelar
-      </base-button>
-      <base-button variant="primary" @click="handleSubmit" :disabled="submitting">
-        <loading-spinner v-if="submitting" class="mr-2" size="sm" />
-        {{ isEditing ? 'Actualizar' : 'Crear' }} Radio
-      </base-button>
-    </template>
-  </modal>
+      <div class="modal-footer">
+        <button
+class="btn btn-secondary"
+@click="handleClose"
+>
+Cancelar
+</button>
+        <button
+:disabled="submitting"
+class="btn btn-primary"
+@click="handleSubmit"
+>
+          <i
+v-if="submitting"
+class="fas fa-spinner fa-spin mr-2"
+/>
+          {{ isEditing ? 'Actualizar' : 'Crear' }} Radio
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import Modal from '@/components/ui/Modal.vue'
-import BaseInput from '@/components/ui/BaseInput.vue'
-import BaseSelect from '@/components/ui/BaseSelect.vue'
-import BaseButton from '@/components/ui/BaseButton.vue'
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 
 const props = defineProps({
   show: {

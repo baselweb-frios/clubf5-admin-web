@@ -1,477 +1,379 @@
 <template>
-  <div class="container is-fluid">
+  <div class="page-wrapper">
     <!-- Alert Notifications -->
-    <div v-if="alertMsg" class="notification-container">
-      <div :class="['notification', `is-${alertType}`]">
-        <button class="delete" @click="alertMsg = ''"></button>
+    <div
+v-if="alertMsg"
+class="p-4 max-w-md mx-auto mb-6"
+>
+      <div :class="['alert', `alert-${getAlertVariant(alertType)}`]">
+        <i class="fas fa-info-circle flex-shrink-0" />
         <span>{{ alertMsg }}</span>
+        <button
+class="ml-auto flex-shrink-0"
+aria-label="Cerrar"
+@click="alertMsg = ''"
+>
+          <i class="fas fa-times" />
+        </button>
       </div>
     </div>
 
     <!-- Main Content Card -->
-    <BaseCard title="Gestión de Paquetes">
-      <template #actions>
-        <BaseButton
-          variant="primary"
-          icon="fas fa-plus"
-          @click="abrirModalNuevo"
-        >
-          Nuevo Paquete
-        </BaseButton>
-      </template>
-
-      <!-- Data Table -->
-      <DataTable
-        :columns="tableColumns"
-        :rows="paquetes"
-        :loading="loading"
-        :row-buttons="tableButtons"
-        :config="tableConfig"
-        no-data-message="No se encontraron paquetes"
-      >
-        <template #paq_precio="{ row }">
-          {{ formatPrecio(row.paq_precio) }}
-        </template>
-        <template #paq_canequ="{ row }">
-          {{ row.paq_canequ || '-' }}
-        </template>
-        <template #paq_maxspo="{ row }">
-          {{ row.paq_maxspo || '-' }}
-        </template>
-        <template #paq_ia_limit="{ row }">
-          {{ row.paq_ia_limit || '-' }}
-        </template>
-      </DataTable>
-    </BaseCard>
-
-    <!-- Create/Edit Modal -->
-    <Modal
-      v-model="showModal"
-      :title="form.title"
-      size="md"
-      @close="resetForm"
-    >
-      <div class="form-grid">
-        <BaseInput
-          v-model="paquete.paq_descri"
-          label="Descripción"
-          placeholder="Ingrese la descripción del paquete"
-          icon="tag"
-          required
-        />
-
-        <div class="form-row">
-          <BaseInput
-            v-model.number="paquete.paq_canequ"
-            type="number"
-            label="Cantidad de Equipos"
-            placeholder="Cantidad de equipos"
-            :min="0"
-          >
-            <template #prepend>
-              <i class="fas fa-desktop"></i>
-            </template>
-          </BaseInput>
-
-          <BaseInput
-            v-model.number="paquete.paq_precio"
-            type="number"
-            label="Precio"
-            placeholder="Precio del paquete"
-            :min="0"
-            :step="0.01"
-          >
-            <template #prepend>
-              <i class="fas fa-dollar-sign"></i>
-            </template>
-          </BaseInput>
+    <div class="page-content">
+      <div class="card">
+        <div class="flex-between mb-6 pb-6 border-b border-dark-border">
+          <h1 class="text-2xl font-bold text-text-primary">
+Gestión de Paquetes
+</h1>
+          <button
+class="btn btn-primary"
+@click="abrirModalNuevo"
+>
+            <i class="fas fa-plus" />
+            Nuevo Paquete
+          </button>
         </div>
 
-        <div class="form-row">
-          <BaseInput
-            v-model.number="paquete.paq_maxspo"
-            type="number"
-            label="Máximo de Spots"
-            placeholder="Máximo de spots permitidos"
-            :min="0"
-          >
-            <template #prepend>
-              <i class="fas fa-bullhorn"></i>
-            </template>
-          </BaseInput>
-
-          <BaseInput
-            v-model.number="paquete.paq_ia_limit"
-            type="number"
-            label="Límite de IA"
-            placeholder="Límite de uso de IA"
-            :min="0"
-          >
-            <template #prepend>
-              <i class="fas fa-robot"></i>
-            </template>
-          </BaseInput>
+        <!-- Loading State -->
+        <div
+v-if="loading"
+class="flex-center py-12"
+>
+          <div class="spinner" />
+          <span class="ml-3 text-text-secondary">Cargando paquetes...</span>
         </div>
 
-        <div class="field">
-          <label class="input-label">Características</label>
-          <textarea
-            v-model="paquete.paq_caract"
-            class="textarea-field"
-            rows="3"
-            placeholder="Descripción de las características del paquete"
-          ></textarea>
+        <!-- Data Table -->
+        <div
+v-else
+class="table-container"
+>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Cant. Equipos</th>
+                <th>Precio</th>
+                <th>Max. Spots</th>
+                <th>Límite IA</th>
+                <th class="text-right">
+Acciones
+</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="paquetes.length === 0">
+                <td
+colspan="7"
+class="text-center py-8 text-text-tertiary"
+>
+                  <i class="fas fa-inbox text-2xl mb-2 block" />
+                  <p>No se encontraron paquetes</p>
+                </td>
+              </tr>
+              <tr
+v-for="paq in paquetes"
+:key="paq.paq_codigo"
+>
+                <td>
+                  <span class="font-medium text-text-primary">{{ paq.paq_codigo }}</span>
+                </td>
+                <td>{{ paq.paq_descri }}</td>
+                <td>{{ paq.paq_canequ || '-' }}</td>
+                <td>{{ formatPrecio(paq.paq_precio) }}</td>
+                <td>{{ paq.paq_maxspo || '-' }}</td>
+                <td>{{ paq.paq_ia_limit || '-' }}</td>
+                <td>
+                  <div class="flex-end gap-1.5">
+                    <button
+class="btn btn-ghost btn-icon btn-sm text-primary-400"
+title="Editar"
+@click="editarPaquete(paq)"
+>
+                      <i class="fas fa-pencil" />
+                    </button>
+                    <button
+class="btn btn-ghost btn-icon btn-sm text-danger-400"
+title="Eliminar"
+@click="eliminarPaquete(paq)"
+>
+                      <i class="fas fa-trash" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <template #footer>
-        <BaseButton
-          variant="secondary"
-          @click="showModal = false"
-          :disabled="saving"
-        >
-          Cancelar
-        </BaseButton>
-        <BaseButton
-          variant="success"
-          icon="fas fa-save"
-          @click="guardarPaquete"
-          :loading="saving"
-        >
-          {{ form.submitLabel }}
-        </BaseButton>
-      </template>
-    </Modal>
+    <!-- Create/Edit Modal -->
+    <div
+v-if="showModal"
+class="modal-backdrop"
+@click.self="showModal = false"
+>
+      <div class="modal max-w-md">
+        <div class="modal-header">
+          <h2 class="text-lg font-bold text-text-primary">
+{{ form.title }}
+</h2>
+          <button
+class="btn btn-ghost btn-icon"
+aria-label="Cerrar"
+@click="showModal = false"
+>
+            <i class="fas fa-times" />
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="space-y-4">
+            <div class="form-group">
+              <label class="label">Descripción</label>
+              <input
+v-model="paquete.paq_descri"
+type="text"
+class="input"
+placeholder="Ingrese la descripción del paquete"
+required
+>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="form-group">
+                <label class="label">Cant. Equipos</label>
+                <input
+v-model.number="paquete.paq_canequ"
+type="number"
+class="input"
+placeholder="Equipos"
+min="0"
+>
+              </div>
+              <div class="form-group">
+                <label class="label">Precio</label>
+                <input
+v-model.number="paquete.paq_precio"
+type="number"
+class="input"
+placeholder="Precio"
+min="0"
+step="0.01"
+>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="form-group">
+                <label class="label">Max. Spots</label>
+                <input
+v-model.number="paquete.paq_maxspo"
+type="number"
+class="input"
+placeholder="Spots"
+min="0"
+>
+              </div>
+              <div class="form-group">
+                <label class="label">Límite IA</label>
+                <input
+v-model.number="paquete.paq_ia_limit"
+type="number"
+class="input"
+placeholder="IA"
+min="0"
+>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="label">Características</label>
+              <textarea
+v-model="paquete.paq_caract"
+class="input"
+rows="3"
+placeholder="Descripción de características"
+/>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+class="btn btn-secondary"
+@click="showModal = false"
+>
+Cancelar
+</button>
+          <button
+class="btn btn-primary"
+:disabled="saving"
+@click="guardarPaquete"
+>
+            <i
+class="fas"
+:class="saving ? 'fa-spinner fa-spin' : 'fa-save'"
+/>
+            {{ form.submitLabel }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import BaseCard from '@/components/ui/BaseCard.vue';
-import BaseInput from '@/components/ui/BaseInput.vue';
-import BaseButton from '@/components/ui/BaseButton.vue';
-import Modal from '@/components/ui/Modal.vue';
-import DataTable from '@/components/ui/DataTable.vue';
+import { ref } from 'vue';
 import paqueteService from '@/services/PaqueteServices';
 
-// State
-const loading = ref(false);
-const saving = ref(false);
-const paquetes = ref([]);
-const showModal = ref(false);
+// Alert state
 const alertMsg = ref('');
 const alertType = ref('info');
 
+// Modal state
+const showModal = ref(false);
+const saving = ref(false);
+const loading = ref(false);
+
+// Form data
+const paquetes = ref([]);
 const paquete = ref({
-  paq_codigo: -1,
+  paq_codigo: null,
   paq_descri: '',
-  paq_canequ: null,
-  paq_precio: null,
+  paq_canequ: 0,
+  paq_precio: 0,
   paq_caract: '',
-  paq_maxspo: null,
-  paq_ia_limit: null
+  paq_maxspo: 0,
+  paq_ia_limit: 0,
 });
 
 const form = ref({
   title: 'Nuevo Paquete',
-  submitLabel: 'Crear Paquete'
+  submitLabel: 'Crear',
 });
 
-// Table configuration
-const tableConfig = {
-  per_page: 10,
-  global_search: {
-    visibility: true,
-    placeholder: 'Buscar paquetes...'
-  },
-  highlight_row_hover: true
-};
-
-const tableColumns = [
-  { field: 'paq_codigo', label: 'ID', sortable: true },
-  { field: 'paq_descri', label: 'Descripción', sortable: true },
-  { field: 'paq_canequ', label: 'Cant. Equipos', sortable: true },
-  { field: 'paq_precio', label: 'Precio', sortable: true },
-  { field: 'paq_maxspo', label: 'Max. Spots', sortable: true },
-  { field: 'paq_ia_limit', label: 'Límite IA', sortable: true }
-];
-
-const tableButtons = computed(() => [
-  {
-    label: 'Editar',
-    type: 'success',
-    icon: 'pencil',
-    showLabel: true,
-    fn: (row) => editarPaquete(row)
-  },
-  {
-    label: 'Eliminar',
-    type: 'danger',
-    icon: 'trash',
-    showLabel: true,
-    fn: (row) => eliminarPaquete(row)
-  }
-]);
-
-// Methods
-async function cargarPaquetes() {
+// Load paquetes on mount
+const cargarPaquetes = async () => {
   try {
     loading.value = true;
     const response = await paqueteService.getAll();
     paquetes.value = response || [];
   } catch (error) {
-    showAlert('Error al cargar los paquetes.', 'danger');
-    console.error('Error cargando paquetes:', error);
+    console.error('Error loading paquetes:', error);
+    mostrarAlerta('Error al cargar los paquetes', 'danger');
   } finally {
     loading.value = false;
   }
-}
+};
 
-function abrirModalNuevo() {
+// Methods
+const abrirModalNuevo = () => {
   resetForm();
+  form.value = {
+    title: 'Nuevo Paquete',
+    submitLabel: 'Crear',
+  };
   showModal.value = true;
-}
+};
 
-function editarPaquete(row) {
-  paquete.value = { ...row };
-  form.value.title = 'Editar Paquete';
-  form.value.submitLabel = 'Actualizar Paquete';
+const editarPaquete = (paq) => {
+  paquete.value = { ...paq };
+  form.value = {
+    title: 'Editar Paquete',
+    submitLabel: 'Guardar',
+  };
   showModal.value = true;
-}
+};
 
-async function eliminarPaquete(row) {
-  if (!confirm(`¿Seguro que desea eliminar el paquete "${row.paq_descri}"?`)) {
-    return;
-  }
-
+const guardarPaquete = async () => {
   try {
-    await paqueteService.delete(row.paq_codigo);
-    showAlert('Paquete eliminado correctamente.', 'success');
-    cargarPaquetes();
-  } catch (error) {
-    showAlert('Error al eliminar el paquete.', 'danger');
-    console.error('Error eliminando paquete:', error);
-  }
-}
+    if (!paquete.value.paq_descri) {
+      mostrarAlerta('La descripción es requerida', 'warning');
+      return;
+    }
 
-async function guardarPaquete() {
-  if (!paquete.value.paq_descri || !paquete.value.paq_descri.trim()) {
-    showAlert('La descripción del paquete es requerida.', 'warning');
+    saving.value = true;
+
+    if (paquete.value.paq_codigo) {
+      // Update existing
+      await paqueteService.update(paquete.value.paq_codigo, paquete.value);
+      mostrarAlerta('Paquete actualizado correctamente', 'success');
+    } else {
+      // Create new
+      await paqueteService.create(paquete.value);
+      mostrarAlerta('Paquete creado correctamente', 'success');
+    }
+
+    showModal.value = false;
+    await cargarPaquetes();
+  } catch (error) {
+    console.error('Error saving paquete:', error);
+    mostrarAlerta('Error al guardar el paquete', 'danger');
+  } finally {
+    saving.value = false;
+  }
+};
+
+const eliminarPaquete = async (paq) => {
+  if (!confirm(`¿Desea eliminar el paquete "${paq.paq_descri}"?`)) {
     return;
   }
 
   try {
     saving.value = true;
-
-    if (paquete.value.paq_codigo === -1) {
-      await paqueteService.create(paquete.value);
-      showAlert('Paquete creado correctamente.', 'success');
-    } else {
-      await paqueteService.update(paquete.value.paq_codigo, paquete.value);
-      showAlert('Paquete actualizado correctamente.', 'success');
-    }
-
-    showModal.value = false;
-    resetForm();
-    cargarPaquetes();
+    await paqueteService.delete(paq.paq_codigo);
+    mostrarAlerta('Paquete eliminado correctamente', 'success');
+    await cargarPaquetes();
   } catch (error) {
-    showAlert('Error al guardar el paquete.', 'danger');
-    console.error('Error guardando paquete:', error);
+    console.error('Error deleting paquete:', error);
+    mostrarAlerta('Error al eliminar el paquete', 'danger');
   } finally {
     saving.value = false;
   }
-}
+};
 
-function resetForm() {
+const resetForm = () => {
   paquete.value = {
-    paq_codigo: 0,
+    paq_codigo: null,
     paq_descri: '',
-    paq_canequ: null,
-    paq_precio: null,
+    paq_canequ: 0,
+    paq_precio: 0,
     paq_caract: '',
-    paq_maxspo: null,
-    paq_ia_limit: null
+    paq_maxspo: 0,
+    paq_ia_limit: 0,
   };
-  form.value.title = 'Nuevo Paquete';
-  form.value.submitLabel = 'Crear Paquete';
-}
+};
 
-function formatPrecio(precio) {
-  if (precio === null || precio === undefined) return '-';
-  return `$${precio.toFixed(2)}`;
-}
+const mostrarAlerta = (mensaje, tipo = 'info') => {
+  alertMsg.value = mensaje;
+  alertType.value = tipo;
+  setTimeout(() => {
+    alertMsg.value = '';
+  }, 5000);
+};
 
-function showAlert(msg, type = 'info') {
-  alertMsg.value = msg;
-  alertType.value = type;
-  setTimeout(() => (alertMsg.value = ''), 5000);
-}
+const formatPrecio = (precio) => {
+  if (!precio) return '-';
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+  }).format(precio);
+};
+
+const getAlertVariant = (type) => {
+  const variants = {
+    info: 'info',
+    success: 'success',
+    warning: 'warning',
+    danger: 'danger',
+  };
+  return variants[type] || 'info';
+};
 
 // Load data on mount
 cargarPaquetes();
 </script>
 
-<style scoped>
-.notification-container {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 1000;
-  max-width: 400px;
-  width: 100%;
-}
-
-.notification {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  border-radius: 0.75rem;
-  font-size: 0.9375rem;
-  animation: slideIn 0.3s ease;
-}
-
-.notification.is-success {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.15) 100%);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  color: #4ade80;
-}
-
-.notification.is-danger {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #f87171;
-}
-
-.notification.is-warning {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.15) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  color: #fbbf24;
-}
-
-.notification.is-info {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  color: #60a5fa;
-}
-
-.notification .delete {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 50%;
-  width: 1.5rem;
-  height: 1.5rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.notification .delete:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.notification .delete::before,
-.notification .delete::after {
-  content: '';
-  position: absolute;
-  width: 0.75rem;
-  height: 2px;
-  background: currentColor;
-}
-
-.notification .delete::before {
-  transform: rotate(45deg);
-}
-
-.notification .delete::after {
-  transform: rotate(-45deg);
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Form Grid */
-.form-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-@media (min-width: 1024px) {
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Textarea field styling to match BaseInput */
-.input-label {
-  display: block;
-  margin-bottom: 0.625rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #a1a1aa;
-  letter-spacing: 0.025em;
-  text-transform: uppercase;
-}
-
-.textarea-field {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
-  color: #ffffff;
-  font-size: 0.9375rem;
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
-  resize: vertical;
-  min-height: 80px;
-  transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  outline: none;
-}
-
-.textarea-field::placeholder {
-  color: #52525b;
-}
-
-.textarea-field:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.textarea-field:focus {
-  border-color: #3b82f6;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-}
-
-.field {
-  margin-bottom: 1.25rem;
-}
-
-/* Responsive */
-@media (min-width: 768px) {
-  .notification-container {
-    top: 0.5rem;
-    right: 0.5rem;
-    left: 0.5rem;
-    max-width: none;
-  }
-}
-</style>
