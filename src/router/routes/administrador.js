@@ -57,5 +57,13 @@ export default [
     name: 'EmailTest',
     component: () => import('@/pages/Admin/EmailTestBench.vue'),
     meta: { requiresAuth: true, roles: ['Administrador'], title: 'Banco de Pruebas de Email' }
+  },
+
+  // ===== VOCES ELEVENLABS (Solo Administrador) =====
+  {
+    path: 'voces-elevenlabs',
+    name: 'VocesElevenLabs',
+    component: () => import('@/pages/Admin/VocesElevenLabs/Index.vue'),
+    meta: { requiresAuth: true, roles: ['Administrador'], title: 'Voces ElevenLabs' }
   }
 ]

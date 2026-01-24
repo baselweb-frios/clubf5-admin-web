@@ -14,18 +14,18 @@
             <img loading="lazy" decoding="async" width="50" height="30" src="https://laf5.com/wp-content/uploads/2025/09/Recurso-1.png" alt="F5">
           </a>
           <ul class="nav-links" :class="{ active: mobileMenuOpen }">
-            <li><a href="#inicio" @click="closeMobileMenu">Inicio</a></li>
-            <li><a href="#plataformas" @click="closeMobileMenu">Plataformas</a></li>
-            <li><a href="#caracteristicas" @click="closeMobileMenu">Caracteristicas</a></li>
-            <li><a href="#registro" @click="closeMobileMenu">Registro</a></li>
+            <li><a href="#inicio" @click="closeMobileMenu"><i class="fas fa-home"></i> Inicio</a></li>
+            <li><a href="#plataformas" @click="closeMobileMenu"><i class="fas fa-cog"></i> Plataformas</a></li>
+            <li><a href="#caracteristicas" @click="closeMobileMenu"><i class="fas fa-star"></i> Caracteristicas</a></li>
+            <li><a href="#registro" @click="closeMobileMenu"><i class="fas fa-user-plus"></i>Registro</a></li>
             <li>
-              <a href="#" @click.prevent="openLoginModal" class="nav-login-link">
-                <i class="fas fa-sign-in-alt"></i> Login
+              <a href="https://web.clubf5.com" target="_blank">
+                <i class="fas fa-music"></i> Reproductor
               </a>
             </li>
             <li>
-              <a href="https://web.clubf5.com" target="_blank" class="nav-login-link">
-                <i class="fas fa-music"></i> Reproductor
+              <a href="#" @click.prevent="openLoginModal">
+                <i class="fas fa-sign-in-alt"></i> Login
               </a>
             </li>
           </ul>

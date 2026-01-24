@@ -71,6 +71,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+    show: {
+    type: Boolean,
+    default: false
+  },
   title: {
     type: String,
     default: ''
@@ -94,7 +98,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'close'])
+const emit = defineEmits(['update:modelValue', 'close','update:show'])
 
 const sizeClasses = computed(() => {
   const sizes = {
@@ -109,6 +113,7 @@ const sizeClasses = computed(() => {
 
 const close = () => {
   emit('update:modelValue', false)
+  emit('update:show', false)
   emit('close')
 }
 

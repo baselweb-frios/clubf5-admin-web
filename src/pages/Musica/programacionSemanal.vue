@@ -199,6 +199,8 @@ Programación Semanal
  class="input"
  :min="horarioCliente.horaDesde"
  :max="horarioCliente.horaHasta"
+ @focus="$event.target.showPicker?.()"
+ @click="$event.target.showPicker?.()"
  >
                         <span class="text-text-secondary">-</span>
                         <input
@@ -207,6 +209,8 @@ Programación Semanal
  class="input"
  :min="horarioCliente.horaDesde"
  :max="horarioCliente.horaHasta"
+ @focus="$event.target.showPicker?.()"
+ @click="$event.target.showPicker?.()"
  >
                         <button
  class="btn btn-success btn-sm"
@@ -408,6 +412,8 @@ Programación Semanal
  class="input flex-1"
  :min="horarioCliente.horaDesde"
  :max="horarioCliente.horaHasta"
+ @focus="$event.target.showPicker?.()"
+ @click="$event.target.showPicker?.()"
  >
                   <span class="text-text-secondary">-</span>
                   <input
@@ -416,6 +422,8 @@ Programación Semanal
  class="input flex-1"
  :min="horarioCliente.horaDesde"
  :max="horarioCliente.horaHasta"
+ @focus="$event.target.showPicker?.()"
+ @click="$event.target.showPicker?.()"
  >
                 </div>
                 <div class="flex gap-2">
@@ -524,38 +532,8 @@ Programación Semanal
     </div>
 
     <!-- Modal de Confirmación Eliminar -->
-    <div
- v-if="showDeleteModal"
- class="modal-overlay"
- @click="cancelDelete"
- >
-      <div
- class="modal-content"
- @click.stop
- >
-        <div class="flex-between p-6 border-b border-dark-border">
-          <h3 class="text-lg font-semibold">
-Confirmar eliminación
-</h3>
-          <button
- class="btn-icon"
- @click="cancelDelete"
- >
-            <svg
- class="w-5 h-5"
- fill="none"
- stroke="currentColor"
- viewBox="0 0 24 24"
- >
-              <path
- stroke-linecap="round"
- stroke-linejoin="round"
- stroke-width="2"
- d="M6 18L18 6M6 6l12 12"
- />
-            </svg>
-          </button>
-        </div>
+    <Modal v-model="showDeleteModal" title="Confirmar eliminación">
+      <template #default>
         <div class="p-6">
           <p>¿Está seguro que desea eliminar la programación de <strong>{{ selectedProgramacion?.radioNombre }}</strong>?</p>
           <p class="text-text-secondary mt-2">
@@ -576,43 +554,14 @@ Confirmar eliminación
  Eliminar
  </button>
         </div>
-      </div>
-    </div>
+      </template>
+    </Modal>
 
     <!-- Modal de Edición de Horario -->
-    <div
- v-if="showEditModal"
- class="modal-overlay"
- @click="cancelEdit"
- >
-      <div
- class="modal-content"
- @click.stop
- >
-        <div class="flex-between p-6 border-b border-dark-border">
-          <h3 class="text-lg font-semibold">
-Editar Programación
-</h3>
-          <button
- class="btn-icon"
- @click="cancelEdit"
- >
-            <svg
- class="w-5 h-5"
- fill="none"
- stroke="currentColor"
- viewBox="0 0 24 24"
- >
-              <path
- stroke-linecap="round"
- stroke-linejoin="round"
- stroke-width="2"
- d="M6 18L18 6M6 6l12 12"
- />
-            </svg>
-          </button>
-        </div>
-        <div class="p-6">
+    <Modal  v-model="showEditModal" size="lg" :colosable="true" title="Editar Programación">
+      <template #default> 
+        <div>
+        
           <div class="space-y-4">
             <div class="mb-4">
               <h4 class="text-lg font-medium">
@@ -632,9 +581,11 @@ for="edit-hora-inicio"
                 id="edit-hora-inicio"
                 v-model="editForm.horaInicio"
                 type="time"
-                class="input"
+                class="ligth input"
                 :min="horarioCliente.horaDesde"
                 :max="editForm.horaFin"
+                @focus="$event.target.showPicker?.()"
+                @click="$event.target.showPicker?.()"
               >
             </div>
 
@@ -643,6 +594,7 @@ for="edit-hora-inicio"
 class="label"
 for="edit-hora-fin"
 >Hora de Fin</label>
+
               <input
                 id="edit-hora-fin"
                 v-model="editForm.horaFin"
@@ -650,6 +602,8 @@ for="edit-hora-fin"
                 class="input"
                 :min="editForm.horaInicio"
                 :max="horarioCliente.horaHasta"
+                @focus="$event.target.showPicker?.()"
+                @click="$event.target.showPicker?.()"
               >
             </div>
 
@@ -690,7 +644,7 @@ for="edit-hora-fin"
               {{ editConflictMessage }}
             </div>
           </div>
-        </div>
+        
         <div class="flex justify-end gap-3 p-6 border-t border-dark-border">
           <button
  class="btn btn-secondary"
@@ -707,225 +661,9 @@ for="edit-hora-fin"
           </button>
         </div>
       </div>
-    </div>
-
-    <!-- Botón Flotante para Distribución Mágica -->
-    <button
-      v-if="selectedRadios.length > 0"
-      class="fixed bottom-6 right-6 btn btn-primary rounded-full w-16 h-16 flex items-center justify-center shadow-lg animate-pulse"
-      @click="showMagicDistributionModal = true"
-    >
-      <svg
- class="w-6 h-6"
- fill="none"
- stroke="currentColor"
- viewBox="0 0 24 24"
- >
-        <path
- stroke-linecap="round"
- stroke-linejoin="round"
- stroke-width="2"
- d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
- />
-      </svg>
-      <span class="absolute -top-2 -right-2 bg-danger-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium">{{ selectedRadios.length }}</span>
-    </button>
-
-    <!-- Modal de Distribución Mágica -->
-    <div
- v-if="showMagicDistributionModal"
- class="modal-overlay"
- @click="showMagicDistributionModal = false"
- >
-      <div
- class="modal-content"
- @click.stop
- >
-        <div class="flex-between p-6 border-b border-dark-border">
-          <h3 class="text-lg font-semibold flex items-center gap-2">
-            <svg
- class="w-6 h-6"
- fill="none"
- stroke="currentColor"
- viewBox="0 0 24 24"
- >
-              <path
- stroke-linecap="round"
- stroke-linejoin="round"
- stroke-width="2"
- d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
- />
-            </svg>
-            Distribución Mágica de Radios
-          </h3>
-          <button
- class="btn-icon"
- @click="showMagicDistributionModal = false"
- >
-            <svg
- class="w-5 h-5"
- fill="none"
- stroke="currentColor"
- viewBox="0 0 24 24"
- >
-              <path
- stroke-linecap="round"
- stroke-linejoin="round"
- stroke-width="2"
- d="M6 18L18 6M6 6l12 12"
- />
-            </svg>
-          </button>
-        </div>
-        <div class="p-6 space-y-6">
-          <!-- Resumen de radios seleccionadas -->
-          <div class="space-y-4">
-            <h4 class="text-md font-medium">
-Radios Seleccionadas ({{ selectedRadios.length }})
-</h4>
-            <div class="flex flex-wrap gap-2">
-              <span
- v-for="radio in selectedRadios"
- :key="radio.codRadio"
- class="badge badge-primary"
- >
-                {{ radio.nombre }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Configuración de distribución -->
-          <div class="space-y-4">
-            <h4 class="text-md font-medium">
-Modo de Distribución
-</h4>
-            <div class="space-y-3">
-              <label
- class="flex items-start gap-3 p-3 rounded-lg border border-dark-border cursor-pointer hover:bg-dark-hover"
- :class="{ 'bg-primary-500/10 border-primary-500': distributionMode === 'sequential' }"
- >
-                <input
- v-model="distributionMode"
- type="radio"
- value="sequential"
- class="mt-0.5"
- >
-                <div class="flex-1">
-                  <div class="flex items-center gap-2">
-                    <svg
- class="w-5 h-5"
- fill="none"
- stroke="currentColor"
- viewBox="0 0 24 24"
- >
-                      <path
- stroke-linecap="round"
- stroke-linejoin="round"
- stroke-width="2"
- d="M4 6h16M4 12h16M4 18h16"
- />
-                    </svg>
-                    <span class="font-medium">Secuencial</span>
-                  </div>
-                  <small class="text-text-secondary">Distribuye radios en orden (Radio 1, Radio 2, Radio 3...)</small>
-                </div>
-              </label>
-              <label
- class="flex items-start gap-3 p-3 rounded-lg border border-dark-border cursor-pointer hover:bg-dark-hover"
- :class="{ 'bg-primary-500/10 border-primary-500': distributionMode === 'random' }"
- >
-                <input
- v-model="distributionMode"
- type="radio"
- value="random"
- class="mt-0.5"
- >
-                <div class="flex-1">
-                  <div class="flex items-center gap-2">
-                    <svg
- class="w-5 h-5"
- fill="none"
- stroke="currentColor"
- viewBox="0 0 24 24"
- >
-                      <path
- stroke-linecap="round"
- stroke-linejoin="round"
- stroke-width="2"
- d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
- />
-                    </svg>
-                    <span class="font-medium">Aleatorio</span>
-                  </div>
-                  <small class="text-text-secondary">Distribuye radios de forma aleatoria</small>
-                </div>
-              </label>
-            </div>
-
-            <!-- Opción de llenar solo horas vacías -->
-            <label class="flex items-center gap-2">
-              <input
- v-model="fillEmptyHoursOnly"
- type="checkbox"
- class="checkbox"
- >
-              <span class="text-sm">Llenar solo horas vacías (no sobrescribir programaciones existentes)</span>
-            </label>
-          </div>
-
-          <!-- Vista previa -->
-          <div class="p-4 bg-dark-secondary rounded">
-            <div class="flex gap-4">
-              <svg
- class="w-5 h-5 text-info-500 mt-0.5"
- fill="none"
- stroke="currentColor"
- viewBox="0 0 24 24"
- >
-                <path
- stroke-linecap="round"
- stroke-linejoin="round"
- stroke-width="2"
- d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
- />
-              </svg>
-              <div class="space-y-1">
-                <p><strong>Días a programar:</strong> {{ daysOfWeek.length }} días hábiles ({{ getDaysNames() }})</p>
-                <p><strong>Horas por día:</strong> {{ hours.length }} horas ({{ horarioCliente.horaDesde }} - {{ horarioCliente.horaHasta }})</p>
-                <p><strong>Total de programaciones:</strong> {{ calculateTotalSlots() }} slots</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flex justify-end gap-3 p-6 border-t border-dark-border">
-          <button
- class="btn btn-secondary"
- @click="showMagicDistributionModal = false"
- >
- Cancelar
- </button>
-          <button
- class="btn btn-primary"
- @click="executeMagicDistribution"
- >
-            <svg
- class="w-4 h-4 mr-2"
- fill="none"
- stroke="currentColor"
- viewBox="0 0 24 24"
- >
-              <path
- stroke-linecap="round"
- stroke-linejoin="round"
- stroke-width="2"
- d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
- />
-            </svg>
-            Ejecutar Distribución Mágica
-          </button>
-        </div>
-      </div>
-    </div>
+      </template>
+    </Modal>
+  
   </div>
 </template>
 
@@ -940,6 +678,9 @@ import generoMusicalServices from '@/services/GeneroMusicalServices'
 import ClienteHorarioServices from '@/services/ClienteHorarioServices'
 import DiaHabilService from '@/services/DiaHabilService'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
+import BaseInput from '@/components/ui/BaseInput.vue'
+import Modal from '@/components/ui/Modal.vue'
+
 
 const router = useRouter()
 const route = useRoute()

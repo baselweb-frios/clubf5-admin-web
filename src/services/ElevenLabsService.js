@@ -12,7 +12,7 @@ import axios from 'axios'
 
 const CONFIG = {
   baseURL: import.meta.env.VITE_API_ELEVENLABS_URL || 'https://api.elevenlabs.io/v1',
-  apiKey: import.meta.env.VITE_API_ELEVENLABS_KEY || import.meta.env.VITE_ELEVEN_KEY_API,
+  apiKey: import.meta.env.VITE_ELEVEN_KEY_API,
   timeout: 30000,
   maxRetries: 3,
   retryDelay: 1000,

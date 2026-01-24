@@ -339,9 +339,9 @@ const sidebarLinks = computed(() => {
 
   if (userRole === 'Cliente') {
     links.push({ name: 'Sucursales', icon: 'building', path: '/sucursales' })
-    links.push({ name: 'Mi musica', icon: 'music', path: '/programaMusica' })
+    links.push({ name: 'Mi Musica', icon: 'music', path: '/programaMusica' })
     links.push({ name: 'Mis Recibos', icon: 'file-invoice', path: '/facturas' })
-    links.push({ name: 'Mis spots', icon: 'bullhorn', path: '/bibliotecaSpot' })
+    links.push({ name: 'Mis Spots', icon: 'bullhorn', path: '/bibliotecaSpot' })
   }
 
   if (userRole === 'Reproductor') {
@@ -353,6 +353,7 @@ const sidebarLinks = computed(() => {
     links.push({ name: 'Radios', icon: 'music', path: '/radios' })
     links.push({ name: 'Recibos', icon: 'document', path: '/facturasAdmin' })
     links.push({ name: 'Paquetes y Precios', icon: 'list-alt', path: '/paquetes' })
+    links.push({ name: 'Locutores (Voces IA)', icon: 'cog', path: '/voces-elevenlabs' })
   }
 
   return links

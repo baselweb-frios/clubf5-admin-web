@@ -15,7 +15,6 @@
           <i class="fa fa-calendar-check-o text-primary-400 text-lg" />
           <span class="text-text-secondary text-sm">Programación Activa:</span>
           <strong class="text-text-primary">{{ selectedProgramacion.clipro_nombre }}</strong>
-          <span class="text-text-tertiary text-sm">({{ selectedProgramacion.clipro_codigo }})</span>
         </div>
         <div class="flex gap-2">
           <button

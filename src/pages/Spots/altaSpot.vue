@@ -326,12 +326,12 @@
                 </div>
 
                 <!-- Filter Chips -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                   <!-- Gender Filter -->
                   <div v-if="availableFilters.genders.length > 0" class="form-group">
                     <label class="label text-xs flex items-center gap-1">
                       <i class="fas fa-venus-mars" />
-                      Género
+                      Genero
                     </label>
                     <select v-model="voiceFilters.gender" class="select text-sm">
                       <option value="all">Todos</option>
@@ -345,56 +345,38 @@
                     </select>
                   </div>
 
-                  <!-- Accent Filter -->
+                  <!-- Language Filter (reutilizando accent) -->
                   <div v-if="availableFilters.accents.length > 0" class="form-group">
                     <label class="label text-xs flex items-center gap-1">
-                      <i class="fas fa-globe-americas" />
-                      Acento
+                      <i class="fas fa-language" />
+                      Idioma
                     </label>
                     <select v-model="voiceFilters.accent" class="select text-sm">
                       <option value="all">Todos</option>
                       <option
-                        v-for="accent in availableFilters.accents"
-                        :key="accent"
-                        :value="accent"
+                        v-for="language in availableFilters.accents"
+                        :key="language"
+                        :value="language"
                       >
-                        {{ capitalizeFirst(accent) }}
+                        {{ capitalizeFirst(language) }}
                       </option>
                     </select>
                   </div>
 
-                  <!-- Age Filter -->
-                  <div v-if="availableFilters.ages.length > 0" class="form-group">
-                    <label class="label text-xs flex items-center gap-1">
-                      <i class="fas fa-birthday-cake" />
-                      Edad
-                    </label>
-                    <select v-model="voiceFilters.age" class="select text-sm">
-                      <option value="all">Todas</option>
-                      <option
-                        v-for="age in availableFilters.ages"
-                        :key="age"
-                        :value="age"
-                      >
-                        {{ capitalizeFirst(age) }}
-                      </option>
-                    </select>
-                  </div>
-
-                  <!-- Use Case Filter -->
+                  <!-- Category Filter (reutilizando useCase) -->
                   <div v-if="availableFilters.useCases.length > 0" class="form-group">
                     <label class="label text-xs flex items-center gap-1">
-                      <i class="fas fa-bullseye" />
-                      Uso
+                      <i class="fas fa-folder" />
+                      Categoria
                     </label>
                     <select v-model="voiceFilters.useCase" class="select text-sm">
-                      <option value="all">Todos</option>
+                      <option value="all">Todas</option>
                       <option
-                        v-for="useCase in availableFilters.useCases"
-                        :key="useCase"
-                        :value="useCase"
+                        v-for="category in availableFilters.useCases"
+                        :key="category"
+                        :value="category"
                       >
-                        {{ capitalizeFirst(useCase) }}
+                        {{ capitalizeFirst(category) }}
                       </option>
                     </select>
                   </div>
@@ -425,10 +407,10 @@
                   </option>
                   <option
                     v-for="locutor in filteredVoices"
-                    :key="locutor.voice_id"
+                    :key="locutor.id"
                     :value="locutor"
                   >
-                    {{ locutor.name }}{{ getVoiceDisplayInfo(locutor) }}
+                    {{ locutor.name }}
                   </option>
                 </select>
                 <p v-if="filteredVoices.length === 0 && locutores.length > 0" class="text-sm text-warning-400 mt-1 flex items-center gap-1">
@@ -458,15 +440,22 @@
                   </button>
                 </div>
 
+                <!-- Variacion Info -->
+                <!-- <div class="flex items-center gap-2 mb-3 p-2 bg-primary-500/10 rounded-lg border border-primary-500/30">
+                  <i class="fas fa-sliders-h text-primary-400" />
+                  <span class="text-sm text-primary-300">Variacion:</span>
+                  <span class="text-sm font-medium text-text-primary">{{ selectedLoc.variacion_nombre }}</span>
+                </div> -->
+
                 <div v-if="selectedLoc.description" class="text-sm text-text-secondary mb-3">
                   {{ selectedLoc.description }}
                 </div>
 
                 <div class="space-y-2">
-                  <div v-if="selectedLoc.labels" class="flex items-start gap-2">
+                  <!-- <div v-if="selectedLoc.labels" class="flex items-start gap-2">
                     <i class="fas fa-tags text-text-tertiary mt-0.5" />
                     <div class="flex-1">
-                      <span class="text-xs text-text-tertiary">Características:</span>
+                      <span class="text-xs text-text-tertiary">Caracteristicas:</span>
                       <div class="flex flex-wrap gap-1 mt-1">
                         <span
                           v-for="(value, key) in selectedLoc.labels"
@@ -477,12 +466,20 @@
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
 
-                  <div v-if="selectedLoc.high_quality_base_model_ids" class="flex items-center gap-2 text-sm">
-                    <i class="fas fa-star text-warning-400" />
-                    <span class="text-text-tertiary">Modelos compatibles:</span>
-                    <span class="text-text-secondary">{{ selectedLoc.high_quality_base_model_ids.join(', ') }}</span>
+                  <!-- Mostrar configuraciones de la variacion -->
+                  <div v-if="selectedLoc.settings" class="flex items-start gap-2">
+                    <i class="fas fa-cog text-text-tertiary mt-0.5" />
+                    <div class="flex-1">
+                      <span class="text-xs text-text-tertiary">Configuracion de la variacion:</span>
+                      <div class="grid grid-cols-2 gap-2 mt-1 text-xs">
+                        <span class="text-text-secondary">Estabilidad: <strong class="text-text-primary">{{ ((selectedLoc.settings.stability || 0) * 100).toFixed(0) }}%</strong></span>
+                        <span class="text-text-secondary">Similitud: <strong class="text-text-primary">{{ ((selectedLoc.settings.similarity_boost || 0) * 100).toFixed(0) }}%</strong></span>
+                        <span class="text-text-secondary">Estilo: <strong class="text-text-primary">{{ ((selectedLoc.settings.style || 0) * 100).toFixed(0) }}%</strong></span>
+                        <span class="text-text-secondary">Speaker Boost: <strong class="text-text-primary">{{ selectedLoc.settings.use_speaker_boost ? 'Si' : 'No' }}</strong></span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -490,152 +487,16 @@
                 <div v-if="previewAudioUrl" class="mt-3 pt-3 border-t border-dark-border">
                   <audio ref="previewAudio" :src="previewAudioUrl" controls class="w-full h-8" />
                 </div>
+
+                <!-- Preview texto info -->
+                <!-- <div v-if="selectedLoc.variacion_preview_texto" class="mt-2 text-xs text-text-tertiary italic">
+                  <i class="fas fa-quote-left mr-1"></i>
+                  {{ selectedLoc.variacion_preview_texto }}
+                </div> -->
               </div>
 
-              <!-- Voice Settings -->
-              <div v-if="selectedLoc" class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
-                <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-4">
-                  <i class="fas fa-sliders-h text-primary-400" />
-                  Configuración de Voz
-                </h4>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <!-- Stability -->
-                  <div class="form-group">
-                    <label class="label text-sm flex items-center justify-between">
-                      <span class="flex items-center gap-1">
-                        Estabilidad
-                        <i class="fas fa-question-circle text-text-tertiary text-xs cursor-help" title="Controla la consistencia de la voz." />
-                      </span>
-                      <span class="text-primary-400 font-mono">{{ voiceSettings.stability.toFixed(2) }}</span>
-                    </label>
-                    <input
-                      v-model.number="voiceSettings.stability"
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.01"
-                      class="w-full accent-primary-500"
-                    >
-                    <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
-                      <i class="fas fa-lightbulb text-warning-400" />
-                      Mayor estabilidad = voz más consistente
-                    </p>
-                  </div>
-
-                  <!-- Similarity Boost -->
-                  <div class="form-group">
-                    <label class="label text-sm flex items-center justify-between">
-                      <span class="flex items-center gap-1">
-                        Similitud
-                        <i class="fas fa-question-circle text-text-tertiary text-xs cursor-help" title="Qué tan fiel será la voz al modelo original." />
-                      </span>
-                      <span class="text-primary-400 font-mono">{{ voiceSettings.similarity_boost.toFixed(2) }}</span>
-                    </label>
-                    <input
-                      v-model.number="voiceSettings.similarity_boost"
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.01"
-                      class="w-full accent-primary-500"
-                    >
-                    <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
-                      <i class="fas fa-lightbulb text-warning-400" />
-                      Qué tan similar será al locutor original
-                    </p>
-                  </div>
-
-                  <!-- Style -->
-                  <div class="form-group">
-                    <label class="label text-sm flex items-center justify-between">
-                      <span class="flex items-center gap-1">
-                        Estilo
-                        <i class="fas fa-question-circle text-text-tertiary text-xs cursor-help" title="Controla la exageración emocional." />
-                      </span>
-                      <span class="text-primary-400 font-mono">{{ voiceSettings.style.toFixed(2) }}</span>
-                    </label>
-                    <input
-                      v-model.number="voiceSettings.style"
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.01"
-                      class="w-full accent-primary-500"
-                    >
-                    <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
-                      <i class="fas fa-lightbulb text-warning-400" />
-                      0 = neutral, 1 = muy expresivo
-                    </p>
-                  </div>
-
-                  <!-- Speaker Boost -->
-                  <div class="form-group">
-                    <label class="flex items-center gap-3 cursor-pointer">
-                      <input
-                        v-model="voiceSettings.use_speaker_boost"
-                        type="checkbox"
-                        class="checkbox"
-                      >
-                      <span class="flex items-center gap-1 text-sm text-text-primary">
-                        Mejora de Locutor
-                        <i class="fas fa-question-circle text-text-tertiary text-xs cursor-help" title="Mejora calidad pero usa más caracteres." />
-                      </span>
-                    </label>
-                    <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1 ml-7">
-                      <i class="fas fa-lightbulb text-warning-400" />
-                      Mejora la similitud y calidad
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Model Selection -->
-                <div class="form-group mt-4">
-                  <label class="label flex items-center gap-2">
-                    <i class="fas fa-brain" />
-                    Modelo de IA
-                  </label>
-                  <select v-model="voiceSettings.modelId" class="select">
-                    <option value="eleven_multilingual_v2">🌍 Multilingual v2 (Recomendado para Español)</option>
-                    <option value="eleven_turbo_v2_5">⚡ Turbo v2.5 (Rápido, buena calidad)</option>
-                    <option value="eleven_flash_v2_5">🚀 Flash v2.5 (Ultra Rápido, menor latencia)</option>
-                    <option value="eleven_monolingual_v1">🇺🇸 Monolingual v1 (Solo Inglés, alta calidad)</option>
-                  </select>
-                  <p class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
-                    <i class="fas fa-lightbulb text-warning-400" />
-                    <span v-if="voiceSettings.modelId === 'eleven_multilingual_v2'">Ideal para español</span>
-                    <span v-else-if="voiceSettings.modelId === 'eleven_turbo_v2_5'">2x más rápido</span>
-                    <span v-else-if="voiceSettings.modelId === 'eleven_flash_v2_5'">4x más rápido</span>
-                    <span v-else>Solo inglés</span>
-                  </p>
-                </div>
-
-                <!-- Preset Buttons -->
-                <div class="mt-4 pt-4 border-t border-dark-border">
-                  <h5 class="flex items-center gap-2 text-sm font-medium text-text-primary mb-3">
-                    <i class="fas fa-magic text-primary-400" />
-                    Presets Rápidos
-                  </h5>
-                  <div class="flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-secondary" @click="applyPreset('balanced')">
-                      <i class="fas fa-balance-scale" />
-                      Balanceado
-                    </button>
-                    <button class="btn btn-sm btn-secondary" @click="applyPreset('expressive')">
-                      <i class="fas fa-theater-masks" />
-                      Expresivo
-                    </button>
-                    <button class="btn btn-sm btn-secondary" @click="applyPreset('stable')">
-                      <i class="fas fa-anchor" />
-                      Estable
-                    </button>
-                    <button class="btn btn-sm btn-ghost" @click="resetSettings">
-                      <i class="fas fa-undo" />
-                      Restaurar
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <!-- Voice Settings - Oculto ya que las variaciones tienen configuraciones predefinidas -->
+              <!-- Las configuraciones se muestran en modo solo lectura en el Voice Info Card arriba -->
 
               <!-- Text Input -->
               <div class="form-group">
@@ -712,6 +573,7 @@ import { useToast } from '@/composables/useToast'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import ElevenLabsService from '@/services/ElevenLabsService'
+import VozElevenLabsServices from '@/services/VozElevenLabsServices'
 import { useAuthStore } from '@/stores/auth'
 import { useSignalRAuth } from '@/composables/useSignalRAuth'
 import moment from 'moment'
@@ -830,8 +692,10 @@ const filteredVoices = computed(() => {
     if (voiceFilters.search) {
       const searchTerm = voiceFilters.search.toLowerCase()
       const matchesName = voice.name.toLowerCase().includes(searchTerm)
+      const matchesVozName = voice.voz_nombre?.toLowerCase().includes(searchTerm)
+      const matchesVariacionName = voice.variacion_nombre?.toLowerCase().includes(searchTerm)
       const matchesDescription = voice.description?.toLowerCase().includes(searchTerm)
-      if (!matchesName && !matchesDescription) return false
+      if (!matchesName && !matchesVozName && !matchesVariacionName && !matchesDescription) return false
     }
 
     // Gender filter
@@ -840,22 +704,16 @@ const filteredVoices = computed(() => {
       if (voiceGender !== voiceFilters.gender) return false
     }
 
-    // Accent filter
+    // Language filter (usando accent filter)
     if (voiceFilters.accent !== 'all') {
-      const voiceAccent = voice.labels?.accent?.toLowerCase()
-      if (voiceAccent !== voiceFilters.accent) return false
+      const voiceLanguage = voice.labels?.language?.toLowerCase()
+      if (voiceLanguage !== voiceFilters.accent) return false
     }
 
-    // Age filter
-    if (voiceFilters.age !== 'all') {
-      const voiceAge = voice.labels?.age?.toLowerCase()
-      if (voiceAge !== voiceFilters.age) return false
-    }
-
-    // Use case filter
+    // Category filter (usando useCase filter)
     if (voiceFilters.useCase !== 'all') {
-      const voiceUseCase = voice.labels?.['use case']?.toLowerCase() || voice.labels?.use_case?.toLowerCase()
-      if (voiceUseCase !== voiceFilters.useCase) return false
+      const voiceCategory = voice.category?.toLowerCase()
+      if (voiceCategory !== voiceFilters.useCase) return false
     }
 
     return true
@@ -1051,15 +909,18 @@ const formatDuration = (seconds) => {
 const generarVoz = async () => {
   isLoading.value = true
   try {
+    // Usar configuraciones de la variacion seleccionada
+    const variacionSettings = selectedLoc.value.settings || {}
+
     const result = await ElevenLabsService.textToSpeechFile(
-      selectedLoc.value.voice_id,
+      selectedLoc.value.voice_id, // voice_id de la voz original para la API de ElevenLabs
       MensajeSpot.value,
       {
-        stability: voiceSettings.stability,
-        similarityBoost: voiceSettings.similarity_boost,
-        style: voiceSettings.style,
-        useSpeakerBoost: voiceSettings.use_speaker_boost,
-        modelId: voiceSettings.modelId
+        stability: variacionSettings.stability ?? voiceSettings.stability,
+        similarityBoost: variacionSettings.similarity_boost ?? voiceSettings.similarity_boost,
+        style: variacionSettings.style ?? voiceSettings.style,
+        useSpeakerBoost: variacionSettings.use_speaker_boost ?? voiceSettings.use_speaker_boost,
+        modelId: variacionSettings.modelId ?? voiceSettings.modelId
       }
     )
 
@@ -1098,8 +959,17 @@ const playVoicePreview = async () => {
       previewAudioUrl.value = null
     }
 
-    const result = await ElevenLabsService.getVoicePreview(selectedLoc.value.voice_id)
-    previewAudioUrl.value = result.audioUrl
+    // Intentar usar el preview de la variacion primero, si no existe usar el preview original
+    if (selectedLoc.value.variacion_preview_path) {
+      previewAudioUrl.value = VozElevenLabsServices.getPreviewUrl(selectedLoc.value.variacion_preview_path)
+    } else if (selectedLoc.value.preview_url) {
+      // Usar preview original de ElevenLabs (URL directa)
+      previewAudioUrl.value = selectedLoc.value.preview_url
+    } else {
+      // Fallback: obtener preview desde ElevenLabs API
+      const result = await ElevenLabsService.getVoicePreview(selectedLoc.value.voice_id)
+      previewAudioUrl.value = result.audioUrl
+    }
 
     nextTick(() => {
       if (previewAudio.value) {
@@ -1119,6 +989,16 @@ const onVoiceChange = () => {
   if (previewAudioUrl.value) {
     URL.revokeObjectURL(previewAudioUrl.value)
     previewAudioUrl.value = null
+  }
+
+  // Aplicar configuraciones de la variacion seleccionada
+  if (selectedLoc.value?.settings) {
+    const settings = selectedLoc.value.settings
+    voiceSettings.stability = settings.stability ?? 0.75
+    voiceSettings.similarity_boost = settings.similarity_boost ?? 0.75
+    voiceSettings.style = settings.style ?? 0.0
+    voiceSettings.use_speaker_boost = settings.use_speaker_boost ?? true
+    voiceSettings.modelId = settings.modelId ?? 'eleven_multilingual_v2'
   }
 }
 
@@ -1165,34 +1045,35 @@ const extractFiltersFromVoices = () => {
   if (!locutores.value || locutores.value.length === 0) return
 
   const genders = new Set()
-  const accents = new Set()
-  const ages = new Set()
-  const useCases = new Set()
+  const languages = new Set()
+  const categories = new Set()
 
   locutores.value.forEach(voice => {
+    // Labels de la variacion
     if (voice.labels) {
       if (voice.labels.gender) genders.add(voice.labels.gender.toLowerCase())
-      if (voice.labels.accent) accents.add(voice.labels.accent.toLowerCase())
-      if (voice.labels.age) ages.add(voice.labels.age.toLowerCase())
-
-      const useCase = voice.labels['use case'] || voice.labels.use_case
-      if (useCase) useCases.add(useCase.toLowerCase())
+      if (voice.labels.language) languages.add(voice.labels.language.toLowerCase())
     }
+    // Categoria de la voz
+    if (voice.category) categories.add(voice.category.toLowerCase())
   })
 
   availableFilters.genders = Array.from(genders).sort()
-  availableFilters.accents = Array.from(accents).sort()
-  availableFilters.ages = Array.from(ages).sort()
-  availableFilters.useCases = Array.from(useCases).sort()
+  // Reutilizamos accents para idiomas
+  availableFilters.accents = Array.from(languages).sort()
+  // Reutilizamos useCases para categorias
+  availableFilters.useCases = Array.from(categories).sort()
+  // Limpiamos ages ya que no se usa en la nueva estructura
+  availableFilters.ages = []
 }
 
 const clearFilters = () => {
   Object.assign(voiceFilters, {
     search: '',
     gender: 'all',
-    accent: 'all',
-    age: 'all',
-    useCase: 'all'
+    accent: 'all', // Usado para idioma
+    age: 'all', // No usado pero se mantiene por compatibilidad
+    useCase: 'all' // Usado para categoria
   })
   toast('Filtros limpiados', 'success')
 }
@@ -1205,12 +1086,12 @@ const getVoiceDisplayInfo = (voice) => {
     parts.push(genderIcon)
   }
 
-  if (voice.labels?.accent) {
-    parts.push(capitalizeFirst(voice.labels.accent))
+  if (voice.labels?.language) {
+    parts.push(capitalizeFirst(voice.labels.language))
   }
 
-  if (voice.labels?.age) {
-    parts.push(capitalizeFirst(voice.labels.age))
+  if (voice.category) {
+    parts.push(capitalizeFirst(voice.category))
   }
 
   return parts.length > 0 ? ` (${parts.join(' • ')})` : ''
@@ -1225,9 +1106,8 @@ const getActiveFiltersCount = () => {
   let count = 0
   if (voiceFilters.search) count++
   if (voiceFilters.gender !== 'all') count++
-  if (voiceFilters.accent !== 'all') count++
-  if (voiceFilters.age !== 'all') count++
-  if (voiceFilters.useCase !== 'all') count++
+  if (voiceFilters.accent !== 'all') count++ // Usado para idioma
+  if (voiceFilters.useCase !== 'all') count++ // Usado para categoria
   return count
 }
 
@@ -1460,7 +1340,8 @@ const verificarParametros = () => {
 onMounted(async () => {
   isLoading.value = true
   try {
-    const locutoresData = await ElevenLabsService.getVoices()
+    // Cargar voces con variaciones desde la base de datos
+    const locutoresData = await VozElevenLabsServices.getVocesConVariaciones()
     locutores.value = locutoresData
 
     extractFiltersFromVoices()
