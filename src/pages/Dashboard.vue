@@ -1,16 +1,10 @@
 <template>
   <div class="page-content">
     <!-- SignalR Connection Status -->
-    <SignalRStatus
-      v-if="userRole === 'Cliente' && !loading"
-      :connected-count="connectedCount"
-    />
+    <SignalRStatus v-if="userRole === 'Cliente' && !loading" :connected-count="connectedCount" />
 
     <!-- Loading State -->
-    <div
-v-if="loading"
-class="min-h-[60vh] flex-center"
->
+    <div v-if="loading" class="min-h-[60vh] flex-center">
       <div class="spinner w-8 h-8" />
     </div>
 
@@ -18,18 +12,17 @@ class="min-h-[60vh] flex-center"
       <!-- Configuration Progress Alert -->
       <div
         v-if="userRole === 'Cliente' && !configLoading && configStatus && !configStatus.isComplete && showConfigAlert"
-        class="alert alert-warning mb-6"
-      >
+        class="alert alert-warning mb-6">
         <div class="flex-1">
           <div class="flex items-start gap-3 mb-4">
             <i class="fas fa-exclamation-triangle" />
             <div>
               <h3 class="font-semibold text-warning-300 mb-1">
-Configuracion Inicial Incompleta
-</h3>
+                Configuracion Inicial Incompleta
+              </h3>
               <p class="text-warning-400/80 text-sm">
-Complete la configuracion inicial para acceder a todas las funciones
-</p>
+                Complete la configuracion inicial para acceder a todas las funciones
+              </p>
             </div>
           </div>
 
@@ -42,37 +35,26 @@ Complete la configuracion inicial para acceder a todas las funciones
             <div class="h-2 bg-dark-secondary rounded-full overflow-hidden">
               <div
                 class="h-full bg-gradient-to-r from-warning-500 to-warning-400 rounded-full transition-all duration-500"
-                :style="{ width: configProgress + '%' }"
-              />
+                :style="{ width: configProgress + '%' }" />
             </div>
           </div>
 
           <!-- Missing Items -->
           <div class="flex flex-wrap gap-2 mb-4">
             <span class="text-text-tertiary text-sm">Pendiente:</span>
-            <span
-              v-for="item in missingConfigLabels"
-              :key="item"
-              class="badge bg-warning-500/20 text-warning-400"
-            >
+            <span v-for="item in missingConfigLabels" :key="item" class="badge bg-warning-500/20 text-warning-400">
               {{ item }}
             </span>
           </div>
 
           <!-- Actions -->
           <div class="flex flex-wrap gap-3">
-            <button
-class="btn btn-primary btn-sm"
-@click="goToConfiguration"
->
+            <button class="btn btn-primary btn-sm" @click="goToConfiguration">
               <i class="fas fa-cog" />
 
               Completar Configuracion
             </button>
-            <button
-class="btn btn-ghost btn-sm"
-@click="dismissConfigAlert"
->
+            <button class="btn btn-ghost btn-sm" @click="dismissConfigAlert">
               Recordar mas tarde
             </button>
           </div>
@@ -80,12 +62,8 @@ class="btn btn-ghost btn-sm"
       </div>
 
       <!-- Pending Invoices Alert -->
-      <PendingInvoicesAlert
-        v-if="userRole === 'Cliente' && !invoicesLoading && pendingInvoices.length > 0"
-        :invoices="pendingInvoices"
-        :max-display="3"
-        @dismiss="pendingInvoices = []"
-      />
+      <PendingInvoicesAlert v-if="userRole === 'Cliente' && !invoicesLoading && pendingInvoices.length > 0"
+        :invoices="pendingInvoices" :max-display="3" @dismiss="pendingInvoices = []" />
 
       <!-- Welcome Header -->
       <div class="flex-between flex-wrap gap-4 mb-8">
@@ -97,175 +75,107 @@ class="btn btn-ghost btn-sm"
             {{ getWelcomeMessage() }}
           </p>
         </div>
-        <span
-class="badge px-3 py-1.5"
-:class="getRoleBadgeClass()"
->
+        <span class="badge px-3 py-1.5" :class="getRoleBadgeClass()">
           <i class="fas fa-user-tag" />
           {{ userRole }}
         </span>
       </div>
 
       <!-- Stats Cards Row -->
-      <div
-v-if="showStats"
-class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8"
->
-        <div
-          v-for="stat in statsCards"
-          :key="stat.label"
-          class="card card-hover flex items-center gap-4"
-        >
-          <div
-            class="w-12 h-12 rounded-xl flex-center flex-shrink-0"
-            :style="{ backgroundColor: stat.color + '20', color: stat.color }"
-          >
-            <svg
-class="w-6 h-6"
-fill="none"
-stroke="currentColor"
-viewBox="0 0 24 24"
->
-              <path
-stroke-linecap="round"
-stroke-linejoin="round"
-stroke-width="2"
-:d="stat.icon"
-/>
+      <div v-if="showStats" data-tour="stats-cards"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+        <div v-for="stat in statsCards" :key="stat.label" class="card card-hover flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl flex-center flex-shrink-0"
+            :style="{ backgroundColor: stat.color + '20', color: stat.color }">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stat.icon" />
             </svg>
           </div>
           <div>
             <p class="text-text-tertiary text-sm">
-{{ stat.label }}
-</p>
+              {{ stat.label }}
+            </p>
             <p class="text-2xl font-bold text-text-primary">
-{{ stat.value }}
-</p>
-            <p
-v-if="stat.subtitle"
-class="text-text-quaternary text-xs"
->
-{{ stat.subtitle }}
-</p>
+              {{ stat.value }}
+            </p>
+            <p v-if="stat.subtitle" class="text-text-quaternary text-xs">
+              {{ stat.subtitle }}
+            </p>
           </div>
         </div>
       </div>
 
       <!-- Main Interactive Cards Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-8">
-        <div
-          v-for="card in dashboardCards"
-          :key="card.id"
+      <div data-tour="dashboard-cards"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-8">
+        <div v-for="card in dashboardCards" :key="card.id"
           class="card group cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg relative overflow-hidden"
-          :class="card.featured ? 'sm:col-span-2 lg:col-span-1' : ''"
-          @click="handleCardClick(card)"
-        >
+          :class="card.featured ? 'sm:col-span-2 lg:col-span-1' : ''" @click="handleCardClick(card)">
           <!-- Glow Effect -->
           <div
             class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-            :style="{ background: `radial-gradient(circle at 50% 0%, ${card.color}15, transparent 70%)` }"
-          />
+            :style="{ background: `radial-gradient(circle at 50% 0%, ${card.color}15, transparent 70%)` }" />
 
           <div class="relative z-10">
             <!-- Card Header -->
             <div class="flex-between mb-4">
-              <div
-                class="w-12 h-12 rounded-xl flex-center"
-                :style="{ backgroundColor: card.color + '20', color: card.color }"
-              >
-                <svg
-class="w-6 h-6"
-fill="none"
-stroke="currentColor"
-viewBox="0 0 24 24"
->
-                  <path
-stroke-linecap="round"
-stroke-linejoin="round"
-stroke-width="2"
-:d="card.icon"
-/>
+              <div class="w-12 h-12 rounded-xl flex-center"
+                :style="{ backgroundColor: card.color + '20', color: card.color }">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="card.icon" />
                 </svg>
               </div>
-              <span
-v-if="card.badge"
-class="badge badge-primary text-xs"
->
+              <span v-if="card.badge" class="badge badge-primary text-xs">
                 {{ card.badge }}
               </span>
             </div>
 
             <!-- Card Body -->
             <h3 class="text-lg font-semibold text-text-primary mb-1">
-{{ card.title }}
-</h3>
+              {{ card.title }}
+            </h3>
             <p class="text-text-tertiary text-sm mb-4 line-clamp-2">
-{{ card.description }}
-</p>
+              {{ card.description }}
+            </p>
 
             <!-- Card Stats -->
-            <div
-v-if="card.stats"
-class="flex gap-4 mb-4"
->
-              <div
-v-for="(stat, idx) in card.stats"
-:key="idx"
-class="text-center"
->
-                <p
-class="text-xl font-bold"
-:style="{ color: card.color }"
->
-{{ stat.value }}
-</p>
+            <div v-if="card.stats" class="flex gap-4 mb-4">
+              <div v-for="(stat, idx) in card.stats" :key="idx" class="text-center">
+                <p class="text-xl font-bold" :style="{ color: card.color }">
+                  {{ stat.value }}
+                </p>
                 <p class="text-text-quaternary text-xs">
-{{ stat.label }}
-</p>
+                  {{ stat.label }}
+                </p>
               </div>
             </div>
 
             <!-- Card Footer -->
-            <div
-class="flex items-center text-sm font-medium"
-:style="{ color: card.color }"
->
+            <div class="flex items-center text-sm font-medium" :style="{ color: card.color }">
               <span>{{ card.action || 'Ir a modulo' }} <i class="fas fa-arrow-alt-circle-right fa-2" /></span>
-</div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Quick Actions -->
-      <div v-if="quickActions.length > 0">
+      <div v-if="quickActions.length > 0" data-tour="quick-actions">
         <h3 class="text-lg font-semibold text-text-primary mb-4">
- Acciones Rapidas
-</h3>
+          Acciones Rapidas
+        </h3>
         <div class="flex flex-wrap gap-3">
-          <button
-            v-for="action in quickActions"
-            :key="action.id"
-            class="btn btn-secondary"
-            @click="go(action.path)"
-          >
-            <svg
-class="w-5 h-5"
-fill="none"
-stroke="currentColor"
-viewBox="0 0 24 24"
->
-              <path
-stroke-linecap="round"
-stroke-linejoin="round"
-stroke-width="2"
-:d="action.icon"
-/>
+          <button v-for="action in quickActions" :key="action.id" class="btn btn-secondary" @click="go(action.path)">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="action.icon" />
             </svg>
             <span>{{ action.label }}</span>
           </button>
         </div>
       </div>
     </template>
+
+    <!-- Botón flotante para iniciar tour -->
+    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
   </div>
 </template>
 
@@ -282,6 +192,8 @@ import configValidationService from '@/services/ConfigValidationService'
 import { useFacturasStore } from '@/stores/facturas'
 import SignalRStatus from '@/components/SignalRStatus.vue'
 import PendingInvoicesAlert from '@/components/PendingInvoicesAlert.vue'
+import TourButton from '@/components/TourButton.vue'
+import { useDriverTour } from '@/composables/useDriverTour'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -313,6 +225,12 @@ const invoicesLoading = ref(false)
 
 const signalR = useSignalRAuth()
 const { getCachedEvent } = signalR
+
+// Driver.js tour
+const { startTour, hasTour, isTourViewed } = useDriverTour({
+  autoStart: true, // Iniciar automáticamente en primera visita
+  onComplete: () => console.log('[Dashboard] Tour completado')
+})
 
 const currentUser = computed(() => authStore.user)
 const userRole = computed(() => {

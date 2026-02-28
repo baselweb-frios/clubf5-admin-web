@@ -2,6 +2,7 @@
   <div class="page-wrapper">
     <!-- Radio List -->
     <radio-list
+      data-tour="radio-list"
       :radios="radios"
       :loading="loading"
       @create="openCreateModal"
@@ -33,6 +34,9 @@
 
     <!-- Loading Overlay -->
     <loading-overlay v-if="processing" />
+
+    <!-- Tour Button -->
+    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
   </div>
 </template>
 
@@ -46,8 +50,12 @@ import ObsMusicBrowser from './components/ObsMusicBrowser.vue'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
 import RadioService from '@/services/RadioServices'
 import obsServices from '@/services/obsServices'
+import { useDriverTour } from '@/composables/useDriverTour'
 
 const toast = useToast()
+
+// Driver.js tour
+const { startTour, hasTour, isTourViewed } = useDriverTour({ autoStart: true })
 
 // State
 const loading = ref(false)

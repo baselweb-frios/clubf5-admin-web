@@ -69,56 +69,15 @@
             </div>
           </div>
 
-          <div class="relative">
-            <input
-              ref="spotInput"
-              v-model="spotSearch"
-              class="input"
-              placeholder="Buscar y seleccionar spots..."
-              aria-label="Buscar spots"
-              @input="filterSpots"
-              @focus="showSpotsDropdown = true"
-              @blur="hideSpotsDropdown"
-            >
-
-            <div
-              v-if="showSpotsDropdown && (filteredSpots.length > 0 || spotSearch)"
-              class="absolute top-full left-0 right-0 mt-1 bg-dark-elevated border border-dark-border rounded-lg shadow-xl z-dropdown max-h-64 overflow-y-auto"
-              role="listbox"
-            >
-              <div
-                v-for="group in groupedSpotsArray"
-                :key="group.category"
-                class="p-2"
-              >
-                <div class="flex items-center justify-between px-2 py-1 mb-1">
-                  <span
-                    class="text-xs font-semibold uppercase tracking-wide"
-                    :class="`text-${group.variant}-400`"
-                  >
-                    {{ group.label }}
-                  </span>
-                  <span class="text-xs text-text-tertiary">({{ group.spots.length }})</span>
-                </div>
-                <div
-                  v-for="spot in group.spots"
-                  :key="spot.spo_codigo"
-                  class="flex items-center justify-between px-3 py-2 rounded-md cursor-pointer hover:bg-dark-hover transition-colors"
-                  role="option"
-                  :aria-selected="isSpotSelected(spot)"
-                  @mousedown.prevent="addSpot(spot)"
-                >
-                  <span class="text-sm text-text-primary">{{ spot.spo_nombre }}</span>
-                  <span
-                    class="badge text-xs"
-                    :class="`badge-${group.variant}`"
-                  >
-                    {{ group.label }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- Botón para abrir modal de selección de spots -->
+          <button
+            class="btn btn-secondary w-full flex items-center justify-center gap-2"
+            @click="showSpotSelectorModal = true"
+          >
+            <i class="fa fa-plus-circle" />
+            <span>Seleccionar Spots</span>
+            <span class="badge badge-info ml-2">{{ spots.length }} disponibles</span>
+          </button>
         </div>
         <div class="form-group mt-4">
           <label class="label">
@@ -246,7 +205,7 @@
                     :key="hour - 1"
                     :value="`${(hour - 1).toString().padStart(2, '0')}:00`"
                 >
-                  {{ hour.toString().padStart(2, '0') }}
+                  {{ (hour - 1).toString().padStart(2, '0') }}
                 </option>
               </select>
             </div>
@@ -608,7 +567,7 @@
         </div>
       </div>
 
-      <div v-else ref="tableContainer" class="table-container" @scroll="handleScroll">
+      <div v-else ref="tableContainer" class="table-container">
         <table class="table" role="table" aria-label="Programaciones activas">
           <thead>
             <tr>
@@ -679,16 +638,72 @@
           </tbody>
         </table>
 
-        <!-- Indicador de carga de más items -->
-        <div v-if="hasMoreItems" class="flex items-center justify-center gap-2 py-4 text-text-secondary">
-          <div class="spinner" />
-          <span class="text-sm">Cargando más programaciones...</span>
-        </div>
+      </div>
 
-        <!-- Mensaje cuando se han cargado todos los items -->
-        <div v-else-if="filteredProgramaciones.length > 0" class="flex items-center justify-center gap-2 py-4 text-success-400">
-          <i class="fa fa-check-circle" />
-          <span class="text-sm">Has visto todas las {{ filteredProgramaciones.length }} programaciones</span>
+      <!-- Controles de Paginación -->
+      <div v-if="filteredProgramaciones.length > 0" class="mt-4 p-4 bg-dark-secondary rounded-lg">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="text-sm text-text-secondary">
+            Mostrando {{ paginationInfo.start }} - {{ paginationInfo.end }} de {{ paginationInfo.total }} programaciones
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              class="btn btn-secondary btn-sm btn-icon"
+              :disabled="currentPage === 1"
+              aria-label="Primera página"
+              @click="goToFirstPage"
+            >
+              <i class="fa fa-angle-double-left" />
+            </button>
+            <button
+              class="btn btn-secondary btn-sm btn-icon"
+              :disabled="currentPage === 1"
+              aria-label="Página anterior"
+              @click="goToPreviousPage"
+            >
+              <i class="fa fa-angle-left" />
+            </button>
+
+            <div class="flex items-center gap-1">
+              <button
+                v-for="page in visiblePages"
+                :key="page"
+                class="btn btn-sm min-w-[36px]"
+                :class="page === currentPage ? 'btn-primary' : 'btn-ghost'"
+                :disabled="page === '...'"
+                @click="goToPage(page)"
+              >
+                {{ page }}
+              </button>
+            </div>
+
+            <button
+              class="btn btn-secondary btn-sm btn-icon"
+              :disabled="currentPage === totalPages"
+              aria-label="Página siguiente"
+              @click="goToNextPage"
+            >
+              <i class="fa fa-angle-right" />
+            </button>
+            <button
+              class="btn btn-secondary btn-sm btn-icon"
+              :disabled="currentPage === totalPages"
+              aria-label="Última página"
+              @click="goToLastPage"
+            >
+              <i class="fa fa-angle-double-right" />
+            </button>
+          </div>
+
+          <div>
+            <select v-model="pageSize" class="select w-auto" @change="handlePageSizeChange">
+              <option :value="10">10 por página</option>
+              <option :value="25">25 por página</option>
+              <option :value="50">50 por página</option>
+              <option :value="100">100 por página</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -703,13 +718,6 @@
           Eliminar Seleccionadas
         </button>
       </div>
-    </div>
-
-    <!-- Mensaje cuando no hay resultados -->
-    <div v-if="spotSearch && filteredSpots.length === 0" class="card mt-4 text-center py-8">
-      <div class="text-4xl mb-3">🔍</div>
-      <div class="text-lg text-text-secondary mb-1">No se encontraron spots para "{{ spotSearch }}"</div>
-      <div class="text-sm text-text-tertiary">Intenta con otros términos de búsqueda</div>
     </div>
 
     <!-- Modal de Confirmación de Guardado -->
@@ -757,6 +765,184 @@
           <i class="fa fa-check" />
           Confirmar y Guardar
         </button>
+      </template>
+    </Modal>
+
+    <!-- Modal de Selección de Spots -->
+    <Modal v-model="showSpotSelectorModal" size="xl" :closable="true">
+      <template #header>
+        <div class="flex items-center gap-3">
+          <i class="fa fa-music text-primary-400" />
+          <h3 class="text-lg font-semibold text-text-primary">Seleccionar Spots</h3>
+          <span class="badge badge-primary">{{ selectedSpots.length }}/{{ maxSpotsAllowed }}</span>
+        </div>
+      </template>
+
+      <template #default>
+        <div class="space-y-4">
+          <!-- Filtros -->
+          <div class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
+            <div class="flex items-center gap-2 mb-3">
+              <i class="fa fa-filter text-text-secondary" />
+              <span class="text-sm font-semibold text-text-primary">Filtros</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Filtro por nombre -->
+              <div class="form-group">
+                <label class="label text-xs">Buscar por nombre</label>
+                <div class="relative">
+                  <input
+                    v-model="spotModalSearch"
+                    type="text"
+                    class="input pl-9"
+                    placeholder="Nombre del spot..."
+                  >
+                  <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
+                </div>
+              </div>
+
+              <!-- Filtro por tipo de spot -->
+              <div class="form-group">
+                <label class="label text-xs">Tipo de Spot</label>
+                <select v-model="spotModalFilterTipo" class="select">
+                  <option value="">Todos los tipos</option>
+                  <option value="inst">Institucional</option>
+                  <option value="prom">Promocional</option>
+                  <option value="noti">Noticias</option>
+                </select>
+              </div>
+
+              <!-- Filtro por tipo de media -->
+              <div class="form-group">
+                <label class="label text-xs">Tipo de Media</label>
+                <select v-model="spotModalFilterMedia" class="select">
+                  <option value="">Todos los medios</option>
+                  <option value="audio">Audio</option>
+                  <option value="video">Video</option>
+                  <option value="streaming">Streaming</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Botón limpiar filtros -->
+            <div v-if="hasSpotModalFilters" class="mt-3 flex justify-end">
+              <button class="btn btn-ghost btn-sm" @click="clearSpotModalFilters">
+                <i class="fa fa-times" />
+                Limpiar filtros
+              </button>
+            </div>
+          </div>
+
+          <!-- Contador de resultados -->
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-text-secondary">
+              Mostrando <strong class="text-text-primary">{{ filteredSpotsForModal.length }}</strong> spots
+            </span>
+            <div v-if="selectedSpots.length > 0" class="flex items-center gap-2">
+              <span class="text-success-400">
+                <i class="fa fa-check-circle" />
+                {{ selectedSpots.length }} seleccionado{{ selectedSpots.length !== 1 ? 's' : '' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Grid de Cards de Spots -->
+          <div class="max-h-[50vh] overflow-y-auto pr-2">
+            <div v-if="filteredSpotsForModal.length === 0" class="text-center py-12">
+              <i class="fa fa-search text-4xl text-text-tertiary mb-3" />
+              <p class="text-text-secondary">No se encontraron spots con los filtros aplicados</p>
+            </div>
+
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div
+                v-for="spot in filteredSpotsForModal"
+                :key="spot.spo_codigo"
+                class="spot-card p-4 rounded-xl border-2 cursor-pointer transition-all hover:shadow-lg"
+                :class="{
+                  'border-primary-500 bg-primary-500/10 shadow-primary-500/20': isSpotSelected(spot),
+                  'border-dark-border bg-dark-tertiary hover:border-dark-hover': !isSpotSelected(spot),
+                  'opacity-50 cursor-not-allowed': !canAddMoreSpots && !isSpotSelected(spot)
+                }"
+                @click="toggleSpotSelection(spot)"
+              >
+                <!-- Header de la card -->
+                <div class="flex items-start justify-between mb-3">
+                  <div class="flex items-center gap-2">
+                    <!-- Icono según tipo de media -->
+                    <div
+                      class="w-10 h-10 rounded-lg flex items-center justify-center"
+                      :class="getMediaTypeIconClass(spot.spo_mediaTipo)"
+                    >
+                      <i :class="getMediaTypeIcon(spot.spo_mediaTipo)" />
+                    </div>
+                    <div>
+                      <span
+                        class="badge text-xs"
+                        :class="`badge-${getCategoryVariant(spot.spo_tipo)}`"
+                      >
+                        {{ getCategoryLabel(spot.spo_tipo) }}
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Checkbox de selección -->
+                  <div
+                    class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors"
+                    :class="{
+                      'border-primary-500 bg-primary-500 text-white': isSpotSelected(spot),
+                      'border-dark-border': !isSpotSelected(spot)
+                    }"
+                  >
+                    <i v-if="isSpotSelected(spot)" class="fa fa-check text-xs" />
+                  </div>
+                </div>
+
+                <!-- Nombre del spot -->
+                <h4 class="font-semibold text-text-primary mb-2 line-clamp-2">
+                  {{ spot.spo_nombre }}
+                </h4>
+
+                <!-- Información adicional -->
+                <div class="flex items-center gap-3 text-xs text-text-tertiary">
+                  <span class="flex items-center gap-1">
+                    <i :class="getMediaTypeIcon(spot.spo_mediaTipo)" />
+                    {{ getMediaTypeLabel(spot.spo_mediaTipo) }}
+                  </span>
+                  <span v-if="spot.spo_duracion" class="flex items-center gap-1">
+                    <i class="fa fa-clock-o" />
+                    {{ formatSpotDuration(spot.spo_duracion) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <template #footer>
+        <div class="flex items-center justify-between w-full">
+          <div class="text-sm text-text-secondary">
+            <span v-if="!canAddMoreSpots && selectedSpots.length >= maxSpotsAllowed" class="text-warning-400">
+              <i class="fa fa-exclamation-triangle" />
+              Límite de spots alcanzado
+            </span>
+            <span v-else>
+              Puedes seleccionar hasta {{ maxSpotsAllowed }} spots
+            </span>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-ghost" @click="showSpotSelectorModal = false">
+              Cancelar
+            </button>
+            <button
+              class="btn btn-primary"
+              :disabled="selectedSpots.length === 0"
+              @click="confirmSpotSelection"
+            >
+              <i class="fa fa-check" />
+              Confirmar Selección ({{ selectedSpots.length }})
+            </button>
+          </div>
+        </div>
       </template>
     </Modal>
 
@@ -864,9 +1050,9 @@ export default {
         Array.isArray(this.initialSelectedDays) && this.initialSelectedDays.length > 0
           ? this.initialSelectedDays.map(d => Number(d))
           : [],
-      // Propiedades de scroll infinito
-      displayedItemsCount: 20, // Número inicial de items a mostrar
-      itemsIncrement: 20, // Cuántos items cargar cada vez
+      // Propiedades de paginación para tabla de programaciones
+      currentPage: 1,
+      pageSize: 25,
       // Propiedades de scroll infinito para modal pendientes
       displayedPendingCount: 20, // Número inicial de items pendientes a mostrar
       pendingIncrement: 20, // Cuántos items pendientes cargar cada vez
@@ -874,7 +1060,7 @@ export default {
       filterStartTime: '',
       filterEndTime: '',
       // Propiedades para programación de múltiples minutos en una hora específica
-      showMultiMinuteSelector: false,
+      showMultiMinuteSelector: true,
       selectedHourForMultiMinute: '',
       selectedMinutes: [], // Array de minutos seleccionados [0, 5, 10, 15, etc.]
       currentSpotIndexForMinutes: 0, // Para rotar spots cuando se programan múltiples minutos
@@ -888,7 +1074,12 @@ export default {
       savedCount: 0,
       // Configuración del cliente
       clientConfig: null,
-      configLoading: false
+      configLoading: false,
+      // Modal de selección de spots
+      showSpotSelectorModal: false,
+      spotModalSearch: '',
+      spotModalFilterTipo: '',
+      spotModalFilterMedia: ''
     }
   },
 
@@ -986,6 +1177,36 @@ export default {
       return this.spots.filter(spot =>
         spot.spo_nombre.toLowerCase().includes(this.spotSearch.toLowerCase())
       )
+    },
+
+    // Spots filtrados para el modal de selección
+    filteredSpotsForModal() {
+      let filtered = [...this.spots]
+
+      // Filtro por nombre
+      if (this.spotModalSearch) {
+        const searchLower = this.spotModalSearch.toLowerCase()
+        filtered = filtered.filter(spot =>
+          spot.spo_nombre.toLowerCase().includes(searchLower)
+        )
+      }
+
+      // Filtro por tipo de spot
+      if (this.spotModalFilterTipo) {
+        filtered = filtered.filter(spot => spot.spo_tipo === this.spotModalFilterTipo)
+      }
+
+      // Filtro por tipo de media
+      if (this.spotModalFilterMedia) {
+        filtered = filtered.filter(spot => spot.spo_mediaTipo === this.spotModalFilterMedia)
+      }
+
+      return filtered
+    },
+
+    // Verificar si hay filtros activos en el modal
+    hasSpotModalFilters() {
+      return !!(this.spotModalSearch || this.spotModalFilterTipo || this.spotModalFilterMedia)
     },
     getUsuario() {
       return JSON.parse(localStorage.getItem('user') || '{}')
@@ -1199,14 +1420,46 @@ export default {
       return count
     },
 
-    // Programaciones visibles según scroll infinito
+    // Programaciones visibles según paginación
     displayedProgramaciones() {
-      return this.filteredProgramaciones.slice(0, this.displayedItemsCount)
+      const start = (this.currentPage - 1) * this.pageSize
+      const end = start + this.pageSize
+      return this.filteredProgramaciones.slice(start, end)
     },
 
-    // Verificar si hay más items para cargar
-    hasMoreItems() {
-      return this.displayedItemsCount < this.filteredProgramaciones.length
+    // Total de páginas
+    totalPages() {
+      return Math.ceil(this.filteredProgramaciones.length / this.pageSize) || 1
+    },
+
+    // Páginas visibles en el paginador
+    visiblePages() {
+      const pages = []
+      const total = this.totalPages
+      const current = this.currentPage
+
+      if (total <= 7) {
+        for (let i = 1; i <= total; i++) {
+          pages.push(i)
+        }
+      } else {
+        if (current <= 4) {
+          pages.push(1, 2, 3, 4, 5, '...', total)
+        } else if (current >= total - 3) {
+          pages.push(1, '...', total - 4, total - 3, total - 2, total - 1, total)
+        } else {
+          pages.push(1, '...', current - 1, current, current + 1, '...', total)
+        }
+      }
+
+      return pages
+    },
+
+    // Información de paginación
+    paginationInfo() {
+      const start = (this.currentPage - 1) * this.pageSize + 1
+      const end = Math.min(this.currentPage * this.pageSize, this.filteredProgramaciones.length)
+      return { start, end, total: this.filteredProgramaciones.length }
     },
 
     // Programaciones pendientes visibles según scroll infinito
@@ -1306,7 +1559,7 @@ export default {
     selectedReproductor() {
       // Limpiar selección de programaciones al cambiar filtros
       this.selectedProgramaciones = []
-      this.resetDisplayedItems()
+      this.resetPagination()
 
       // Emitir evento de cambio de filtros
       this.emitFilterChange()
@@ -1315,7 +1568,7 @@ export default {
       handler() {
         // Limpiar selección al cambiar días seleccionados
         this.selectedProgramaciones = []
-        this.resetDisplayedItems()
+        this.resetPagination()
 
         // Emitir evento de cambio de filtros
         this.emitFilterChange()
@@ -1325,7 +1578,7 @@ export default {
     startTime() {
       // Limpiar selección al cambiar rango horario
       this.selectedProgramaciones = []
-      this.resetDisplayedItems()
+      this.resetPagination()
 
       // Emitir evento de cambio de filtros
       this.emitFilterChange()
@@ -1333,18 +1586,18 @@ export default {
     endTime() {
       // Limpiar selección al cambiar rango horario
       this.selectedProgramaciones = []
-      this.resetDisplayedItems()
+      this.resetPagination()
 
       // Emitir evento de cambio de filtros
       this.emitFilterChange()
     },
     filterStartTime() {
       // Resetear scroll al cambiar filtro de inicio
-      this.resetDisplayedItems()
+      this.resetPagination()
     },
     filterEndTime() {
       // Resetear scroll al cambiar filtro de fin
-      this.resetDisplayedItems()
+      this.resetPagination()
     },
     programaciones: {
       handler(newVal, oldVal) {
@@ -1387,6 +1640,12 @@ export default {
 
     // Inicializar filtros
     this.initializeFilters()
+
+    // Cargar preferencia de tamaño de página guardada
+    const savedPageSize = localStorage.getItem('programacionesPageSize')
+    if (savedPageSize) {
+      this.pageSize = parseInt(savedPageSize)
+    }
 
     // Si el usuario es reproductor, setear automáticamente su usuario
     if (this.isReproductor) {
@@ -1644,9 +1903,6 @@ export default {
           'success'
         )
       }
-      this.spotSearch = ''
-      this.showSpotsDropdown = false
-      this.$refs.spotInput.focus()
     },
 
     removeSpot(spot) {
@@ -1665,6 +1921,80 @@ export default {
         this.showSpotsDropdown = false
       }, 200)
     },
+
+    // ===== MÉTODOS PARA MODAL DE SELECCIÓN DE SPOTS =====
+
+    // Toggle de selección de spot en el modal
+    toggleSpotSelection(spot) {
+      if (this.isSpotSelected(spot)) {
+        // Deseleccionar
+        this.removeSpot(spot)
+      } else {
+        // Seleccionar (verificar límite)
+        if (this.canAddMoreSpots) {
+          this.selectedSpots.push(spot)
+        } else {
+          this.$toast(`Límite de ${this.maxSpotsAllowed} spots alcanzado`, 'warning')
+        }
+      }
+    },
+
+    // Limpiar filtros del modal
+    clearSpotModalFilters() {
+      this.spotModalSearch = ''
+      this.spotModalFilterTipo = ''
+      this.spotModalFilterMedia = ''
+    },
+
+    // Confirmar selección de spots y cerrar modal
+    confirmSpotSelection() {
+      if (this.selectedSpots.length > 0) {
+        this.$toast(`${this.selectedSpots.length} spot(s) seleccionado(s)`, 'success')
+      }
+      this.showSpotSelectorModal = false
+      this.clearSpotModalFilters()
+    },
+
+    // Obtener icono según tipo de media
+    getMediaTypeIcon(mediaTipo) {
+      const icons = {
+        audio: 'fa fa-volume-up',
+        video: 'fa fa-film',
+        streaming: 'fa fa-wifi'
+      }
+      return icons[mediaTipo] || 'fa fa-file'
+    },
+
+    // Obtener clase de icono según tipo de media
+    getMediaTypeIconClass(mediaTipo) {
+      const classes = {
+        audio: 'bg-primary-500/20 text-primary-400',
+        video: 'bg-success-500/20 text-success-400',
+        streaming: 'bg-info-500/20 text-info-400'
+      }
+      return classes[mediaTipo] || 'bg-dark-secondary text-text-secondary'
+    },
+
+    // Obtener etiqueta según tipo de media
+    getMediaTypeLabel(mediaTipo) {
+      const labels = {
+        audio: 'Audio',
+        video: 'Video',
+        streaming: 'Streaming'
+      }
+      return labels[mediaTipo] || mediaTipo || 'Media'
+    },
+
+    // Formatear duración del spot
+    formatSpotDuration(duration) {
+      if (!duration) return '--:--'
+      const totalSeconds = typeof duration === 'string' ? parseInt(duration) : duration
+      const minutes = Math.floor(totalSeconds / 60)
+      const seconds = totalSeconds % 60
+      return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    },
+
+    // ===== FIN MÉTODOS MODAL SELECCIÓN SPOTS =====
 
     toggleSelectAll() {
       if (this.isAllSelected) {
@@ -2237,27 +2567,40 @@ export default {
       }
     },
 
-    // Método de scroll infinito
-    handleScroll(event) {
-      const container = event.target
-      const scrollPosition = container.scrollTop + container.clientHeight
-      const scrollHeight = container.scrollHeight
+    // Métodos de paginación
+    goToPage(page) {
+      if (page === '...') return
+      this.currentPage = page
+    },
 
-      // Cargar más items cuando estamos cerca del final (50px del fondo o 80%)
-      const threshold = Math.min(scrollHeight * 0.8, scrollHeight - 50)
-      if (scrollPosition >= threshold && this.hasMoreItems) {
-        this.loadMoreItems()
+    goToFirstPage() {
+      this.currentPage = 1
+    },
+
+    goToLastPage() {
+      this.currentPage = this.totalPages
+    },
+
+    goToNextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++
       }
     },
 
-    loadMoreItems() {
-      // Incrementar el número de items mostrados
-      this.displayedItemsCount += this.itemsIncrement
+    goToPreviousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
     },
 
-    resetDisplayedItems() {
-      // Resetear a la cantidad inicial cuando cambian los filtros
-      this.displayedItemsCount = 20
+    handlePageSizeChange() {
+      this.currentPage = 1
+      localStorage.setItem('programacionesPageSize', this.pageSize)
+    },
+
+    resetPagination() {
+      // Resetear a la primera página cuando cambian los filtros
+      this.currentPage = 1
     },
 
     // Método de scroll infinito para modal de pendientes
@@ -2306,7 +2649,7 @@ export default {
       this.endTime = '23:00'
       this.filterStartTime = ''
       this.filterEndTime = ''
-      this.resetDisplayedItems()
+      this.resetPagination()
       this.selectedProgramaciones = []
 
       // Emitir evento de filtros limpiados
@@ -2317,7 +2660,7 @@ export default {
     clearTimeFilter() {
       this.filterStartTime = ''
       this.filterEndTime = ''
-      this.resetDisplayedItems()
+      this.resetPagination()
     },
 
     // Emitir evento de cambio de filtros hacia el componente padre
@@ -2572,6 +2915,45 @@ export default {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Spot Cards Styles */
+.spot-card {
+  @apply relative;
+}
+
+.spot-card:hover:not(.opacity-50) {
+  transform: translateY(-2px);
+}
+
+.spot-card.border-primary-500 {
+  box-shadow: 0 0 0 1px rgba(var(--color-primary-500), 0.3);
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom scrollbar for modal */
+.max-h-\[50vh\]::-webkit-scrollbar {
+  width: 6px;
+}
+
+.max-h-\[50vh\]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.max-h-\[50vh\]::-webkit-scrollbar-thumb {
+  background: var(--color-dark-border);
+  border-radius: 3px;
+}
+
+.max-h-\[50vh\]::-webkit-scrollbar-thumb:hover {
+  background: var(--color-dark-hover);
 }
 </style>
 

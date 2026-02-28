@@ -1,11 +1,31 @@
 <template>
-  <div class="overlay-container">
+  <teleport v-if="fullscreen" to="body">
     <transition name="fade">
       <div
-v-if="show"
-class="overlay"
-:style="overlayStyle"
->
+        v-if="show"
+        class="overlay overlay-fullscreen"
+        :style="overlayStyle"
+      >
+        <div class="overlay-content">
+          <slot name="overlay">
+            <loading-spinner
+              :loading="true"
+              :color="color"
+              :size="height"
+              :text="text"
+            />
+          </slot>
+        </div>
+      </div>
+    </transition>
+  </teleport>
+  <div v-else class="overlay-container">
+    <transition name="fade">
+      <div
+        v-if="show"
+        class="overlay"
+        :style="overlayStyle"
+      >
         <div class="overlay-content">
           <slot name="overlay">
             <loading-spinner
@@ -35,6 +55,10 @@ const props = defineProps({
     default: 0.9
   },
   noWrap: {
+    type: Boolean,
+    default: false
+  },
+  fullscreen: {
     type: Boolean,
     default: false
   },
@@ -73,7 +97,16 @@ const overlayStyle = computed(() => {
   @apply rounded-xl;
 }
 
-.light .overlay {
+/* Fullscreen Overlay */
+.overlay-fullscreen {
+  @apply fixed inset-0 z-modal;
+  @apply bg-dark-primary/90 backdrop-blur-sm;
+  @apply flex items-center justify-center;
+  @apply rounded-none;
+}
+
+.light .overlay,
+.light .overlay-fullscreen {
   @apply bg-light-primary/90;
 }
 

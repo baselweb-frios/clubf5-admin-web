@@ -11,9 +11,11 @@ import moment from 'moment'
 // Import styles
 import './assets/css/main.css'
 import '@fortawesome/fontawesome-free/css/all.css'
+import './assets/styles/driver-theme.css'
 
 // Import plugins
 import toastPlugin from './plugins/toast'
+import driverTourPlugin from './plugins/driverTour'
 
 // Import locale files
 import es from './locales/es.json'
@@ -60,6 +62,7 @@ app.use(pinia)
 app.use(router)
 app.use(i18n)
 app.use(toastPlugin)
+app.use(driverTourPlugin)
 
 // Load user from storage before mounting (async)
 const authStore = useAuthStore()

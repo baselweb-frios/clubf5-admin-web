@@ -354,6 +354,7 @@ const sidebarLinks = computed(() => {
     links.push({ name: 'Recibos', icon: 'document', path: '/facturasAdmin' })
     links.push({ name: 'Paquetes y Precios', icon: 'list-alt', path: '/paquetes' })
     links.push({ name: 'Locutores (Voces IA)', icon: 'cog', path: '/voces-elevenlabs' })
+    links.push({ name: 'Editor de pagina', icon: 'building', path: '/landing-editor' })
   }
 
   return links

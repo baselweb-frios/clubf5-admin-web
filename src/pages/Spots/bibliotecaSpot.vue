@@ -2,13 +2,14 @@
   <div class="page-content">
     <div class="space-y-6">
     <!-- Loading Overlay - Solo durante carga inicial -->
-    <LoadingOverlay :show="isLoading" text="Cargando biblioteca de spots..." />
+    <LoadingOverlay :show="isLoading" text="Cargando biblioteca de spots..." fullscreen />
 
     <!-- Contenido principal - Solo visible cuando NO está cargando -->
     <template v-if="!isLoading">
       <!-- Selector de Programación -->
       <div
         v-if="selectedProgramacion"
+        data-tour="spot-programacion"
         class="card flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div class="flex items-center gap-3 flex-wrap">
@@ -194,7 +195,7 @@ class="btn btn-secondary"
       </Modal>
 
       <div class="card p-0 overflow-hidden">
-        <div class="flex border-b border-dark-border">
+        <div data-tour="spot-tabs" class="flex border-b border-dark-border">
           <button
             class="flex-1 px-4 py-3 font-medium text-sm transition-all border-b-2"
             :class="activeTab === 'spots' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
@@ -213,7 +214,7 @@ class="btn btn-secondary"
           </button>
         </div>
 
-        <div v-if="activeTab === 'spots'" class="p-4 sm:p-6">
+        <div v-if="activeTab === 'spots'" data-tour="spot-table" class="p-4 sm:p-6">
           <SpotTable
             :spots="spots"
             :selected-spots="selectedSpots"
@@ -245,6 +246,9 @@ class="btn btn-secondary"
         </div>
       </div>
     </template>
+
+    <!-- Tour Button -->
+    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
   </div>
   </div>
 </template>
@@ -264,9 +268,13 @@ import SpotTable from './SpotTable.vue'
 import ProgrammingInterface from './ProgrammingInterface.vue'
 import { LoadingOverlay } from '@/components'
 import Modal from '@/components/ui/Modal.vue'
+import { useDriverTour } from '@/composables/useDriverTour'
 
 // Router
 const router = useRouter()
+
+// Driver.js tour
+const { startTour, hasTour, isTourViewed } = useDriverTour({ autoStart: true })
 
 // Get global properties
 const { proxy } = getCurrentInstance()

@@ -5,6 +5,7 @@
       opacity="0.85"
       color="#1d8cf8"
       height="95px"
+      fullscreen="true"
       text="Procesando..."
     />
 
@@ -27,7 +28,7 @@
 
     <div class="space-y-6">
       <!-- Información Básica -->
-      <div class="card">
+      <div class="card" data-tour="spot-info">
         <div class="flex items-center gap-2 mb-6">
           <i class="fas fa-info-circle text-primary-400" />
           <h3 class="text-lg font-semibold text-text-primary">Información del Spot</h3>
@@ -105,7 +106,7 @@
           </div>
         </div>
         <div>
-          <div class="flex flex-wrap border-b border-dark-border">
+          <div data-tour="spot-media-tabs" class="flex flex-wrap border-b border-dark-border">
             <button
               class="flex-1 min-w-[120px] px-4 py-3 text-sm font-medium transition-all border-b-2"
               :class="spot.spo_mediaTipo === 'audio' && activeTab !== 'ai' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
@@ -205,7 +206,7 @@
             </div>
           </div>
           <!-- Upload Tab -->
-          <div v-if="activeTab === 'upload'" class="p-4 sm:p-6">
+          <div v-if="activeTab === 'upload'" data-tour="spot-upload" class="p-4 sm:p-6">
             <div class="space-y-4">
               <input
                 id="file-upload"
@@ -281,7 +282,7 @@
           </div>
 
           <!-- AI Generation Tab -->
-          <div v-if="activeTab === 'ai'" class="p-4 sm:p-6">
+          <div v-if="activeTab === 'ai'" data-tour="spot-ai" class="p-4 sm:p-6">
             <div class="space-y-6">
               <!-- Voice Filters Section -->
               <div class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
@@ -548,7 +549,7 @@
       </div>
 
       <!-- Actions -->
-      <div class="card">
+      <div class="card" data-tour="spot-save">
         <div class="flex flex-wrap gap-3">
           <button class="btn btn-primary" @click="guardar">
             <i class="fas fa-save" />
@@ -561,6 +562,9 @@
         </div>
       </div>
     </div>
+
+    <!-- Tour Button -->
+    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
   </div>
 </template>
 
@@ -576,10 +580,14 @@ import ElevenLabsService from '@/services/ElevenLabsService'
 import VozElevenLabsServices from '@/services/VozElevenLabsServices'
 import { useAuthStore } from '@/stores/auth'
 import { useSignalRAuth } from '@/composables/useSignalRAuth'
+import { useDriverTour } from '@/composables/useDriverTour'
 import moment from 'moment'
 
 // Composables
 const route = useRoute()
+
+// Driver.js tour
+const { startTour, hasTour, isTourViewed } = useDriverTour({ autoStart: true })
 const router = useRouter()
 const { t } = useI18n()
 const toast = useToast()

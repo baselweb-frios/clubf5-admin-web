@@ -17,6 +17,7 @@ Inicia sesión para continuar
       <!-- Form -->
       <form
 class="space-y-5"
+data-tour="login-form"
 @submit.prevent="handleSubmit"
 >
         <!-- Error Alert -->
@@ -165,6 +166,7 @@ class="text-danger-400 text-xs mt-1"
           </label>
           <router-link
             to="/forgot-password"
+            data-tour="forgot-password"
             class="text-primary-400 hover:text-primary-300 transition-colors"
           >
             ¿Olvidaste tu contraseña?

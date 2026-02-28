@@ -65,5 +65,13 @@ export default [
     name: 'VocesElevenLabs',
     component: () => import('@/pages/Admin/VocesElevenLabs/Index.vue'),
     meta: { requiresAuth: true, roles: ['Administrador'], title: 'Voces ElevenLabs' }
+  },
+
+  // ===== EDITOR LANDING PAGE (Solo Administrador) =====
+  {
+    path: 'landing-editor',
+    name: 'LandingEditor',
+    component: () => import('@/pages/Admin/LandingEditor/Index.vue'),
+    meta: { requiresAuth: true, roles: ['Administrador'], title: 'Editor Landing Page' }
   }
 ]

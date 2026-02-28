@@ -1,5 +1,46 @@
 <template>
   <div class="space-y-4">
+    <!-- Media Preview Modal -->
+    <Modal
+      v-model="showMediaModal"
+      :title="mediaPreviewSpot?.nombreSpot || 'Vista previa'"
+      size="lg"
+    >
+      <div class="flex flex-col items-center justify-center p-4">
+        <div v-if="mediaPreviewSpot?.mediaTipo === 'streaming'" class="text-center">
+          <i class="fas fa-broadcast-tower text-4xl text-primary-400 mb-4" />
+          <p class="text-text-secondary mb-2">URL de Streaming:</p>
+          <a
+            :href="mediaPreviewSpot?.url"
+            target="_blank"
+            class="text-primary-400 hover:text-primary-300 break-all"
+          >
+            {{ mediaPreviewSpot?.url }}
+          </a>
+        </div>
+        <video
+          v-else-if="mediaPreviewSpot?.mediaTipo === 'video'"
+          controls
+          :src="mediaPreviewSpot?.url"
+          class="w-full max-h-[60vh] rounded-lg"
+        >
+          Tu navegador no soporta el elemento de video.
+        </video>
+        <audio
+          v-else-if="mediaPreviewSpot?.mediaTipo === 'audio'"
+          controls
+          :src="mediaPreviewSpot?.url"
+          class="w-full"
+        >
+          Tu navegador no soporta el elemento de audio.
+        </audio>
+      </div>
+      <template #footer>
+        <button class="btn btn-secondary" @click="closeMediaPreview">
+          Cerrar
+        </button>
+      </template>
+    </Modal>
     <!-- Header Section -->
     <div class="card">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -230,19 +271,15 @@
                 </div>
               </td>
               <td>
-                <div v-if="spot.mediaTipo=='streaming'" class="text-sm text-text-secondary truncate max-w-[200px]">
-                  <p>{{ spot.url }}</p>
-                </div>
-                <div v-if="spot.mediaTipo=='video'">
-                  <video controls :src="spot.url" class="h-10 rounded">
-                    Tu navegador no soporta el elemento de video.
-                  </video>
-                </div>
-                <div v-if="spot.mediaTipo=='audio'">
-                  <audio controls :src="spot.url" class="h-8 max-w-[200px]">
-                    Tu navegador no soporta el elemento de audio.
-                  </audio>
-                </div>
+                <button
+                  v-if="spot.mediaTipo"
+                  class="btn btn-ghost btn-sm flex items-center gap-2"
+                  @click.stop="openMediaPreview(spot)"
+                >
+                  <i :class="getMediaIcon(spot.mediaTipo)" />
+                  <span class="text-xs">{{ getMediaLabel(spot.mediaTipo) }}</span>
+                </button>
+                <span v-else class="text-text-tertiary text-sm">Sin media</span>
               </td>
             </tr>
 
@@ -316,30 +353,18 @@
             </div>
 
             <div v-if="spot.mediaTipo" class="pt-2 border-t border-dark-border">
-              <span class="text-sm text-text-secondary flex items-center gap-2 mb-2">
-                <i class="fas fa-music" />
-                Media
-              </span>
-              <div>
-                <div v-if="spot.mediaTipo=='streaming'">
-                  <p class="text-xs text-text-tertiary truncate">{{ spot.url }}</p>
-                </div>
-                <video
-                  v-if="spot.mediaTipo=='video'"
-                  controls
-                  :src="spot.url"
-                  class="w-full h-auto rounded"
+              <div class="flex items-center justify-between">
+                <span class="text-sm text-text-secondary flex items-center gap-2">
+                  <i class="fas fa-music" />
+                  Media
+                </span>
+                <button
+                  class="btn btn-ghost btn-sm flex items-center gap-2"
+                  @click.stop="openMediaPreview(spot)"
                 >
-                  Tu navegador no soporta el elemento de video.
-                </video>
-                <audio
-                  v-if="spot.mediaTipo=='audio'"
-                  controls
-                  :src="spot.url"
-                  class="w-full h-8"
-                >
-                  Tu navegador no soporta el elemento de audio.
-                </audio>
+                  <i :class="getMediaIcon(spot.mediaTipo)" />
+                  <span class="text-xs">{{ getMediaLabel(spot.mediaTipo) }}</span>
+                </button>
               </div>
             </div>
           </div>
@@ -362,7 +387,7 @@
 
     <!-- Pagination -->
     <div
-      v-if="totalPages > 1"
+      v-if="filteredSpots.length > 0"
       class="card"
     >
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -429,8 +454,13 @@
 </template>
 
 <script>
+import Modal from '@/components/ui/Modal.vue'
+
 export default {
   name: 'SpotTable',
+  components: {
+    Modal
+  },
   props: {
     spots: {
       type: Array,
@@ -464,7 +494,10 @@ export default {
       currentPage: 1,
       pageSize: 25,
       // Audio durations cache
-      audioDurations: {}
+      audioDurations: {},
+      // Media preview modal
+      showMediaModal: false,
+      mediaPreviewSpot: null
     }
   },
   computed: {
@@ -700,6 +733,18 @@ export default {
       this.$emit('play', spot)
     },
 
+    // Media preview methods
+    openMediaPreview(spot) {
+      console.log('SpotTable: Opening media preview for:', spot.nombreSpot)
+      this.mediaPreviewSpot = spot
+      this.showMediaModal = true
+    },
+
+    closeMediaPreview() {
+      this.showMediaModal = false
+      this.mediaPreviewSpot = null
+    },
+
     // Filter methods
     handleSearch() {
       clearTimeout(this.searchTimeout)
@@ -833,6 +878,24 @@ export default {
         noti: 'fas fa-newspaper'
       }
       return icons[tipo] || 'fas fa-tag'
+    },
+
+    getMediaIcon(mediaTipo) {
+      const icons = {
+        audio: 'fas fa-headphones',
+        video: 'fas fa-video',
+        streaming: 'fas fa-broadcast-tower'
+      }
+      return icons[mediaTipo] || 'fas fa-play'
+    },
+
+    getMediaLabel(mediaTipo) {
+      const labels = {
+        audio: 'Escuchar',
+        video: 'Ver video',
+        streaming: 'Ver URL'
+      }
+      return labels[mediaTipo] || 'Ver'
     },
 
     getExpirationClass(spot) {

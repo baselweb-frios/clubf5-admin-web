@@ -53,7 +53,7 @@ v-else
 class="page-content"
 >
       <!-- Sección: Horarios Disponibles -->
-      <div class="card mb-6">
+      <div class="card mb-6" data-tour="config-horarios">
         <div class="border-b border-dark-border pb-4 mb-4 flex-between">
           <div class="flex items-center gap-3">
             <i class="fas fa-clock text-primary-400 text-lg" />
@@ -123,7 +123,7 @@ class="btn btn-primary"
       </div>
 
       <!-- Sección: Días Disponibles -->
-      <div class="card mb-6">
+      <div class="card mb-6" data-tour="config-dias">
         <div class="border-b border-dark-border pb-4 mb-4 flex-between">
           <div class="flex items-center gap-3">
             <i class="fas fa-calendar text-primary-400 text-lg" />
@@ -189,7 +189,7 @@ class="btn btn-primary"
       </div>
 
       <!-- Sección: Tipo de Empresa -->
-      <div class="card mb-6">
+      <div class="card mb-6" data-tour="config-empresa">
         <div class="border-b border-dark-border pb-4 mb-4 flex-between">
           <div class="flex items-center gap-3">
             <i class="fas fa-building text-primary-400 text-lg" />
@@ -495,6 +495,9 @@ class="fas"
         </div>
       </div>
     </transition>
+
+    <!-- Tour Button -->
+    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
   </div>
 </template>
 
@@ -502,12 +505,16 @@ class="fas"
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useDriverTour } from '@/composables/useDriverTour'
 import clienteConfigService from '@/services/ClienteConfigServices'
 import configValidationService from '@/services/ConfigValidationService'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+
+// Driver.js tour
+const { startTour, hasTour, isTourViewed } = useDriverTour({ autoStart: true })
 
 // State
 const loading = ref(false)
@@ -555,6 +562,9 @@ const hasHorario = computed(() => horario.value !== null && horario.value.cliHor
 const hasDias = computed(() => diasHabiles.value && diasHabiles.value.length > 0)
 const hasTipoEmpresa = computed(() => tiposEmpresa.value && tiposEmpresa.value.length > 0)
 const tiposEmpresaDisponiblesGet = computed(() => tiposEmpresaDisponibles.value.filter(data=>data.tipEmp_codigoTipoEmpGrupo==formTipoEmpresa.value.grupoSeleccionado)) // Todos los tipos disponibles para seleccionar
+
+// track if completion alert has been shown to avoid duplicates
+const completionNotified = ref(false)
 
 // Methods
 const showAlert = (msg, type = 'notification-info') => {
@@ -654,6 +664,19 @@ const getGrupoNombre = (codigoGrupo) => {
   return grupo ? grupo.tiemgr_nombre : ''
 }
 
+// check if all three sections have been configured and notify once
+const checkConfigurationComplete = () => {
+  if (!completionNotified.value && hasHorario.value && hasDias.value && hasTipoEmpresa.value) {
+    completionNotified.value = true
+    showAlert('Configuración completada. Todos los datos han sido configurados.', 'notification-success')
+    // after showing success navigate to home and reload
+    router.push('/').catch(()=>{})
+    setTimeout(() => {
+      window.location.reload()
+    }, 500) // give time for navigation
+  }
+}
+
 const editarTipoEmpresa = () => {
   if (tiposEmpresa.value.length > 0) {
     const tipoActual = tiposEmpresa.value[0]
@@ -687,6 +710,7 @@ const guardarHorario = async () => {
 
     await cargarConfiguracion()
     closeHorarioForm()
+    checkConfigurationComplete()
   } catch (error) {
     console.error('Error al guardar horario:', error)
     showAlert('Error al guardar el horario', 'notification-danger')
@@ -711,6 +735,7 @@ const guardarDias = async () => {
 
     await cargarConfiguracion()
     closeDiasForm()
+    checkConfigurationComplete()
   } catch (error) {
     console.error('Error al guardar días:', error)
     showAlert('Error al guardar los días', 'notification-danger')
@@ -743,6 +768,7 @@ const guardarTipoEmpresa = async () => {
 
     await cargarConfiguracion()
     closeTipoEmpresaForm()
+    checkConfigurationComplete()
   } catch (error) {
     console.error('Error al guardar tipo de empresa:', error)
     showAlert('Error al guardar el tipo de empresa', 'notification-danger')
@@ -761,6 +787,7 @@ onMounted(async () => {
   }
 
   await cargarConfiguracion()
+  checkConfigurationComplete()
 })
 </script>
 

@@ -31,6 +31,7 @@ Administra y configura tus sucursales
         </div>
       </div>
       <button
+data-tour="sucursal-add"
 class="btn btn-primary"
 @click="openCreateModal"
 >
@@ -52,7 +53,7 @@ d="M12 4v16m8-8H4"
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+    <div data-tour="sucursal-stats" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
       <div class="card flex items-center gap-3 p-4">
         <div class="w-10 h-10 rounded-lg bg-primary-500/20 flex-center text-primary-400">
           <svg
@@ -187,7 +188,7 @@ Auditoria
 
     <!-- Search and View Toggle -->
     <div class="flex-between flex-wrap gap-4 mb-6">
-      <div class="relative flex-1 max-w-md">
+      <div data-tour="sucursal-search" class="relative flex-1 max-w-md">
         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary">
           <svg
 class="w-5 h-5"
@@ -266,6 +267,7 @@ Cargando sucursales...
     <!-- Grid View -->
     <div
 v-else-if="viewMode === 'grid'"
+data-tour="sucursal-list"
 class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
 >
       <div
@@ -1413,6 +1415,9 @@ Limpiar
         </div>
       </div>
     </div>
+
+    <!-- Tour Button -->
+    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
   </div>
 </template>
 
@@ -1425,8 +1430,12 @@ import UserServices from '@/services/UserServices'
 import { usePlayerControl } from '@/composables/usePlayerControl'
 import { useSucursal } from '@/composables/useSucursal'
 import SignalRStatus from '@/components/SignalRStatus.vue'
+import { useDriverTour } from '@/composables/useDriverTour'
 
 const router = useRouter()
+
+// Driver.js tour
+const { startTour, hasTour, isTourViewed } = useDriverTour({ autoStart: true })
 const { proxy } = getCurrentInstance()
 
 const playerControl = usePlayerControl({
@@ -1691,7 +1700,7 @@ const togglePlayerMode = async (sucursal) => {
   const newMode = currentMode === 'neuro' ? 'radio' : 'neuro'
 
   try {
-    await playerControl.setMode(newMode, sucursal.userId)
+    await playerControl.setMode(newMode, sucursal.connectionId)
     if (proxy && proxy.$toast) {
       proxy.$toast(`Modo cambiado a ${newMode === 'neuro' ? 'Neuro' : 'Radio'}`, 'success')
     }

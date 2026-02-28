@@ -2,7 +2,7 @@
   <div class="landing-page">
     <!-- Video Background -->
     <video class="video-background" autoplay muted loop playsinline>
-      <source src="https://assets.mixkit.co/videos/preview/mixkit-city-lights-at-night-4158-large.mp4" type="video/mp4">
+      <source :src="landingContent?.hero?.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-city-lights-at-night-4158-large.mp4'" type="video/mp4">
     </video>
 
     <!-- Header -->
@@ -42,21 +42,33 @@
     <section class="hero" id="inicio">
       <div class="container">
         <div class="hero-content fade-in-up">
-          <h1>ClubF5</h1>
-          <p class="tagline">El placer de escuchar</p>
+          <h1>{{ landingContent?.hero?.title || 'ClubF5' }}</h1>
+          <p class="tagline">{{ landingContent?.hero?.tagline || 'El placer de escuchar' }}</p>
           <p class="subtitle">
-            Plataforma integral de gestion de radio y streaming en tiempo real.
-            Administra contenido, programacion y spots publicitarios desde una solucion completa y profesional.
+            {{ landingContent?.hero?.subtitle || 'Plataforma integral de gestion de radio y streaming en tiempo real. Administra contenido, programacion y spots publicitarios desde una solucion completa y profesional.' }}
           </p>
           <div class="cta-buttons">
-            <a href="#plataformas" class="btn btn-primary">
-              <i class="fas fa-play"></i>
-              Explorar Plataformas
+            <a
+              v-for="button in (landingContent?.hero?.ctaButtons || [])"
+              :key="button.id"
+              :href="button.link"
+              class="btn"
+              :class="button.variant === 'primary' ? 'btn-primary' : 'btn-outline'"
+            >
+              <i v-if="button.icon" :class="button.icon"></i>
+              {{ button.text }}
             </a>
-            <a href="#caracteristicas" class="btn btn-outline">
-              <i class="fas fa-info-circle"></i>
-              Ver Caracteristicas
-            </a>
+            <!-- Fallback buttons if no content loaded -->
+            <template v-if="!landingContent?.hero?.ctaButtons?.length">
+              <a href="#plataformas" class="btn btn-primary">
+                <i class="fas fa-play"></i>
+                Explorar Plataformas
+              </a>
+              <a href="#caracteristicas" class="btn btn-outline">
+                <i class="fas fa-info-circle"></i>
+                Ver Caracteristicas
+              </a>
+            </template>
           </div>
         </div>
       </div>
@@ -66,35 +78,20 @@
     <section class="section platforms" id="plataformas">
       <div class="container">
         <div class="section-title">
-          <h2>Nuestras Plataformas</h2>
-          <p>Soluciones disenadas para cada necesidad de tu negocio de radio</p>
+          <h2>{{ landingContent?.platforms?.title || 'Nuestras Plataformas' }}</h2>
+          <p>{{ landingContent?.platforms?.description || 'Soluciones disenadas para cada necesidad de tu negocio de radio' }}</p>
         </div>
         <div class="platforms-grid">
-          <!-- Admin Platform -->
-          <div class="platform-card">
-            <i class="fas fa-users-cog"></i>
-            <h3>Panel de control (Gestion)</h3>
-            <p>Sistema completo de gestion de radio y publicidad con control total sobre programacion musica y publicidad.</p>
+          <div
+            v-for="platform in (landingContent?.platforms?.items || defaultPlatforms)"
+            :key="platform.id"
+            class="platform-card"
+          >
+            <i :class="platform.icon"></i>
+            <h3>{{ platform.title }}</h3>
+            <p>{{ platform.description }}</p>
             <ul class="platform-features">
-              <li>Gestion de programacion de radio</li>
-              <li>Control de spots publicitarios</li>
-              <li>Gestion de locutores y clientes</li>
-              <li>Generacion de voz con IA</li>
-              <li>Panel de control en tiempo real</li>
-            </ul>
-          </div>
-
-          <!-- Client Platform -->
-          <div class="platform-card">
-            <i class="fas fa-mobile-alt"></i>
-            <h3>Reproductor</h3>
-            <p>Experiencia de usuario premium con reproduccion en vivo, PWA y soporte offline.</p>
-            <ul class="platform-features">
-              <li>Streaming de radio en vivo (HLS)</li>
-              <li>Progressive Web App (PWA)</li>
-              <li>Reproduccion offline</li>
-              <li>Optimizado para moviles</li>
-              <li>Actualizaciones en tiempo real</li>
+              <li v-for="(feature, index) in platform.features" :key="index">{{ feature }}</li>
             </ul>
           </div>
         </div>
@@ -105,29 +102,18 @@
     <section class="section" id="caracteristicas">
       <div class="container">
         <div class="section-title">
-          <h2>Caracteristicas Destacadas</h2>
-          <p>Tecnologia de vanguardia para una experiencia completa</p>
+          <h2>{{ landingContent?.features?.title || 'Caracteristicas Destacadas' }}</h2>
+          <p>{{ landingContent?.features?.description || 'Tecnologia de vanguardia para una experiencia completa' }}</p>
         </div>
         <div class="features-grid">
-          <div class="feature-card">
-            <i class="fas fa-broadcast-tower feature-icon"></i>
-            <h3>Streaming en Tiempo Real</h3>
-            <p>Transmision de alta calidad con protocolo HLS y conexiones con sincronizacion instantanea.</p>
-          </div>
-          <div class="feature-card">
-            <i class="fas fa-calendar-alt feature-icon"></i>
-            <h3>Programacion Inteligente</h3>
-            <p>Sistema avanzado de calendarizacion de contenido con gestion de horarios, repetidoras y dias habiles.</p>
-          </div>
-          <div class="feature-card">
-            <i class="fas fa-ad feature-icon"></i>
-            <h3>Gestion de Publicidad</h3>
-            <p>Control completo de spots publicitarios, con seguimiento de reproducciones y generacion automatizada.</p>
-          </div>
-          <div class="feature-card">
-            <i class="fas fa-microphone feature-icon"></i>
-            <h3>Voz Sintetica con IA</h3>
-            <p>Integracion con Agentes de IA para generar locuciones profesionales con inteligencia artificial.</p>
+          <div
+            v-for="feature in (landingContent?.features?.items || defaultFeatures)"
+            :key="feature.id"
+            class="feature-card"
+          >
+            <i :class="[feature.icon, 'feature-icon']"></i>
+            <h3>{{ feature.title }}</h3>
+            <p>{{ feature.description }}</p>
           </div>
         </div>
       </div>
@@ -185,21 +171,13 @@
     <section class="section">
       <div class="container">
         <div class="stats">
-          <div class="stat-item">
-            <div class="stat-number">2</div>
-            <div class="stat-label">Plataformas Integradas</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number">24/7</div>
-            <div class="stat-label">Transmision Continua</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number">100%</div>
-            <div class="stat-label">Web Responsive</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number">PWA</div>
-            <div class="stat-label">Instalable</div>
+          <div
+            v-for="stat in (landingContent?.stats?.items || defaultStats)"
+            :key="stat.id"
+            class="stat-item"
+          >
+            <div class="stat-number">{{ stat.number }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
           </div>
         </div>
       </div>
@@ -209,7 +187,7 @@
     <footer class="footer">
       <div class="container">
         <div class="footer-bottom">
-          <p>&copy; {{ currentYear }} ClubF5. Todos los derechos reservados.</p>
+          <p>&copy; {{ currentYear }} {{ landingContent?.footer?.copyrightText || 'ClubF5. Todos los derechos reservados.' }}</p>
         </div>
       </div>
     </footer>
@@ -309,11 +287,16 @@ import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import LoginModal from '@/components/LoginModal.vue'
 import EmailApiService from '@/services/EmailApiService'
+import LandingPageService from '@/services/LandingPageService'
 const router = useRouter()
 const route = useRoute()
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
+// Landing Page Content (loaded from service)
+const landingContent = ref(null)
+const contentLoading = ref(true)
 
 // State
 const isScrolled = ref(false)
@@ -326,6 +309,50 @@ const selectedPaquete = ref(null)
 const paquetesData = ref([])
 const loadingPaquetes = ref(true)
 const paquetesError = ref(false)
+
+// Default fallback data
+const defaultPlatforms = [
+  {
+    id: 1,
+    icon: 'fas fa-users-cog',
+    title: 'Panel de control (Gestion)',
+    description: 'Sistema completo de gestion de radio y publicidad con control total sobre programacion musica y publicidad.',
+    features: [
+      'Gestion de programacion de radio',
+      'Control de spots publicitarios',
+      'Gestion de locutores y clientes',
+      'Generacion de voz con IA',
+      'Panel de control en tiempo real'
+    ]
+  },
+  {
+    id: 2,
+    icon: 'fas fa-mobile-alt',
+    title: 'Reproductor',
+    description: 'Experiencia de usuario premium con reproduccion en vivo, PWA y soporte offline.',
+    features: [
+      'Streaming de radio en vivo (HLS)',
+      'Progressive Web App (PWA)',
+      'Reproduccion offline',
+      'Optimizado para moviles',
+      'Actualizaciones en tiempo real'
+    ]
+  }
+]
+
+const defaultFeatures = [
+  { id: 1, icon: 'fas fa-broadcast-tower', title: 'Streaming en Tiempo Real', description: 'Transmision de alta calidad con protocolo HLS y conexiones con sincronizacion instantanea.' },
+  { id: 2, icon: 'fas fa-calendar-alt', title: 'Programacion Inteligente', description: 'Sistema avanzado de calendarizacion de contenido con gestion de horarios, repetidoras y dias habiles.' },
+  { id: 3, icon: 'fas fa-ad', title: 'Gestion de Publicidad', description: 'Control completo de spots publicitarios, con seguimiento de reproducciones y generacion automatizada.' },
+  { id: 4, icon: 'fas fa-microphone', title: 'Voz Sintetica con IA', description: 'Integracion con Agentes de IA para generar locuciones profesionales con inteligencia artificial.' }
+]
+
+const defaultStats = [
+  { id: 1, number: '2', label: 'Plataformas Integradas' },
+  { id: 2, number: '24/7', label: 'Transmision Continua' },
+  { id: 3, number: '100%', label: 'Web Responsive' },
+  { id: 4, number: 'PWA', label: 'Instalable' }
+]
 
 // Registration form
 const registroForm = reactive({
@@ -501,11 +528,26 @@ const handleKeydown = (e) => {
   }
 }
 
+// Load Landing Page Content
+const loadLandingContent = async () => {
+  try {
+    contentLoading.value = true
+    landingContent.value = await LandingPageService.getPublic()
+  } catch (error) {
+    console.error('Error loading landing content:', error)
+    // Use default content as fallback
+    landingContent.value = LandingPageService.getDefaultConfig()
+  } finally {
+    contentLoading.value = false
+  }
+}
+
 // Lifecycle
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
   document.addEventListener('keydown', handleKeydown)
   loadPaquetes()
+  loadLandingContent()
 })
 
 onUnmounted(() => {
