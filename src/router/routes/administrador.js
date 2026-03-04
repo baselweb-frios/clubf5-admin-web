@@ -73,5 +73,13 @@ export default [
     name: 'LandingEditor',
     component: () => import('@/pages/Admin/LandingEditor/Index.vue'),
     meta: { requiresAuth: true, roles: ['Administrador'], title: 'Editor Landing Page' }
+  },
+
+  // ===== CONSOLA OBS API (Solo Administrador) =====
+  {
+    path: 'obs-api-console',
+    name: 'ObsApiConsole',
+    component: () => import('@/pages/Admin/ObsApiConsole/Index.vue'),
+    meta: { requiresAuth: true, roles: ['Administrador'], title: 'OBS API Console' }
   }
 ]
