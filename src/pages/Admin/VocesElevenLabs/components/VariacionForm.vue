@@ -1,11 +1,14 @@
 <template>
   <Modal
     :model-value="show"
-    @update:model-value="$emit('update:show', $event)"
     size="lg"
     :title="isEditing ? 'Editar Variacion' : 'Nueva Variacion'"
+    @update:model-value="$emit('update:show', $event)"
   >
-    <form @submit.prevent="handleSubmit" class="variacion-form">
+    <form
+class="variacion-form"
+@submit.prevent="handleSubmit"
+>
       <!-- Name -->
       <div class="form-group">
         <label class="form-label">Nombre de la Variacion *</label>
@@ -15,13 +18,16 @@
           class="form-input"
           placeholder="Ej: Voz suave para comerciales"
           required
-        />
+        >
       </div>
 
       <!-- Model -->
       <div class="form-group">
         <label class="form-label">Modelo</label>
-        <select v-model="form.modelId" class="form-select">
+        <select
+v-model="form.modelId"
+class="form-select"
+>
           <option
             v-for="modelo in modelos"
             :key="modelo.id"
@@ -30,7 +36,9 @@
             {{ modelo.nombre }}
           </option>
         </select>
-        <p class="form-hint">{{ getModelDescription(form.modelId) }}</p>
+        <p class="form-hint">
+{{ getModelDescription(form.modelId) }}
+</p>
       </div>
 
       <!-- Stability Slider -->
@@ -46,7 +54,7 @@
           max="1"
           step="0.01"
           class="form-slider"
-        />
+        >
         <p class="form-hint">
           Mayor estabilidad = voz mas consistente pero menos expresiva
         </p>
@@ -65,7 +73,7 @@
           max="1"
           step="0.01"
           class="form-slider"
-        />
+        >
         <p class="form-hint">
           Mayor similitud = mas parecido a la voz original
         </p>
@@ -84,7 +92,7 @@
           max="1"
           step="0.01"
           class="form-slider"
-        />
+        >
         <p class="form-hint">
           Amplifica el estilo de la voz (puede aumentar inestabilidad)
         </p>
@@ -93,7 +101,10 @@
       <!-- Speaker Boost -->
       <div class="form-group">
         <label class="form-checkbox">
-          <input v-model="form.speakerBoost" type="checkbox" />
+          <input
+v-model="form.speakerBoost"
+type="checkbox"
+>
           <span class="checkbox-label">Speaker Boost</span>
         </label>
         <p class="form-hint">
@@ -104,7 +115,7 @@
       <!-- Preview Generator -->
       <div class="preview-section">
         <h4 class="preview-title">
-          <i class="fas fa-play-circle mr-2"></i>
+          <i class="fas fa-play-circle mr-2" />
           Generar Preview
         </h4>
 
@@ -116,8 +127,10 @@
             rows="3"
             placeholder="Escribe el texto para generar el preview de audio..."
             maxlength="500"
-          ></textarea>
-          <p class="form-hint text-right">{{ previewText.length }}/500 caracteres</p>
+          />
+          <p class="form-hint text-right">
+{{ previewText.length }}/500 caracteres
+</p>
         </div>
 
         <div class="preview-actions">
@@ -127,23 +140,33 @@
             :disabled="!previewText.trim() || !savedVariacionId"
             @click="generatePreview"
           >
-            <i class="fas fa-magic mr-2"></i>
+            <i class="fas fa-magic mr-2" />
             Generar Preview
           </base-button>
 
-          <div v-if="previewUrl" class="preview-player">
-            <button type="button" class="btn-play" @click="playPreview">
-              <i :class="isPlaying ? 'fas fa-stop' : 'fas fa-play'"></i>
+          <div
+v-if="previewUrl"
+class="preview-player"
+>
+            <button
+type="button"
+class="btn-play"
+@click="playPreview"
+>
+              <i :class="isPlaying ? 'fas fa-stop' : 'fas fa-play'" />
             </button>
             <span class="text-sm text-green-400">
-              <i class="fas fa-check mr-1"></i>
+              <i class="fas fa-check mr-1" />
               Preview generado
             </span>
           </div>
         </div>
 
-        <p v-if="!savedVariacionId" class="text-yellow-400 text-sm mt-2">
-          <i class="fas fa-info-circle mr-1"></i>
+        <p
+v-if="!savedVariacionId"
+class="text-yellow-400 text-sm mt-2"
+>
+          <i class="fas fa-info-circle mr-1" />
           Guarda la variacion primero para poder generar el preview
         </p>
       </div>
@@ -151,17 +174,27 @@
 
     <template #footer>
       <div class="modal-footer">
-        <base-button variant="secondary" @click="$emit('update:show', false)">
+        <base-button
+variant="secondary"
+@click="$emit('update:show', false)"
+>
           Cancelar
         </base-button>
-        <base-button variant="primary" :loading="saving" @click="handleSubmit">
+        <base-button
+variant="primary"
+:loading="saving"
+@click="handleSubmit"
+>
           {{ isEditing ? 'Guardar Cambios' : 'Crear Variacion' }}
         </base-button>
       </div>
     </template>
 
     <!-- Audio Player -->
-    <audio ref="audioPlayer" @ended="isPlaying = false"></audio>
+    <audio
+ref="audioPlayer"
+@ended="isPlaying = false"
+/>
   </Modal>
 </template>
 

@@ -3,7 +3,7 @@ import axios from 'axios';
 // Configuración de la URL base de la API
 // Se obtiene desde las variables de entorno (.env)
 // Por defecto usa HTTP para desarrollo local
-let baseURL = import.meta.env.VITE_API_BASE_URL || 'http://149.50.131.163:3003/api/'
+let baseURL = import.meta.env.VITE_API_BASE_URL || 'https://api.clubf5.com/api/'
 
 console.log('[API Config] Base URL:', baseURL)
 

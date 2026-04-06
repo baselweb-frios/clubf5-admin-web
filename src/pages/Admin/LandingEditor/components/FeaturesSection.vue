@@ -1,5 +1,8 @@
 <template>
-  <base-card title="Caracteristicas" subtitle="Funcionalidades destacadas de la plataforma">
+  <base-card
+title="Caracteristicas"
+subtitle="Funcionalidades destacadas de la plataforma"
+>
     <template #actions>
       <base-button
         variant="ghost"

@@ -276,13 +276,11 @@ import spotService from '../../services/SpotServices'
 import clienteProgramacionSpotService from '../../services/ClienteProgramacionSpotServices'
 import UserServices from '../../services/UserServices'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import TagSpot from '@/components/ui/TagSpot.vue'
 
 export default {
   components: {
     LoadingOverlay,
-    LoadingSpinner,
     TagSpot
   },
   data() {
@@ -413,6 +411,7 @@ export default {
     },
     isValidForm() {
       const isSelectedDiaSemana = this.datosProgSpot.numeroDia.length>0
+      const isSelectedHora = this.datosProgSpot.horasDesde.length>0
       const isSelectedSpot = this.datosProgSpot.codSpot.length>0
       return isSelectedDiaSemana&&isSelectedHora&&isSelectedSpot
     },
@@ -695,7 +694,7 @@ this.updateCodSpot(auxProg)
 
       return result
     },
-    getEventHora(hora) {
+    getEventHora(hora, slot = 1) {
       const result = []
       let getCondition = (element) => {
 
@@ -876,7 +875,6 @@ this.updateCodSpot(auxProg)
       const color = tipo
       this.$notify({
         message: message,
-        component: NotificationTemplate,
         icon: icono,
         horizontalAlign: horizontalAlign,
         verticalAlign: verticalAlign,

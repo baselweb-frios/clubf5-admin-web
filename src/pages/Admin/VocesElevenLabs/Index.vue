@@ -4,7 +4,7 @@
     <div class="page-header">
       <div class="header-content">
         <h1 class="page-title">
-          <i class="fas fa-microphone-alt mr-3"></i>
+          <i class="fas fa-microphone-alt mr-3" />
           Voces ElevenLabs
         </h1>
         <p class="page-subtitle">
@@ -17,7 +17,7 @@
           :loading="syncLoading"
           @click="sincronizarVoces"
         >
-          <i class="fas fa-sync mr-2"></i>
+          <i class="fas fa-sync mr-2" />
           Sincronizar Voces
         </base-button>
       </div>
@@ -28,7 +28,7 @@
       <base-card class="stat-card">
         <div class="stat-content">
           <div class="stat-icon bg-primary-500/20">
-            <i class="fas fa-microphone text-primary-400"></i>
+            <i class="fas fa-microphone text-primary-400" />
           </div>
           <div class="stat-info">
             <span class="stat-value">{{ voces.length }}</span>
@@ -39,7 +39,7 @@
       <base-card class="stat-card">
         <div class="stat-content">
           <div class="stat-icon bg-green-500/20">
-            <i class="fas fa-check-circle text-green-400"></i>
+            <i class="fas fa-check-circle text-green-400" />
           </div>
           <div class="stat-info">
             <span class="stat-value">{{ vocesActivas }}</span>
@@ -50,7 +50,7 @@
       <base-card class="stat-card">
         <div class="stat-content">
           <div class="stat-icon bg-blue-500/20">
-            <i class="fas fa-sliders-h text-blue-400"></i>
+            <i class="fas fa-sliders-h text-blue-400" />
           </div>
           <div class="stat-info">
             <span class="stat-value">{{ totalVariaciones }}</span>

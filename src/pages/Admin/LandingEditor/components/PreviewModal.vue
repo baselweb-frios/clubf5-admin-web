@@ -36,7 +36,10 @@
         <span class="device-label">{{ deviceLabel }}</span>
       </div>
 
-      <div class="preview-frame-wrapper" :class="`frame-${device}`">
+      <div
+class="preview-frame-wrapper"
+:class="`frame-${device}`"
+>
         <div class="preview-frame">
           <div class="frame-header">
             <div class="frame-dots">

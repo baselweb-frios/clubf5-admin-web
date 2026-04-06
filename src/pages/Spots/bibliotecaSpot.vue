@@ -2,7 +2,11 @@
   <div class="page-content">
     <div class="space-y-6">
     <!-- Loading Overlay - Solo durante carga inicial -->
-    <LoadingOverlay :show="isLoading" text="Cargando biblioteca de spots..." fullscreen />
+    <LoadingOverlay
+:show="isLoading"
+text="Cargando biblioteca de spots..."
+fullscreen
+/>
 
     <!-- Contenido principal - Solo visible cuando NO está cargando -->
     <template v-if="!isLoading">
@@ -58,7 +62,10 @@
               <i class="fa fa-check-circle text-success-400" />
               <strong class="text-text-primary">{{ spotsStore.activeSpotsCount }}</strong> vigentes
             </span>
-            <span v-if="spotsStore.expiredSpotsCount > 0" class="flex items-center gap-2 text-text-secondary">
+            <span
+v-if="spotsStore.expiredSpotsCount > 0"
+class="flex items-center gap-2 text-text-secondary"
+>
               <i class="fa fa-times-circle text-danger-400" />
               <strong class="text-text-primary">{{ spotsStore.expiredSpotsCount }}</strong> vencidos
             </span>
@@ -80,7 +87,9 @@
         <template #header>
           <div class="flex items-center gap-3">
             <i class="fa fa-list text-primary-400" />
-            <h3 class="text-lg font-semibold text-text-primary">Seleccionar Programación</h3>
+            <h3 class="text-lg font-semibold text-text-primary">
+Seleccionar Programación
+</h3>
           </div>
         </template>
 
@@ -89,7 +98,9 @@
           class="flex flex-col items-center justify-center gap-4 py-8"
         >
           <i class="fa fa-inbox text-3xl text-text-secondary" />
-          <p class="text-text-secondary">No hay programaciones disponibles</p>
+          <p class="text-text-secondary">
+No hay programaciones disponibles
+</p>
           <button
             v-if="canCreateProgramacion"
             class="btn btn-primary"
@@ -116,7 +127,9 @@ class="programaciones-list space-y-2"
                 <i class="fa fa-calendar text-primary-400" />
               </div>
               <div class="programacion-item-info flex-1">
-                <h4 class="font-semibold">{{ prog.clipro_nombre }}</h4>
+                <h4 class="font-semibold">
+{{ prog.clipro_nombre }}
+</h4>
                 <p class="text-sm text-text-secondary">
 Código: {{ prog.clipro_codigo }}
 </p>
@@ -152,7 +165,9 @@ v-if="canCreateProgramacion && availableProgramaciones.length > 0"
         <template #header>
           <div class="flex items-center gap-3">
             <i class="fa fa-plus-circle text-primary-400" />
-            <h3 class="text-lg font-semibold text-text-primary">Crear Nueva Programación</h3>
+            <h3 class="text-lg font-semibold text-text-primary">
+Crear Nueva Programación
+</h3>
           </div>
         </template>
 
@@ -195,7 +210,10 @@ class="btn btn-secondary"
       </Modal>
 
       <div class="card p-0 overflow-hidden">
-        <div data-tour="spot-tabs" class="flex border-b border-dark-border">
+        <div
+data-tour="spot-tabs"
+class="flex border-b border-dark-border"
+>
           <button
             class="flex-1 px-4 py-3 font-medium text-sm transition-all border-b-2"
             :class="activeTab === 'spots' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
@@ -214,7 +232,11 @@ class="btn btn-secondary"
           </button>
         </div>
 
-        <div v-if="activeTab === 'spots'" data-tour="spot-table" class="p-4 sm:p-6">
+        <div
+v-if="activeTab === 'spots'"
+data-tour="spot-table"
+class="p-4 sm:p-6"
+>
           <SpotTable
             :spots="spots"
             :selected-spots="selectedSpots"
@@ -225,7 +247,10 @@ class="btn btn-secondary"
           />
         </div>
 
-        <div v-if="activeTab === 'programar'" class="p-4 sm:p-6">
+        <div
+v-if="activeTab === 'programar'"
+class="p-4 sm:p-6"
+>
           <ProgrammingInterface
             :spots="spots"
             :programaciones="programaciones"
@@ -248,7 +273,12 @@ class="btn btn-secondary"
     </template>
 
     <!-- Tour Button -->
-    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
+    <TourButton
+v-if="hasTour() && !isTourViewed()"
+variant="floating"
+size="md"
+:pulse="true"
+/>
   </div>
   </div>
 </template>

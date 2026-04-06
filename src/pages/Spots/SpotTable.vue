@@ -7,9 +7,14 @@
       size="lg"
     >
       <div class="flex flex-col items-center justify-center p-4">
-        <div v-if="mediaPreviewSpot?.mediaTipo === 'streaming'" class="text-center">
+        <div
+v-if="mediaPreviewSpot?.mediaTipo === 'streaming'"
+class="text-center"
+>
           <i class="fas fa-broadcast-tower text-4xl text-primary-400 mb-4" />
-          <p class="text-text-secondary mb-2">URL de Streaming:</p>
+          <p class="text-text-secondary mb-2">
+URL de Streaming:
+</p>
           <a
             :href="mediaPreviewSpot?.url"
             target="_blank"
@@ -36,7 +41,10 @@
         </audio>
       </div>
       <template #footer>
-        <button class="btn btn-secondary" @click="closeMediaPreview">
+        <button
+class="btn btn-secondary"
+@click="closeMediaPreview"
+>
           Cerrar
         </button>
       </template>
@@ -99,11 +107,23 @@
             <i class="fas fa-layer-group" />
             Categoría
           </label>
-          <select v-model="categoryFilter" class="select" @change="handleFilterChange">
-            <option value="">Todas las categorías</option>
-            <option value="inst">Institucional</option>
-            <option value="noti">Noticias</option>
-            <option value="prom">Promocional</option>
+          <select
+v-model="categoryFilter"
+class="select"
+@change="handleFilterChange"
+>
+            <option value="">
+Todas las categorías
+</option>
+            <option value="inst">
+Institucional
+</option>
+            <option value="noti">
+Noticias
+</option>
+            <option value="prom">
+Promocional
+</option>
           </select>
         </div>
 
@@ -113,11 +133,23 @@
             <i class="fas fa-clock" />
             Estado
           </label>
-          <select v-model="statusFilter" class="select" @change="handleFilterChange">
-            <option value="">Todos los estados</option>
-            <option value="active">Activos</option>
-            <option value="expired">Vencidos</option>
-            <option value="expiring">Por vencer</option>
+          <select
+v-model="statusFilter"
+class="select"
+@change="handleFilterChange"
+>
+            <option value="">
+Todos los estados
+</option>
+            <option value="active">
+Activos
+</option>
+            <option value="expired">
+Vencidos
+</option>
+            <option value="expiring">
+Por vencer
+</option>
           </select>
         </div>
 
@@ -182,10 +214,17 @@
     <div>
       <!-- Desktop Table View -->
       <div class="table-container hidden md:block">
-        <table class="table" role="table" aria-label="Lista de spots">
+        <table
+class="table"
+role="table"
+aria-label="Lista de spots"
+>
           <thead>
             <tr>
-              <th scope="col" class="w-10">
+              <th
+scope="col"
+class="w-10"
+>
                 <input
                   type="checkbox"
                   :checked="isAllSelected"
@@ -249,8 +288,12 @@
               </td>
               <td>
                 <div>
-                  <div class="font-medium text-text-primary">{{ spot.nombreSpot }}</div>
-                  <div class="text-xs text-text-tertiary">ID: {{ spot.codSpot }}</div>
+                  <div class="font-medium text-text-primary">
+{{ spot.nombreSpot }}
+</div>
+                  <div class="text-xs text-text-tertiary">
+ID: {{ spot.codSpot }}
+</div>
                 </div>
               </td>
               <td>
@@ -265,7 +308,10 @@
                     <i :class="getExpirationIcon(spot)" />
                     {{ (typeof spot.fechaFin==='boolean')?'No vence':spot.fechaFin }}
                   </span>
-                  <div v-if="getDaysUntilExpiration(spot) !== null" class="text-xs text-text-tertiary">
+                  <div
+v-if="getDaysUntilExpiration(spot) !== null"
+class="text-xs text-text-tertiary"
+>
                     {{ getExpirationStatusText(spot) }}
                   </div>
                 </div>
@@ -279,18 +325,32 @@
                   <i :class="getMediaIcon(spot.mediaTipo)" />
                   <span class="text-xs">{{ getMediaLabel(spot.mediaTipo) }}</span>
                 </button>
-                <span v-else class="text-text-tertiary text-sm">Sin media</span>
+                <span
+v-else
+class="text-text-tertiary text-sm"
+>Sin media</span>
               </td>
             </tr>
 
             <!-- Empty State -->
             <tr v-if="paginatedSpots.length === 0">
-              <td colspan="5" class="text-center py-12">
+              <td
+colspan="5"
+class="text-center py-12"
+>
                 <div class="flex flex-col items-center gap-4">
                   <i class="fas fa-microphone-slash text-4xl text-text-tertiary" />
-                  <h3 class="text-lg font-semibold text-text-secondary">No se encontraron spots</h3>
-                  <p class="text-sm text-text-tertiary">{{ getEmptyStateMessage() }}</p>
-                  <button v-if="hasActiveFilters" class="btn btn-primary" @click="clearAllFilters()">
+                  <h3 class="text-lg font-semibold text-text-secondary">
+No se encontraron spots
+</h3>
+                  <p class="text-sm text-text-tertiary">
+{{ getEmptyStateMessage() }}
+</p>
+                  <button
+v-if="hasActiveFilters"
+class="btn btn-primary"
+@click="clearAllFilters()"
+>
                     <i class="fas fa-eraser" />
                     Limpiar Filtros
                   </button>
@@ -319,7 +379,9 @@
               @change.stop="toggleSelection(spot)"
             >
             <div class="flex-1 min-w-0">
-              <h4 class="font-semibold text-text-primary truncate">{{ spot.nombreSpot }}</h4>
+              <h4 class="font-semibold text-text-primary truncate">
+{{ spot.nombreSpot }}
+</h4>
               <span class="text-xs text-text-tertiary">ID: {{ spot.codSpot }}</span>
             </div>
           </div>
@@ -346,13 +408,19 @@
                   <i :class="getExpirationIcon(spot)" />
                   {{ (typeof spot.fechaFin==='boolean')?'No vence':spot.fechaFin }}
                 </span>
-                <div v-if="getDaysUntilExpiration(spot) !== null" class="text-xs text-text-tertiary mt-1">
+                <div
+v-if="getDaysUntilExpiration(spot) !== null"
+class="text-xs text-text-tertiary mt-1"
+>
                   {{ getExpirationStatusText(spot) }}
                 </div>
               </div>
             </div>
 
-            <div v-if="spot.mediaTipo" class="pt-2 border-t border-dark-border">
+            <div
+v-if="spot.mediaTipo"
+class="pt-2 border-t border-dark-border"
+>
               <div class="flex items-center justify-between">
                 <span class="text-sm text-text-secondary flex items-center gap-2">
                   <i class="fas fa-music" />
@@ -371,12 +439,23 @@
         </div>
 
         <!-- Empty State for Mobile -->
-        <div v-if="paginatedSpots.length === 0" class="card text-center py-12">
+        <div
+v-if="paginatedSpots.length === 0"
+class="card text-center py-12"
+>
           <div class="flex flex-col items-center gap-4">
             <i class="fas fa-microphone-slash text-4xl text-text-tertiary" />
-            <h3 class="text-lg font-semibold text-text-secondary">No se encontraron spots</h3>
-            <p class="text-sm text-text-tertiary">{{ getEmptyStateMessage() }}</p>
-            <button v-if="hasActiveFilters" class="btn btn-primary" @click="clearAllFilters()">
+            <h3 class="text-lg font-semibold text-text-secondary">
+No se encontraron spots
+</h3>
+            <p class="text-sm text-text-tertiary">
+{{ getEmptyStateMessage() }}
+</p>
+            <button
+v-if="hasActiveFilters"
+class="btn btn-primary"
+@click="clearAllFilters()"
+>
               <i class="fas fa-eraser" />
               Limpiar Filtros
             </button>
@@ -441,11 +520,23 @@
         </div>
 
         <div>
-          <select v-model="pageSize" class="select w-auto" @change="handlePageSizeChange">
-            <option :value="10">10 por página</option>
-            <option :value="25">25 por página</option>
-            <option :value="50">50 por página</option>
-            <option :value="100">100 por página</option>
+          <select
+v-model="pageSize"
+class="select w-auto"
+@change="handlePageSizeChange"
+>
+            <option :value="10">
+10 por página
+</option>
+            <option :value="25">
+25 por página
+</option>
+            <option :value="50">
+50 por página
+</option>
+            <option :value="100">
+100 por página
+</option>
           </select>
         </div>
       </div>

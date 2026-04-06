@@ -4,23 +4,53 @@
       <div class="logo-icon bg-primary-600 text-white rounded-full w-12 h-12 flex items-center justify-center">
         <span class="font-bold">C5</span>
       </div>
-      <h2 class="page-title text-center">Recuperar Contraseña</h2>
-      <p class="text-text-secondary text-center">Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña</p>
+      <h2 class="page-title text-center">
+Recuperar Contraseña
+</h2>
+      <p class="text-text-secondary text-center">
+Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña
+</p>
     </div>
 
     <!-- Success Message -->
-    <div v-if="emailSent" class="alert alert-success">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+    <div
+v-if="emailSent"
+class="alert alert-success"
+>
+      <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+        <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M5 13l4 4L19 7"
+/>
       </svg>
       <div>
-        <p class="font-semibold">Correo enviado exitosamente</p>
-        <p class="text-sm">Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.</p>
+        <p class="font-semibold">
+Correo enviado exitosamente
+</p>
+        <p class="text-sm">
+Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.
+</p>
       </div>
     </div>
 
-    <form v-if="!emailSent" class="space-y-4" @submit.prevent="handleSubmit">
-      <div v-if="error" class="alert alert-danger">{{ error }}</div>
+    <form
+v-if="!emailSent"
+class="space-y-4"
+@submit.prevent="handleSubmit"
+>
+      <div
+v-if="error"
+class="alert alert-danger"
+>
+{{ error }}
+</div>
 
       <div class="form-group">
         <base-input
@@ -33,18 +63,42 @@
           autocomplete="email"
           :error="errors.email"
         />
-        <p v-if="errors.email" class="text-sm text-danger-400 mt-1">{{ errors.email }}</p>
+        <p
+v-if="errors.email"
+class="text-sm text-danger-400 mt-1"
+>
+{{ errors.email }}
+</p>
       </div>
 
-      <base-button type="submit" variant="primary" :loading="loading" :disabled="loading" class="btn btn-primary w-full">
+      <base-button
+type="submit"
+variant="primary"
+:loading="loading"
+:disabled="loading"
+class="btn btn-primary w-full"
+>
         {{ loading ? 'Enviando...' : 'Enviar enlace de recuperación' }}
       </base-button>
     </form>
 
     <div class="mt-4 text-center">
-      <router-link to="/login" class="text-sm text-text-secondary flex items-center justify-center gap-2 hover:text-text-primary">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      <router-link
+to="/login"
+class="text-sm text-text-secondary flex items-center justify-center gap-2 hover:text-text-primary"
+>
+        <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+          <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M10 19l-7-7m0 0l7-7m-7 7h18"
+/>
         </svg>
         Volver al inicio de sesión
       </router-link>

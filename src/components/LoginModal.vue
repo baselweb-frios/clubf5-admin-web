@@ -1,11 +1,19 @@
 <template>
   <Teleport to="body">
-    <div class="login-modal-overlay" :class="{ active: show }" @click.self="$emit('close')">
+    <div
+class="login-modal-overlay"
+:class="{ active: show }"
+@click.self="$emit('close')"
+>
       <div class="login-modal-content">
         <div class="login-modal-header">
-          <h3><i class="fas fa-sign-in-alt"></i> Iniciar Sesion</h3>
-          <button class="modal-close" type="button" @click="$emit('close')">
-            <i class="fas fa-times"></i>
+          <h3><i class="fas fa-sign-in-alt" /> Iniciar Sesion</h3>
+          <button
+class="modal-close"
+type="button"
+@click="$emit('close')"
+>
+            <i class="fas fa-times" />
           </button>
         </div>
         <div class="login-modal-body">
@@ -19,19 +27,25 @@
           </div>
 
           <!-- Error Alert -->
-          <div v-if="error" class="login-alert error">
-            <i class="fas fa-exclamation-circle"></i>
+          <div
+v-if="error"
+class="login-alert error"
+>
+            <i class="fas fa-exclamation-circle" />
             <span>{{ error }}</span>
           </div>
 
           <!-- Form -->
-          <form @submit.prevent="handleSubmit" class="login-form">
+          <form
+class="login-form"
+@submit.prevent="handleSubmit"
+>
             <!-- Username -->
             <div class="form-group">
               <label>Usuario (email)</label>
               <div class="input-wrapper">
                 <span class="input-icon">
-                  <i class="fas fa-user"></i>
+                  <i class="fas fa-user" />
                 </span>
                 <input
                   v-model="form.username"
@@ -43,7 +57,12 @@
                   required
                 >
               </div>
-              <p v-if="errors.username" class="field-error">{{ errors.username }}</p>
+              <p
+v-if="errors.username"
+class="field-error"
+>
+{{ errors.username }}
+</p>
             </div>
 
             <!-- Password -->
@@ -51,7 +70,7 @@
               <label>Contrasena</label>
               <div class="input-wrapper">
                 <span class="input-icon">
-                  <i class="fas fa-lock"></i>
+                  <i class="fas fa-lock" />
                 </span>
                 <input
                   v-model="form.password"
@@ -67,24 +86,42 @@
                   class="password-toggle"
                   @click="togglePasswordVisibility"
                 >
-                  <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                  <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" />
                 </button>
               </div>
-              <p v-if="errors.password" class="field-error">{{ errors.password }}</p>
+              <p
+v-if="errors.password"
+class="field-error"
+>
+{{ errors.password }}
+</p>
             </div>
 
             <!-- Options -->
             <div class="form-options">
               <label class="checkbox-wrapper">
-                <input v-model="form.remember" type="checkbox">
+                <input
+v-model="form.remember"
+type="checkbox"
+>
                 <span>Recordarme</span>
               </label>
-              <a href="forgot-password" class="forgot-link">Olvidaste tu contrasena?</a>
+              <a
+href="forgot-password"
+class="forgot-link"
+>Olvidaste tu contrasena?</a>
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="btn-submit" :disabled="loading">
-              <span v-if="loading" class="spinner"></span>
+            <button
+type="submit"
+class="btn-submit"
+:disabled="loading"
+>
+              <span
+v-if="loading"
+class="spinner"
+/>
               {{ loading ? 'Iniciando sesion...' : 'Iniciar sesion' }}
             </button>
           </form>
@@ -93,7 +130,10 @@
           <div class="login-footer">
             <p>
               No tienes cuenta?
-              <a href="#registro" @click="$emit('close')">Registrate aqui</a>
+              <a
+href="#registro"
+@click="$emit('close')"
+>Registrate aqui</a>
             </p>
           </div>
         </div>

@@ -1,49 +1,117 @@
 <template>
   <div class="landing-page">
     <!-- Video Background -->
-    <video class="video-background" autoplay muted loop playsinline>
-      <source :src="landingContent?.hero?.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-city-lights-at-night-4158-large.mp4'" type="video/mp4">
+    <video
+class="video-background"
+autoplay
+muted
+loop
+playsinline
+>
+      <source
+:src="landingContent?.hero?.videoUrl || 'https://assets.mixkit.co/videos/preview/mixkit-city-lights-at-night-4158-large.mp4'"
+type="video/mp4"
+>
     </video>
 
     <!-- Header -->
-    <header class="header" :class="{ scrolled: isScrolled }">
+    <header
+class="header"
+:class="{ scrolled: isScrolled }"
+>
       <div class="container">
         <nav class="nav">
-          <a href="#" class="logo">
+          <a
+href="#"
+class="logo"
+>
             Club
-            <img loading="lazy" decoding="async" width="50" height="30" src="https://laf5.com/wp-content/uploads/2025/09/Recurso-1.png" alt="F5">
+            <img
+loading="lazy"
+decoding="async"
+width="50"
+height="30"
+src="https://laf5.com/wp-content/uploads/2025/09/Recurso-1.png"
+alt="F5"
+>
           </a>
-          <ul class="nav-links" :class="{ active: mobileMenuOpen }">
-            <li><a href="#inicio" @click="closeMobileMenu"><i class="fas fa-home"></i> Inicio</a></li>
-            <li><a href="#plataformas" @click="closeMobileMenu"><i class="fas fa-cog"></i> Plataformas</a></li>
-            <li><a href="#caracteristicas" @click="closeMobileMenu"><i class="fas fa-star"></i> Caracteristicas</a></li>
-            <li><a href="#registro" @click="closeMobileMenu"><i class="fas fa-user-plus"></i>Registro</a></li>
+          <ul
+class="nav-links"
+:class="{ active: mobileMenuOpen }"
+>
             <li>
-              <a href="https://web.clubf5.com" target="_blank">
-                <i class="fas fa-music"></i> Reproductor
+<a
+href="#inicio"
+@click="closeMobileMenu"
+><i class="fas fa-home" /> Inicio</a>
+</li>
+            <li>
+<a
+href="#plataformas"
+@click="closeMobileMenu"
+><i class="fas fa-cog" /> Plataformas</a>
+</li>
+            <li>
+<a
+href="#caracteristicas"
+@click="closeMobileMenu"
+><i class="fas fa-star" /> Caracteristicas</a>
+</li>
+            <li>
+<a
+href="#registro"
+@click="closeMobileMenu"
+><i class="fas fa-user-plus" />Registro</a>
+</li>
+            <li>
+              <a
+href="https://web.clubf5.com"
+target="_blank"
+>
+                <i class="fas fa-music" /> Reproductor
               </a>
             </li>
             <li>
-              <a href="#" @click.prevent="openLoginModal">
-                <i class="fas fa-sign-in-alt"></i> Login
+              <a
+href="#"
+@click.prevent="openLoginModal"
+>
+                <i class="fas fa-sign-in-alt" /> Login
+              </a>
+            </li>
+            <li v-if="canInstallPwa">
+              <a
+href="#"
+class="nav-install-link"
+@click.prevent="installPwa"
+>
+                <i class="fas fa-download" /> Instalar App
               </a>
             </li>
           </ul>
-          <div class="burger" @click="toggleMobileMenu">
-            <span></span>
-            <span></span>
-            <span></span>
+          <div
+class="burger"
+@click="toggleMobileMenu"
+>
+            <span />
+            <span />
+            <span />
           </div>
         </nav>
       </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero" id="inicio">
+    <section
+id="inicio"
+class="hero"
+>
       <div class="container">
         <div class="hero-content fade-in-up">
           <h1>{{ landingContent?.hero?.title || 'ClubF5' }}</h1>
-          <p class="tagline">{{ landingContent?.hero?.tagline || 'El placer de escuchar' }}</p>
+          <p class="tagline">
+{{ landingContent?.hero?.tagline || 'El placer de escuchar' }}
+</p>
           <p class="subtitle">
             {{ landingContent?.hero?.subtitle || 'Plataforma integral de gestion de radio y streaming en tiempo real. Administra contenido, programacion y spots publicitarios desde una solucion completa y profesional.' }}
           </p>
@@ -55,17 +123,26 @@
               class="btn"
               :class="button.variant === 'primary' ? 'btn-primary' : 'btn-outline'"
             >
-              <i v-if="button.icon" :class="button.icon"></i>
+              <i
+v-if="button.icon"
+:class="button.icon"
+/>
               {{ button.text }}
             </a>
             <!-- Fallback buttons if no content loaded -->
             <template v-if="!landingContent?.hero?.ctaButtons?.length">
-              <a href="#plataformas" class="btn btn-primary">
-                <i class="fas fa-play"></i>
+              <a
+href="#plataformas"
+class="btn btn-primary"
+>
+                <i class="fas fa-play" />
                 Explorar Plataformas
               </a>
-              <a href="#caracteristicas" class="btn btn-outline">
-                <i class="fas fa-info-circle"></i>
+              <a
+href="#caracteristicas"
+class="btn btn-outline"
+>
+                <i class="fas fa-info-circle" />
                 Ver Caracteristicas
               </a>
             </template>
@@ -75,7 +152,10 @@
     </section>
 
     <!-- Platforms Section -->
-    <section class="section platforms" id="plataformas">
+    <section
+id="plataformas"
+class="section platforms"
+>
       <div class="container">
         <div class="section-title">
           <h2>{{ landingContent?.platforms?.title || 'Nuestras Plataformas' }}</h2>
@@ -87,11 +167,16 @@
             :key="platform.id"
             class="platform-card"
           >
-            <i :class="platform.icon"></i>
+            <i :class="platform.icon" />
             <h3>{{ platform.title }}</h3>
             <p>{{ platform.description }}</p>
             <ul class="platform-features">
-              <li v-for="(feature, index) in platform.features" :key="index">{{ feature }}</li>
+              <li
+v-for="(feature, index) in platform.features"
+:key="index"
+>
+{{ feature }}
+</li>
             </ul>
           </div>
         </div>
@@ -99,7 +184,10 @@
     </section>
 
     <!-- Features Section -->
-    <section class="section" id="caracteristicas">
+    <section
+id="caracteristicas"
+class="section"
+>
       <div class="container">
         <div class="section-title">
           <h2>{{ landingContent?.features?.title || 'Caracteristicas Destacadas' }}</h2>
@@ -111,7 +199,7 @@
             :key="feature.id"
             class="feature-card"
           >
-            <i :class="[feature.icon, 'feature-icon']"></i>
+            <i :class="[feature.icon, 'feature-icon']" />
             <h3>{{ feature.title }}</h3>
             <p>{{ feature.description }}</p>
           </div>
@@ -120,7 +208,10 @@
     </section>
 
     <!-- Registration Section -->
-    <section class="section registro" id="registro">
+    <section
+id="registro"
+class="section registro"
+>
       <div class="container">
         <div class="section-title">
           <h2>Registra tu Negocio</h2>
@@ -129,36 +220,63 @@
 
         <!-- Package Cards Grid -->
         <div class="paquetes-grid-cards">
-          <div v-if="loadingPaquetes" class="paquetes-loading">
-            <div class="spinner"></div>
+          <div
+v-if="loadingPaquetes"
+class="paquetes-loading"
+>
+            <div class="spinner" />
             <p>Cargando paquetes disponibles...</p>
           </div>
-          <div v-else-if="paquetesError" class="paquetes-loading">
-            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #f87171; margin-bottom: 1rem;"></i>
+          <div
+v-else-if="paquetesError"
+class="paquetes-loading"
+>
+            <i
+class="fas fa-exclamation-triangle"
+style="font-size: 2rem; color: #f87171; margin-bottom: 1rem;"
+/>
             <p>No se pudieron cargar los paquetes. Intenta recargar la pagina.</p>
           </div>
-          <div v-else-if="paquetesData.length === 0" class="paquetes-loading">
+          <div
+v-else-if="paquetesData.length === 0"
+class="paquetes-loading"
+>
             <p>No hay paquetes disponibles en este momento.</p>
           </div>
           <template v-else>
-            <div v-for="paquete in paquetesData" :key="paquete.codigo" class="paquete-card-new">
+            <div
+v-for="paquete in paquetesData"
+:key="paquete.codigo"
+class="paquete-card-new"
+>
               <div class="paquete-icon">
-                <i class="fas fa-broadcast-tower"></i>
+                <i class="fas fa-broadcast-tower" />
               </div>
-              <div class="paquete-nombre">{{ paquete.nombre }}</div>
+              <div class="paquete-nombre">
+{{ paquete.nombre }}
+</div>
               <div class="paquete-precio">
                 {{ formatPrecio(paquete.precio) }}
                 <span>/ mes</span>
               </div>
               <ul class="paquete-detalles">
-                <li v-if="paquete.cantidadEquipos">{{ paquete.cantidadEquipos }} equipos incluidos</li>
-                <li v-if="paquete.maxSpots">Hasta {{ paquete.maxSpots }} spots</li>
-                <li v-if="paquete.caracteristicas">{{ paquete.caracteristicas }}</li>
+                <li v-if="paquete.cantidadEquipos">
+{{ paquete.cantidadEquipos }} equipos incluidos
+</li>
+                <li v-if="paquete.maxSpots">
+Hasta {{ paquete.maxSpots }} spots
+</li>
+                <li v-if="paquete.caracteristicas">
+{{ paquete.caracteristicas }}
+</li>
                 <li>Soporte tecnico incluido</li>
                 <li>Panel de administracion</li>
               </ul>
-              <button class="paquete-btn" @click="openRegistroModal(paquete)">
-                <i class="fas fa-check-circle"></i>
+              <button
+class="paquete-btn"
+@click="openRegistroModal(paquete)"
+>
+                <i class="fas fa-check-circle" />
                 Seleccionar Plan
               </button>
             </div>
@@ -176,8 +294,12 @@
             :key="stat.id"
             class="stat-item"
           >
-            <div class="stat-number">{{ stat.number }}</div>
-            <div class="stat-label">{{ stat.label }}</div>
+            <div class="stat-number">
+{{ stat.number }}
+</div>
+            <div class="stat-label">
+{{ stat.label }}
+</div>
           </div>
         </div>
       </div>
@@ -200,80 +322,149 @@
     />
 
     <!-- Registration Modal -->
-    <div class="modal-overlay" :class="{ active: showRegistroModal }" @click.self="closeRegistroModal">
+    <div
+class="modal-overlay"
+:class="{ active: showRegistroModal }"
+@click.self="closeRegistroModal"
+>
       <div class="modal-content">
         <div class="modal-header">
-          <h3><i class="fas fa-user-plus"></i> Registro de Usuario</h3>
-          <button class="modal-close" type="button" @click="closeRegistroModal">
-            <i class="fas fa-times"></i>
+          <h3><i class="fas fa-user-plus" /> Registro de Usuario</h3>
+          <button
+class="modal-close"
+type="button"
+@click="closeRegistroModal"
+>
+            <i class="fas fa-times" />
           </button>
         </div>
         <div class="modal-body">
           <!-- Selected Package Badge -->
-          <div v-if="selectedPaquete" class="selected-package-badge">
+          <div
+v-if="selectedPaquete"
+class="selected-package-badge"
+>
             <div class="selected-package-info">
-              <i class="fas fa-box-open"></i>
+              <i class="fas fa-box-open" />
               <div class="selected-package-details">
                 <h4>{{ selectedPaquete.nombre }}</h4>
                 <span>{{ getPackageDetails(selectedPaquete) }}</span>
               </div>
             </div>
-            <div class="selected-package-price">{{ formatPrecio(selectedPaquete.precio) }}</div>
+            <div class="selected-package-price">
+{{ formatPrecio(selectedPaquete.precio) }}
+</div>
           </div>
 
-          <div v-if="registroAlert.show" class="form-alert show" :class="registroAlert.type">
+          <div
+v-if="registroAlert.show"
+class="form-alert show"
+:class="registroAlert.type"
+>
             {{ registroAlert.message }}
           </div>
 
           <form @submit.prevent="handleRegistroSubmit">
             <div class="form-group">
               <label>Nombre completo <span class="required">*</span></label>
-              <input type="text" class="form-input" v-model="registroForm.nombre" placeholder="Nombre y apellido" required>
+              <input
+v-model="registroForm.nombre"
+type="text"
+class="form-input"
+placeholder="Nombre y apellido"
+required
+>
             </div>
 
             <div class="form-group">
               <label>Email (usuario de inicio de sesion) <span class="required">*</span></label>
-              <input type="email" class="form-input" v-model="registroForm.email" placeholder="correo@ejemplo.com" required>
+              <input
+v-model="registroForm.email"
+type="email"
+class="form-input"
+placeholder="correo@ejemplo.com"
+required
+>
             </div>
 
             <div class="form-group">
               <label>Telefono <span class="required">*</span></label>
-              <input type="tel" class="form-input" v-model="registroForm.telefono" placeholder="Numero de telefono" required>
+              <input
+v-model="registroForm.telefono"
+type="tel"
+class="form-input"
+placeholder="Numero de telefono"
+required
+>
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label>Domicilio</label>
-                <input type="text" class="form-input" v-model="registroForm.domicilio" placeholder="Calle y numero">
+                <input
+v-model="registroForm.domicilio"
+type="text"
+class="form-input"
+placeholder="Calle y numero"
+>
               </div>
               <div class="form-group">
                 <label>Localidad</label>
-                <input type="text" class="form-input" v-model="registroForm.localidad" placeholder="Ciudad / Localidad">
+                <input
+v-model="registroForm.localidad"
+type="text"
+class="form-input"
+placeholder="Ciudad / Localidad"
+>
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
                 <label>Contrasena <span class="required">*</span></label>
-                <input type="password" class="form-input" v-model="registroForm.password" placeholder="Minimo 6 caracteres" required minlength="6">
+                <input
+v-model="registroForm.password"
+type="password"
+class="form-input"
+placeholder="Minimo 6 caracteres"
+required
+minlength="6"
+>
               </div>
               <div class="form-group">
                 <label>Confirmar Contrasena <span class="required">*</span></label>
-                <input type="password" class="form-input" v-model="registroForm.confirmPassword" placeholder="Repetir contrasena" required>
+                <input
+v-model="registroForm.confirmPassword"
+type="password"
+class="form-input"
+placeholder="Repetir contrasena"
+required
+>
               </div>
             </div>
 
             <div class="form-submit">
-              <button type="submit" class="btn btn-primary" :disabled="registroLoading">
-                <span v-if="registroLoading" class="spinner" style="width: 20px; height: 20px; border-width: 2px; display: inline-block; margin-right: 8px;"></span>
-                <i v-else class="fas fa-paper-plane"></i>
+              <button
+type="submit"
+class="btn btn-primary"
+:disabled="registroLoading"
+>
+                <span
+v-if="registroLoading"
+class="spinner"
+style="width: 20px; height: 20px; border-width: 2px; display: inline-block; margin-right: 8px;"
+/>
+                <i
+v-else
+class="fas fa-paper-plane"
+/>
                 {{ registroLoading ? 'Enviando...' : 'Enviar Solicitud de Registro' }}
               </button>
             </div>
           </form>
 
           <div class="form-info">
-            <i class="fas fa-info-circle"></i>
+            <i class="fas fa-info-circle" />
             Tu solicitud sera revisada por nuestro equipo. Te contactaremos por email una vez aprobada.
           </div>
         </div>
@@ -304,6 +495,10 @@ const mobileMenuOpen = ref(false)
 const showLoginModal = ref(false)
 const showRegistroModal = ref(false)
 const selectedPaquete = ref(null)
+
+// PWA Installation
+const canInstallPwa = ref(false)
+const deferredPrompt = ref(null)
 
 // Packages
 const paquetesData = ref([])
@@ -528,6 +723,26 @@ const handleKeydown = (e) => {
   }
 }
 
+// PWA Installation handlers
+const handleBeforeInstallPrompt = (e) => {
+  e.preventDefault()
+  deferredPrompt.value = e
+  canInstallPwa.value = true
+}
+
+const handleAppInstalled = () => {
+  canInstallPwa.value = false
+  deferredPrompt.value = null
+}
+
+const installPwa = async () => {
+  if (!deferredPrompt.value) return
+  deferredPrompt.value.prompt()
+  const { outcome } = await deferredPrompt.value.userChoice
+  deferredPrompt.value = null
+  canInstallPwa.value = false
+}
+
 // Load Landing Page Content
 const loadLandingContent = async () => {
   try {
@@ -546,6 +761,8 @@ const loadLandingContent = async () => {
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
   document.addEventListener('keydown', handleKeydown)
+  window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+  window.addEventListener('appinstalled', handleAppInstalled)
   loadPaquetes()
   loadLandingContent()
 })
@@ -553,6 +770,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
   document.removeEventListener('keydown', handleKeydown)
+  window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+  window.removeEventListener('appinstalled', handleAppInstalled)
 })
 </script>
 
@@ -663,6 +882,22 @@ onUnmounted(() => {
 
 .nav-login-link:hover {
   background: rgba(1, 137, 221, 0.3);
+}
+
+.nav-install-link {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ade80 !important;
+  transition: all 0.25s ease;
+}
+
+.nav-install-link:hover {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(34, 197, 94, 0.2));
+  color: #22c55e !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
 }
 
 .burger {

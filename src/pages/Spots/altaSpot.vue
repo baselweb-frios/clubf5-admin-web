@@ -28,10 +28,15 @@
 
     <div class="space-y-6">
       <!-- Información Básica -->
-      <div class="card" data-tour="spot-info">
+      <div
+class="card"
+data-tour="spot-info"
+>
         <div class="flex items-center gap-2 mb-6">
           <i class="fas fa-info-circle text-primary-400" />
-          <h3 class="text-lg font-semibold text-text-primary">Información del Spot</h3>
+          <h3 class="text-lg font-semibold text-text-primary">
+Información del Spot
+</h3>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="form-group">
@@ -53,7 +58,10 @@
               <i class="fas fa-layer-group" />
               Tipo de Spot
             </label>
-            <select v-model="spot.spo_tipo" class="select">
+            <select
+v-model="spot.spo_tipo"
+class="select"
+>
               <option
                 v-for="tipo in tipoSpot"
                 :key="tipo.value"
@@ -106,7 +114,10 @@
           </div>
         </div>
         <div>
-          <div data-tour="spot-media-tabs" class="flex flex-wrap border-b border-dark-border">
+          <div
+data-tour="spot-media-tabs"
+class="flex flex-wrap border-b border-dark-border"
+>
             <button
               class="flex-1 min-w-[120px] px-4 py-3 text-sm font-medium transition-all border-b-2"
               :class="spot.spo_mediaTipo === 'audio' && activeTab !== 'ai' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
@@ -144,7 +155,10 @@
 
 
           <!-- stream Tab -->
-          <div v-if="activeTab === 'stream'" class="p-4 sm:p-6">
+          <div
+v-if="activeTab === 'stream'"
+class="p-4 sm:p-6"
+>
             <div class="space-y-4">
               <div class="form-group">
                 <label class="label flex items-center gap-2">
@@ -174,18 +188,27 @@
                     <i class="fas fa-times-circle" />
                   </button>
                 </div>
-                <p v-if="streamUrlError" class="text-sm text-danger-400 mt-1 flex items-center gap-1">
+                <p
+v-if="streamUrlError"
+class="text-sm text-danger-400 mt-1 flex items-center gap-1"
+>
                   <i class="fas fa-exclamation-triangle" />
                   {{ streamUrlError }}
                 </p>
-                <p v-else class="text-xs text-text-tertiary mt-1 flex items-center gap-1">
+                <p
+v-else
+class="text-xs text-text-tertiary mt-1 flex items-center gap-1"
+>
                   <i class="fas fa-lightbulb text-warning-400" />
                   Formatos aceptados: .m3u8 (HLS), .mpd (DASH), URLs HTTP/HTTPS
                 </p>
               </div>
 
               <!-- Stream Preview -->
-              <div v-if="isValidStreamUrl" class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
+              <div
+v-if="isValidStreamUrl"
+class="p-4 bg-dark-secondary rounded-lg border border-dark-border"
+>
                 <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
                   <i class="fas fa-broadcast-tower text-success-400" />
                   Vista Previa del Stream
@@ -206,7 +229,11 @@
             </div>
           </div>
           <!-- Upload Tab -->
-          <div v-if="activeTab === 'upload'" data-tour="spot-upload" class="p-4 sm:p-6">
+          <div
+v-if="activeTab === 'upload'"
+data-tour="spot-upload"
+class="p-4 sm:p-6"
+>
             <div class="space-y-4">
               <input
                 id="file-upload"
@@ -226,41 +253,65 @@
                     class="fas fa-cloud-upload-alt text-4xl"
                     :class="fileValidationError ? 'text-danger-400' : 'text-primary-400'"
                   />
-                  <p v-if="spot.spo_mediaTipo=='audio'" class="text-text-primary font-medium">
+                  <p
+v-if="spot.spo_mediaTipo=='audio'"
+class="text-text-primary font-medium"
+>
                     Arrastra tu archivo de audio aquí o haz clic para seleccionar
                   </p>
-                  <p v-if="spot.spo_mediaTipo=='video'" class="text-text-primary font-medium">
+                  <p
+v-if="spot.spo_mediaTipo=='video'"
+class="text-text-primary font-medium"
+>
                     Arrastra tu archivo de video aquí o haz clic para seleccionar
                   </p>
-                  <p v-if="spot.spo_mediaTipo=='audio'" class="text-sm text-text-tertiary">
+                  <p
+v-if="spot.spo_mediaTipo=='audio'"
+class="text-sm text-text-tertiary"
+>
                     Formatos soportados: MP3, WAV, OGG, AAC, FLAC (máx. 50MB)
                   </p>
-                  <p v-if="spot.spo_mediaTipo=='video'" class="text-sm text-text-tertiary">
+                  <p
+v-if="spot.spo_mediaTipo=='video'"
+class="text-sm text-text-tertiary"
+>
                     Formatos soportados: MP4, WebM, OGG, MOV (máx. 50MB)
                   </p>
                 </div>
               </label>
 
               <!-- Validation Error -->
-              <div v-if="fileValidationError" class="alert alert-danger">
+              <div
+v-if="fileValidationError"
+class="alert alert-danger"
+>
                 <i class="fas fa-exclamation-triangle" />
                 {{ fileValidationError }}
               </div>
 
               <!-- File Info Preview -->
-              <div v-if="file" class="flex items-center justify-between p-3 bg-dark-secondary rounded-lg border border-dark-border">
+              <div
+v-if="file"
+class="flex items-center justify-between p-3 bg-dark-secondary rounded-lg border border-dark-border"
+>
                 <div class="flex items-center gap-3">
                   <i :class="spot.spo_mediaTipo === 'audio' ? 'fas fa-file-audio text-primary-400' : 'fas fa-file-video text-primary-400'" />
                   <span class="font-medium text-text-primary">{{ file.name }}</span>
                   <span class="text-sm text-text-tertiary">({{ formatFileSize(file.size) }})</span>
                 </div>
-                <button class="btn btn-ghost btn-sm btn-icon" @click="removeFile">
+                <button
+class="btn btn-ghost btn-sm btn-icon"
+@click="removeFile"
+>
                   <i class="fas fa-times" />
                 </button>
               </div>
 
               <!-- Media Preview Section -->
-              <div v-if="filePreviewUrl" class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
+              <div
+v-if="filePreviewUrl"
+class="p-4 bg-dark-secondary rounded-lg border border-dark-border"
+>
                 <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
                   <i :class="filePreviewType === 'audio' ? 'fas fa-headphones text-primary-400' : 'fas fa-video text-primary-400'" />
                   Vista Previa del {{ filePreviewType === 'audio' ? 'Audio' : 'Video' }}
@@ -268,12 +319,21 @@
 
                 <!-- Audio Preview -->
                 <div v-if="filePreviewType === 'audio'">
-                  <audio ref="audiofile" :src="filePreviewUrl" controls class="w-full" />
+                  <audio
+ref="audiofile"
+:src="filePreviewUrl"
+controls
+class="w-full"
+/>
                 </div>
 
                 <!-- Video Preview -->
                 <div v-if="filePreviewType === 'video'">
-                  <video :src="filePreviewUrl" controls class="w-full max-h-[300px] rounded-lg">
+                  <video
+:src="filePreviewUrl"
+controls
+class="w-full max-h-[300px] rounded-lg"
+>
                     Tu navegador no soporta la reproducción de video.
                   </video>
                 </div>
@@ -282,7 +342,11 @@
           </div>
 
           <!-- AI Generation Tab -->
-          <div v-if="activeTab === 'ai'" data-tour="spot-ai" class="p-4 sm:p-6">
+          <div
+v-if="activeTab === 'ai'"
+data-tour="spot-ai"
+class="p-4 sm:p-6"
+>
             <div class="space-y-6">
               <!-- Voice Filters Section -->
               <div class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
@@ -290,7 +354,10 @@
                   <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary">
                     <i class="fas fa-filter text-primary-400" />
                     Filtrar Voces
-                    <span v-if="getActiveFiltersCount() > 0" class="badge badge-primary text-xs">
+                    <span
+v-if="getActiveFiltersCount() > 0"
+class="badge badge-primary text-xs"
+>
                       {{ getActiveFiltersCount() }}
                     </span>
                   </h4>
@@ -329,13 +396,21 @@
                 <!-- Filter Chips -->
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
                   <!-- Gender Filter -->
-                  <div v-if="availableFilters.genders.length > 0" class="form-group">
+                  <div
+v-if="availableFilters.genders.length > 0"
+class="form-group"
+>
                     <label class="label text-xs flex items-center gap-1">
                       <i class="fas fa-venus-mars" />
                       Genero
                     </label>
-                    <select v-model="voiceFilters.gender" class="select text-sm">
-                      <option value="all">Todos</option>
+                    <select
+v-model="voiceFilters.gender"
+class="select text-sm"
+>
+                      <option value="all">
+Todos
+</option>
                       <option
                         v-for="gender in availableFilters.genders"
                         :key="gender"
@@ -347,13 +422,21 @@
                   </div>
 
                   <!-- Language Filter (reutilizando accent) -->
-                  <div v-if="availableFilters.accents.length > 0" class="form-group">
+                  <div
+v-if="availableFilters.accents.length > 0"
+class="form-group"
+>
                     <label class="label text-xs flex items-center gap-1">
                       <i class="fas fa-language" />
                       Idioma
                     </label>
-                    <select v-model="voiceFilters.accent" class="select text-sm">
-                      <option value="all">Todos</option>
+                    <select
+v-model="voiceFilters.accent"
+class="select text-sm"
+>
+                      <option value="all">
+Todos
+</option>
                       <option
                         v-for="language in availableFilters.accents"
                         :key="language"
@@ -365,13 +448,21 @@
                   </div>
 
                   <!-- Category Filter (reutilizando useCase) -->
-                  <div v-if="availableFilters.useCases.length > 0" class="form-group">
+                  <div
+v-if="availableFilters.useCases.length > 0"
+class="form-group"
+>
                     <label class="label text-xs flex items-center gap-1">
                       <i class="fas fa-folder" />
                       Categoria
                     </label>
-                    <select v-model="voiceFilters.useCase" class="select text-sm">
-                      <option value="all">Todas</option>
+                    <select
+v-model="voiceFilters.useCase"
+class="select text-sm"
+>
+                      <option value="all">
+Todas
+</option>
                       <option
                         v-for="category in availableFilters.useCases"
                         :key="category"
@@ -402,8 +493,15 @@
                     title="Selecciona la voz que se utilizará para generar el audio."
                   />
                 </label>
-                <select v-model="selectedLoc" class="select" @change="onVoiceChange">
-                  <option :value="null" disabled>
+                <select
+v-model="selectedLoc"
+class="select"
+@change="onVoiceChange"
+>
+                  <option
+:value="null"
+disabled
+>
                     {{ filteredVoices.length === 0 ? 'No hay voces disponibles con estos filtros' : 'Seleccionar locutor...' }}
                   </option>
                   <option
@@ -414,19 +512,28 @@
                     {{ locutor.name }}
                   </option>
                 </select>
-                <p v-if="filteredVoices.length === 0 && locutores.length > 0" class="text-sm text-warning-400 mt-1 flex items-center gap-1">
+                <p
+v-if="filteredVoices.length === 0 && locutores.length > 0"
+class="text-sm text-warning-400 mt-1 flex items-center gap-1"
+>
                   <i class="fas fa-exclamation-triangle" />
                   No se encontraron voces con los filtros seleccionados. Intenta ajustar los filtros.
                 </p>
               </div>
 
               <!-- Voice Info Card -->
-              <div v-if="selectedLoc" class="p-4 bg-dark-tertiary rounded-lg border border-dark-border">
+              <div
+v-if="selectedLoc"
+class="p-4 bg-dark-tertiary rounded-lg border border-dark-border"
+>
                 <div class="flex items-center justify-between mb-3">
                   <div class="flex items-center gap-2">
                     <i class="fas fa-microphone text-primary-400" />
                     <span class="font-semibold text-text-primary">{{ selectedLoc.name }}</span>
-                    <span v-if="selectedLoc.category" class="badge badge-info text-xs">
+                    <span
+v-if="selectedLoc.category"
+class="badge badge-info text-xs"
+>
                       {{ selectedLoc.category }}
                     </span>
                   </div>
@@ -448,7 +555,10 @@
                   <span class="text-sm font-medium text-text-primary">{{ selectedLoc.variacion_nombre }}</span>
                 </div> -->
 
-                <div v-if="selectedLoc.description" class="text-sm text-text-secondary mb-3">
+                <div
+v-if="selectedLoc.description"
+class="text-sm text-text-secondary mb-3"
+>
                   {{ selectedLoc.description }}
                 </div>
 
@@ -470,7 +580,10 @@
                   </div> -->
 
                   <!-- Mostrar configuraciones de la variacion -->
-                  <div v-if="selectedLoc.settings" class="flex items-start gap-2">
+                  <div
+v-if="selectedLoc.settings"
+class="flex items-start gap-2"
+>
                     <i class="fas fa-cog text-text-tertiary mt-0.5" />
                     <div class="flex-1">
                       <span class="text-xs text-text-tertiary">Configuracion de la variacion:</span>
@@ -485,8 +598,16 @@
                 </div>
 
                 <!-- Preview Audio Player -->
-                <div v-if="previewAudioUrl" class="mt-3 pt-3 border-t border-dark-border">
-                  <audio ref="previewAudio" :src="previewAudioUrl" controls class="w-full h-8" />
+                <div
+v-if="previewAudioUrl"
+class="mt-3 pt-3 border-t border-dark-border"
+>
+                  <audio
+ref="previewAudio"
+:src="previewAudioUrl"
+controls
+class="w-full h-8"
+/>
                 </div>
 
                 <!-- Preview texto info -->
@@ -529,19 +650,29 @@
                   <i class="fas fa-magic" />
                   Generar Audio con IA
                 </button>
-                <div v-if="CarDispVoz > 0" class="flex items-center gap-2 text-sm text-text-secondary">
+                <div
+v-if="CarDispVoz > 0"
+class="flex items-center gap-2 text-sm text-text-secondary"
+>
                   <i class="fas fa-info-circle text-info-400" />
                   Caracteres disponibles: {{ CarDispVoz }}
                 </div>
               </div>
 
               <!-- Audio Preview for AI Generated Audio -->
-              <div v-if="filePreviewUrl && filePreviewType === 'audio'" class="p-4 bg-dark-secondary rounded-lg border border-dark-border">
+              <div
+v-if="filePreviewUrl && filePreviewType === 'audio'"
+class="p-4 bg-dark-secondary rounded-lg border border-dark-border"
+>
                 <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
                   <i class="fas fa-headphones text-success-400" />
                   Vista Previa del Audio Generado
                 </h4>
-                <audio :src="filePreviewUrl" controls class="w-full" />
+                <audio
+:src="filePreviewUrl"
+controls
+class="w-full"
+/>
               </div>
             </div>
           </div>
@@ -549,13 +680,22 @@
       </div>
 
       <!-- Actions -->
-      <div class="card" data-tour="spot-save">
+      <div
+class="card"
+data-tour="spot-save"
+>
         <div class="flex flex-wrap gap-3">
-          <button class="btn btn-primary" @click="guardar">
+          <button
+class="btn btn-primary"
+@click="guardar"
+>
             <i class="fas fa-save" />
             {{ isEdit ? 'Actualizar Spot' : 'Guardar Spot' }}
           </button>
-          <button class="btn btn-ghost" @click="btnCancelar">
+          <button
+class="btn btn-ghost"
+@click="btnCancelar"
+>
             <i class="fas fa-times" />
             Cancelar
           </button>
@@ -564,7 +704,12 @@
     </div>
 
     <!-- Tour Button -->
-    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
+    <TourButton
+v-if="hasTour() && !isTourViewed()"
+variant="floating"
+size="md"
+:pulse="true"
+/>
   </div>
 </template>
 

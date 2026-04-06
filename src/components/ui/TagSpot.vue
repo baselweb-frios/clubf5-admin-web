@@ -26,7 +26,9 @@
     <!-- Available Tags -->
     <div class="card">
       <div class="flex-between mb-4">
-        <h4 class="text-base font-semibold text-text-primary">Spots Disponibles</h4>
+        <h4 class="text-base font-semibold text-text-primary">
+Spots Disponibles
+</h4>
         <span class="badge badge-info">{{ options.length }} disponibles</span>
       </div>
 

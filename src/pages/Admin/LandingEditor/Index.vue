@@ -44,21 +44,37 @@
         class="status-alert"
         :class="statusAlert.type"
       >
-        <i :class="statusAlert.icon" class="mr-2" />
+        <i
+:class="statusAlert.icon"
+class="mr-2"
+/>
         {{ statusAlert.message }}
-        <button class="alert-close" @click="statusAlert.show = false">
+        <button
+class="alert-close"
+@click="statusAlert.show = false"
+>
           <i class="fas fa-times" />
         </button>
       </div>
     </transition>
 
     <!-- Loading State -->
-    <div v-if="loading" class="loading-state">
-      <loading-overlay :show="true" fullscreen text="Cargando configuracion..." />
+    <div
+v-if="loading"
+class="loading-state"
+>
+      <loading-overlay
+:show="true"
+fullscreen
+text="Cargando configuracion..."
+/>
     </div>
 
     <!-- Editor Content -->
-    <div v-else class="editor-content">
+    <div
+v-else
+class="editor-content"
+>
       <!-- Navigation Tabs -->
       <div class="section-tabs">
         <button
@@ -75,7 +91,10 @@
 
       <!-- Tab Content -->
       <div class="tab-content">
-        <transition name="fade" mode="out-in">
+        <transition
+name="fade"
+mode="out-in"
+>
           <hero-section
             v-if="activeTab === 'hero'"
             :key="'hero'"
@@ -113,7 +132,10 @@
       <div class="quick-actions">
         <base-card>
           <div class="actions-grid">
-            <button class="action-item" @click="showPreview = true">
+            <button
+class="action-item"
+@click="showPreview = true"
+>
               <i class="fas fa-eye" />
               <span>Vista Previa</span>
             </button>
@@ -125,11 +147,17 @@
               <i class="fas fa-external-link-alt" />
               <span>Ver Landing</span>
             </a>
-            <button class="action-item" @click="exportConfig">
+            <button
+class="action-item"
+@click="exportConfig"
+>
               <i class="fas fa-download" />
               <span>Exportar JSON</span>
             </button>
-            <button class="action-item" @click="triggerImport">
+            <button
+class="action-item"
+@click="triggerImport"
+>
               <i class="fas fa-upload" />
               <span>Importar JSON</span>
             </button>

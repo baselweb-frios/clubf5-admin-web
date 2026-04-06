@@ -2,17 +2,17 @@
   <base-card class="voces-list">
     <div class="card-header">
       <h2 class="card-title">
-        <i class="fas fa-list mr-2"></i>
+        <i class="fas fa-list mr-2" />
         Lista de Voces
       </h2>
       <div class="search-box">
-        <i class="fas fa-search"></i>
+        <i class="fas fa-search" />
         <input
           v-model="searchQuery"
           type="text"
           placeholder="Buscar voz..."
           class="search-input"
-        />
+        >
       </div>
     </div>
 
@@ -20,9 +20,18 @@
     <div class="filters-container">
       <div class="filter-group">
         <label class="filter-label">Género</label>
-        <select v-model="filtroGenero" class="filter-select">
-          <option value="">Todos</option>
-          <option v-for="genero in generosUnicos" :key="genero" :value="genero">
+        <select
+v-model="filtroGenero"
+class="filter-select"
+>
+          <option value="">
+Todos
+</option>
+          <option
+v-for="genero in generosUnicos"
+:key="genero"
+:value="genero"
+>
             {{ genero }}
           </option>
         </select>
@@ -30,9 +39,18 @@
 
       <div class="filter-group">
         <label class="filter-label">Idioma</label>
-        <select v-model="filtroIdioma" class="filter-select">
-          <option value="">Todos</option>
-          <option v-for="idioma in idiomasUnicos" :key="idioma" :value="idioma">
+        <select
+v-model="filtroIdioma"
+class="filter-select"
+>
+          <option value="">
+Todos
+</option>
+          <option
+v-for="idioma in idiomasUnicos"
+:key="idioma"
+:value="idioma"
+>
             {{ idioma }}
           </option>
         </select>
@@ -40,9 +58,18 @@
 
       <div class="filter-group">
         <label class="filter-label">Categoría</label>
-        <select v-model="filtroCategoria" class="filter-select">
-          <option value="">Todas</option>
-          <option v-for="categoria in categoriasUnicas" :key="categoria" :value="categoria">
+        <select
+v-model="filtroCategoria"
+class="filter-select"
+>
+          <option value="">
+Todas
+</option>
+          <option
+v-for="categoria in categoriasUnicas"
+:key="categoria"
+:value="categoria"
+>
             {{ categoria }}
           </option>
         </select>
@@ -50,11 +77,22 @@
 
       <div class="filter-group">
         <label class="filter-label">Variaciones</label>
-        <select v-model="filtroVariaciones" class="filter-select">
-          <option value="">Todas</option>
-          <option value="0">Sin variaciones</option>
-          <option value="1-5">1 - 5</option>
-          <option value="6+">6 o más</option>
+        <select
+v-model="filtroVariaciones"
+class="filter-select"
+>
+          <option value="">
+Todas
+</option>
+          <option value="0">
+Sin variaciones
+</option>
+          <option value="1-5">
+1 - 5
+</option>
+          <option value="6+">
+6 o más
+</option>
         </select>
       </div>
 
@@ -63,7 +101,7 @@
         class="btn-clear-filters"
         @click="limpiarFiltros"
       >
-        <i class="fas fa-times mr-1"></i>
+        <i class="fas fa-times mr-1" />
         Limpiar
       </button>
     </div>
@@ -76,31 +114,47 @@
             <th>Categoria</th>
             <th>Idioma</th>
             <th>Genero</th>
-            <th class="text-center">Variaciones</th>
+            <th class="text-center">
+Variaciones
+</th>
             <th>Estado</th>
             <th>Preview</th>
-            <th class="text-center">Acciones</th>
+            <th class="text-center">
+Acciones
+</th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="loading">
-            <td colspan="8" class="text-center py-8">
-              <i class="fas fa-spinner fa-spin text-2xl text-primary-400"></i>
-              <p class="mt-2 text-gray-400">Cargando voces...</p>
+            <td
+colspan="8"
+class="text-center py-8"
+>
+              <i class="fas fa-spinner fa-spin text-2xl text-primary-400" />
+              <p class="mt-2 text-gray-400">
+Cargando voces...
+</p>
             </td>
           </tr>
           <tr v-else-if="filteredVoces.length === 0">
-            <td colspan="8" class="text-center py-8">
-              <i class="fas fa-microphone-slash text-2xl text-gray-500"></i>
+            <td
+colspan="8"
+class="text-center py-8"
+>
+              <i class="fas fa-microphone-slash text-2xl text-gray-500" />
               <p class="mt-2 text-gray-400">
                 {{ searchQuery ? 'No se encontraron voces' : 'No hay voces sincronizadas' }}
               </p>
             </td>
           </tr>
-          <tr v-else v-for="voz in paginatedVoces" :key="voz.vel_codigo">
+          <tr
+v-for="voz in paginatedVoces"
+v-else
+:key="voz.vel_codigo"
+>
             <td>
               <div class="voz-name">
-                <i class="fas fa-microphone text-primary-400 mr-2"></i>
+                <i class="fas fa-microphone text-primary-400 mr-2" />
                 <span class="font-medium">{{ voz.vel_nombre }}</span>
               </div>
             </td>
@@ -109,10 +163,17 @@
             </td>
             <td>{{ voz.vel_idioma || 'N/A' }}</td>
             <td>
-              <span v-if="voz.vel_genero" class="badge" :class="getGeneroBadgeClass(voz.vel_genero)">
+              <span
+v-if="voz.vel_genero"
+class="badge"
+:class="getGeneroBadgeClass(voz.vel_genero)"
+>
                 {{ voz.vel_genero }}
               </span>
-              <span v-else class="text-gray-500">N/A</span>
+              <span
+v-else
+class="text-gray-500"
+>N/A</span>
             </td>
             <td class="text-center">
               <span class="badge badge-purple">
@@ -132,12 +193,15 @@
               <button
                 v-if="voz.vel_preview_url"
                 class="btn-preview"
-                @click="playPreview(voz)"
                 :disabled="playingVoiceId === voz.vel_codigo"
+                @click="playPreview(voz)"
               >
-                <i :class="playingVoiceId === voz.vel_codigo ? 'fas fa-stop' : 'fas fa-play'"></i>
+                <i :class="playingVoiceId === voz.vel_codigo ? 'fas fa-stop' : 'fas fa-play'" />
               </button>
-              <span v-else class="text-gray-500">-</span>
+              <span
+v-else
+class="text-gray-500"
+>-</span>
             </td>
             <td>
               <div class="actions">
@@ -146,14 +210,14 @@
                   title="Ver detalle y variaciones"
                   @click="$emit('ver-detalle', voz)"
                 >
-                  <i class="fas fa-eye"></i>
+                  <i class="fas fa-eye" />
                 </button>
                 <button
                   class="btn-action btn-delete"
                   title="Eliminar voz"
                   @click="$emit('eliminar', voz)"
                 >
-                  <i class="fas fa-trash"></i>
+                  <i class="fas fa-trash" />
                 </button>
               </div>
             </td>
@@ -163,13 +227,16 @@
     </div>
 
     <!-- Pagination -->
-    <div v-if="totalPages > 1" class="pagination">
+    <div
+v-if="totalPages > 1"
+class="pagination"
+>
       <button
         class="page-btn"
         :disabled="currentPage === 1"
         @click="currentPage--"
       >
-        <i class="fas fa-chevron-left"></i>
+        <i class="fas fa-chevron-left" />
       </button>
       <span class="page-info">
         Pagina {{ currentPage }} de {{ totalPages }}
@@ -179,12 +246,15 @@
         :disabled="currentPage === totalPages"
         @click="currentPage++"
       >
-        <i class="fas fa-chevron-right"></i>
+        <i class="fas fa-chevron-right" />
       </button>
     </div>
 
     <!-- Audio element for preview -->
-    <audio ref="audioPlayer" @ended="playingVoiceId = null"></audio>
+    <audio
+ref="audioPlayer"
+@ended="playingVoiceId = null"
+/>
   </base-card>
 </template>
 

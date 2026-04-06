@@ -1,15 +1,18 @@
 <template>
   <Modal
     :model-value="show"
-    @update:model-value="$emit('update:show', $event)"
     size="xl"
     :title="voz ? `Voz: ${voz.vel_nombre}` : 'Detalle de Voz'"
+    @update:model-value="$emit('update:show', $event)"
   >
-    <div v-if="voz" class="voz-detail">
+    <div
+v-if="voz"
+class="voz-detail"
+>
       <!-- Voice Info -->
       <div class="info-section">
         <h3 class="section-title">
-          <i class="fas fa-info-circle mr-2"></i>
+          <i class="fas fa-info-circle mr-2" />
           Informacion de la Voz
         </h3>
         <div class="info-grid">
@@ -36,11 +39,17 @@
         </div>
 
         <!-- Original Preview -->
-        <div v-if="voz.vel_preview_url" class="preview-section">
+        <div
+v-if="voz.vel_preview_url"
+class="preview-section"
+>
           <span class="info-label">Preview Original</span>
           <div class="audio-player">
-            <button class="btn-play" @click="playOriginalPreview">
-              <i :class="playingOriginal ? 'fas fa-stop' : 'fas fa-play'"></i>
+            <button
+class="btn-play"
+@click="playOriginalPreview"
+>
+              <i :class="playingOriginal ? 'fas fa-stop' : 'fas fa-play'" />
             </button>
             <span class="text-sm text-gray-400">Reproducir preview de ElevenLabs</span>
           </div>
@@ -51,34 +60,51 @@
       <div class="variations-section">
         <div class="section-header">
           <h3 class="section-title">
-            <i class="fas fa-sliders-h mr-2"></i>
+            <i class="fas fa-sliders-h mr-2" />
             Variaciones ({{ variaciones.length }})
           </h3>
-          <base-button variant="primary" size="sm" @click="openVariacionForm(null)">
-            <i class="fas fa-plus mr-1"></i>
+          <base-button
+variant="primary"
+size="sm"
+@click="openVariacionForm(null)"
+>
+            <i class="fas fa-plus mr-1" />
             Nueva Variacion
           </base-button>
         </div>
 
-        <div v-if="loadingVariaciones" class="loading-state">
-          <i class="fas fa-spinner fa-spin text-xl"></i>
+        <div
+v-if="loadingVariaciones"
+class="loading-state"
+>
+          <i class="fas fa-spinner fa-spin text-xl" />
           <span>Cargando variaciones...</span>
         </div>
 
-        <div v-else-if="variaciones.length === 0" class="empty-state">
-          <i class="fas fa-sliders-h text-2xl text-gray-500"></i>
+        <div
+v-else-if="variaciones.length === 0"
+class="empty-state"
+>
+          <i class="fas fa-sliders-h text-2xl text-gray-500" />
           <p>No hay variaciones creadas</p>
-          <p class="text-sm">Crea una variacion para personalizar los parametros de la voz</p>
+          <p class="text-sm">
+Crea una variacion para personalizar los parametros de la voz
+</p>
         </div>
 
-        <div v-else class="variations-list">
+        <div
+v-else
+class="variations-list"
+>
           <div
             v-for="variacion in variaciones"
             :key="variacion.vva_codigo"
             class="variation-card"
           >
             <div class="variation-header">
-              <h4 class="variation-name">{{ variacion.vva_nombre }}</h4>
+              <h4 class="variation-name">
+{{ variacion.vva_nombre }}
+</h4>
               <div class="variation-actions">
                 <button
                   v-if="variacion.vva_preview_path"
@@ -86,21 +112,21 @@
                   title="Reproducir preview"
                   @click="playVariacionPreview(variacion)"
                 >
-                  <i :class="playingVariacionId === variacion.vva_codigo ? 'fas fa-stop' : 'fas fa-play'"></i>
+                  <i :class="playingVariacionId === variacion.vva_codigo ? 'fas fa-stop' : 'fas fa-play'" />
                 </button>
                 <button
                   class="btn-action btn-edit"
                   title="Editar variacion"
                   @click="openVariacionForm(variacion)"
                 >
-                  <i class="fas fa-edit"></i>
+                  <i class="fas fa-edit" />
                 </button>
                 <button
                   class="btn-action btn-delete"
                   title="Eliminar variacion"
                   @click="deleteVariacion(variacion)"
                 >
-                  <i class="fas fa-trash"></i>
+                  <i class="fas fa-trash" />
                 </button>
               </div>
             </div>
@@ -109,21 +135,30 @@
               <div class="setting-item">
                 <span class="setting-label">Stability</span>
                 <div class="setting-bar">
-                  <div class="bar-fill" :style="{ width: `${variacion.vva_stability * 100}%` }"></div>
+                  <div
+class="bar-fill"
+:style="{ width: `${variacion.vva_stability * 100}%` }"
+/>
                 </div>
                 <span class="setting-value">{{ (variacion.vva_stability * 100).toFixed(0) }}%</span>
               </div>
               <div class="setting-item">
                 <span class="setting-label">Similarity</span>
                 <div class="setting-bar">
-                  <div class="bar-fill" :style="{ width: `${variacion.vva_similarity * 100}%` }"></div>
+                  <div
+class="bar-fill"
+:style="{ width: `${variacion.vva_similarity * 100}%` }"
+/>
                 </div>
                 <span class="setting-value">{{ (variacion.vva_similarity * 100).toFixed(0) }}%</span>
               </div>
               <div class="setting-item">
                 <span class="setting-label">Style</span>
                 <div class="setting-bar">
-                  <div class="bar-fill" :style="{ width: `${variacion.vva_style * 100}%` }"></div>
+                  <div
+class="bar-fill"
+:style="{ width: `${variacion.vva_style * 100}%` }"
+/>
                 </div>
                 <span class="setting-value">{{ (variacion.vva_style * 100).toFixed(0) }}%</span>
               </div>
@@ -131,17 +166,20 @@
 
             <div class="variation-meta">
               <span class="meta-item">
-                <i class="fas fa-microchip mr-1"></i>
+                <i class="fas fa-microchip mr-1" />
                 {{ getModelName(variacion.vva_model_id) }}
               </span>
               <span class="meta-item">
-                <i class="fas fa-volume-up mr-1"></i>
+                <i class="fas fa-volume-up mr-1" />
                 Speaker Boost: {{ variacion.vva_speaker_boost ? 'Si' : 'No' }}
               </span>
             </div>
 
-            <div v-if="variacion.vva_preview_texto" class="variation-preview-text">
-              <i class="fas fa-quote-left text-gray-600 mr-1"></i>
+            <div
+v-if="variacion.vva_preview_texto"
+class="variation-preview-text"
+>
+              <i class="fas fa-quote-left text-gray-600 mr-1" />
               <span class="text-xs text-gray-500 italic">{{ variacion.vva_preview_texto }}</span>
             </div>
           </div>
@@ -158,7 +196,10 @@
     />
 
     <!-- Audio Player -->
-    <audio ref="audioPlayer" @ended="stopAllPlayback"></audio>
+    <audio
+ref="audioPlayer"
+@ended="stopAllPlayback"
+/>
   </Modal>
 </template>
 

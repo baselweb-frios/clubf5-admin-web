@@ -53,7 +53,10 @@ v-else
 class="page-content"
 >
       <!-- Sección: Horarios Disponibles -->
-      <div class="card mb-6" data-tour="config-horarios">
+      <div
+class="card mb-6"
+data-tour="config-horarios"
+>
         <div class="border-b border-dark-border pb-4 mb-4 flex-between">
           <div class="flex items-center gap-3">
             <i class="fas fa-clock text-primary-400 text-lg" />
@@ -123,7 +126,10 @@ class="btn btn-primary"
       </div>
 
       <!-- Sección: Días Disponibles -->
-      <div class="card mb-6" data-tour="config-dias">
+      <div
+class="card mb-6"
+data-tour="config-dias"
+>
         <div class="border-b border-dark-border pb-4 mb-4 flex-between">
           <div class="flex items-center gap-3">
             <i class="fas fa-calendar text-primary-400 text-lg" />
@@ -189,7 +195,10 @@ class="btn btn-primary"
       </div>
 
       <!-- Sección: Tipo de Empresa -->
-      <div class="card mb-6" data-tour="config-empresa">
+      <div
+class="card mb-6"
+data-tour="config-empresa"
+>
         <div class="border-b border-dark-border pb-4 mb-4 flex-between">
           <div class="flex items-center gap-3">
             <i class="fas fa-building text-primary-400 text-lg" />
@@ -497,7 +506,12 @@ class="fas"
     </transition>
 
     <!-- Tour Button -->
-    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
+    <TourButton
+v-if="hasTour() && !isTourViewed()"
+variant="floating"
+size="md"
+:pulse="true"
+/>
   </div>
 </template>
 

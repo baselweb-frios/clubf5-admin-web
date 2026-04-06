@@ -1,5 +1,8 @@
 <template>
-  <base-card title="Estadisticas" subtitle="Numeros destacados de la plataforma">
+  <base-card
+title="Estadisticas"
+subtitle="Numeros destacados de la plataforma"
+>
     <template #actions>
       <base-button
         variant="ghost"

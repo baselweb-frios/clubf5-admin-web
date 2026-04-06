@@ -41,13 +41,11 @@ class="btn btn-md btn-success"
 <script>
 import SpotServices from '../../services/SpotServices'
 import LoadingOverlay from '@/components/ui/LoadingOverlay.vue'
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 
 export default {
   name: 'FrmNuevaProgramacion',
   components: {
-    LoadingOverlay,
-    LoadingSpinner
+    LoadingOverlay
   },
   layout: 'default',
 
@@ -89,7 +87,7 @@ export default {
       if (!err.response) {
         this.notificacion.mensaje = 'No se ha recibido respuesta del servidor. Int&eacute;ntelo nuevamente m&aacute;s tarde.'
       } else {
-        if (err.response && err.response.data.hasOwnProperty('errorMessage')) {
+        if (err.response && Object.prototype.hasOwnProperty.call(err.response.data, 'errorMessage')) {
           this.notificacion.mensaje = err.response.data.errorMessage
         } else {
           console.log(err.response.data.split('at'))
@@ -97,14 +95,14 @@ export default {
             case 502:
               this.notificacion.mensaje = 'El servidor no se encuentra disponible.'
               break
-            default:
+            default: {
               /* si obtengo un system.exception, hago un split para poder obtener la primer parte
                 *luego, de la primer parte, con un substr para extraer lo que sigue de
                 *"system.exception" (17 caracteres)
                 */
-              let error = []
-              error = (err.response.data.split('at'))
+              const error = err.response.data.split('at')
               this.notificacion.mensaje = error[0].substr(18)
+            }
           }
         }
       }

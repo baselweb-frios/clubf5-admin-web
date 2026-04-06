@@ -1,5 +1,8 @@
 <template>
-  <base-card title="Footer" subtitle="Configuracion del pie de pagina">
+  <base-card
+title="Footer"
+subtitle="Configuracion del pie de pagina"
+>
     <template #actions>
       <base-button
         variant="ghost"

@@ -1,5 +1,8 @@
 <template>
-  <base-card title="Plataformas" subtitle="Secciones de plataformas disponibles">
+  <base-card
+title="Plataformas"
+subtitle="Secciones de plataformas disponibles"
+>
     <template #actions>
       <base-button
         variant="ghost"

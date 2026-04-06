@@ -1,5 +1,8 @@
 <template>
-  <base-card title="Hero Section" subtitle="Configuracion de la seccion principal">
+  <base-card
+title="Hero Section"
+subtitle="Configuracion de la seccion principal"
+>
     <template #actions>
       <base-button
         variant="ghost"
@@ -46,7 +49,9 @@
       <!-- CTA Buttons -->
       <div class="cta-section">
         <div class="cta-header">
-          <h4 class="cta-title">Botones de Accion (CTA)</h4>
+          <h4 class="cta-title">
+Botones de Accion (CTA)
+</h4>
           <base-button
             variant="outline"
             size="sm"
@@ -69,7 +74,10 @@
                   class="btn-preview"
                   :class="button.variant === 'primary' ? 'btn-primary' : 'btn-outline'"
                 >
-                  <i v-if="button.icon" :class="button.icon" />
+                  <i
+v-if="button.icon"
+:class="button.icon"
+/>
                   {{ button.text || 'Boton' }}
                 </span>
               </div>
@@ -132,7 +140,10 @@
           </div>
         </div>
 
-        <p v-if="localData.ctaButtons.length === 0" class="empty-state">
+        <p
+v-if="localData.ctaButtons.length === 0"
+class="empty-state"
+>
           No hay botones configurados. Agrega al menos uno.
         </p>
       </div>

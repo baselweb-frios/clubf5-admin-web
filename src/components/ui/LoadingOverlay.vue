@@ -1,5 +1,8 @@
 <template>
-  <teleport v-if="fullscreen" to="body">
+  <teleport
+v-if="fullscreen"
+to="body"
+>
     <transition name="fade">
       <div
         v-if="show"
@@ -19,7 +22,10 @@
       </div>
     </transition>
   </teleport>
-  <div v-else class="overlay-container">
+  <div
+v-else
+class="overlay-container"
+>
     <transition name="fade">
       <div
         v-if="show"

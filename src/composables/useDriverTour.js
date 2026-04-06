@@ -161,7 +161,7 @@ export function useDriverTour(options = {}) {
     totalSteps.value = validSteps.length
 
     onStart?.()
-    isActive.value = true
+    isActive.value = false
     driverObj.setSteps(validSteps)
     driverObj.drive()
 

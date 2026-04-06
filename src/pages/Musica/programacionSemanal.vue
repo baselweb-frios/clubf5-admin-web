@@ -1,7 +1,10 @@
 <template>
   <div class="page-wrapper">
     <!-- Header Section -->
-    <div class="page-header" data-tour="music-header">
+    <div
+class="page-header"
+data-tour="music-header"
+>
       <div class="flex-between">
         <button
  class="btn btn-secondary"
@@ -35,8 +38,18 @@
  data-tour="music-add"
  @click="abrirModalNuevaProgramacion"
  >
-             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+             <svg
+class="w-5 h-5 mr-2"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+               <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+/>
              </svg>
              Nueva Programacion
            </button>
@@ -66,20 +79,45 @@
         <div class="card">
           <div class="flex-between mb-4">
             <div class="flex flex-col gap-2">
-              <h2 class="text-xl font-semibold">Programacion Semanal</h2>
+              <h2 class="text-xl font-semibold">
+Programacion Semanal
+</h2>
               <span class="badge badge-info">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+class="w-4 h-4 mr-1"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+/>
                 </svg>
                 {{ horarioCliente.horaDesde }} - {{ horarioCliente.horaHasta }}
               </span>
             </div>
-            <div class="flex gap-4 items-end" data-tour="music-filter">
+            <div
+class="flex gap-4 items-end"
+data-tour="music-filter"
+>
               <div class="flex flex-col gap-2">
                 <label class="label">Filtrar por dia:</label>
-                <select v-model="selectedDayFilter" class="select" :disabled="modoSeleccion">
-                  <option :value="null">Todos los dias</option>
-                  <option v-for="day in daysOfWeek" :key="day.value" :value="day.value">
+                <select
+v-model="selectedDayFilter"
+class="select"
+:disabled="modoSeleccion"
+>
+                  <option :value="null">
+Todos los dias
+</option>
+                  <option
+v-for="day in daysOfWeek"
+:key="day.value"
+:value="day.value"
+>
                     {{ day.label }}
                   </option>
                 </select>
@@ -90,8 +128,18 @@
                 class="btn btn-secondary"
                 @click="toggleModoSeleccion"
               >
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                <svg
+class="w-5 h-5 mr-2"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+/>
                 </svg>
                 Seleccionar
               </button>
@@ -128,19 +176,35 @@
                 :disabled="programacionesSeleccionadas.length === 0"
                 @click="abrirModalEliminarMultiple"
               >
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <svg
+class="w-5 h-5 mr-2"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+/>
                 </svg>
                 Eliminar ({{ programacionesSeleccionadas.length }})
               </button>
-              <button class="btn btn-secondary" @click="cancelarModoSeleccion">
+              <button
+class="btn btn-secondary"
+@click="cancelarModoSeleccion"
+>
                 Cancelar
               </button>
             </div>
           </div>
 
           <!-- Vista Acordeón por Día -->
-          <div class="space-y-3" data-tour="music-schedule">
+          <div
+class="space-y-3"
+data-tour="music-schedule"
+>
             <div
               v-for="day in filteredDays"
               :key="day.value"
@@ -159,7 +223,12 @@
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M9 5l7 7-7 7"
+/>
                   </svg>
                   <span class="font-semibold text-lg">{{ day.label.toUpperCase() }}</span>
                   <span class="badge badge-primary">
@@ -169,9 +238,15 @@
               </div>
 
               <!-- Contenido del acordeón -->
-              <div v-show="isDiaExpandido(day.value)" class="p-4 bg-dark-primary">
+              <div
+v-show="isDiaExpandido(day.value)"
+class="p-4 bg-dark-primary"
+>
                 <!-- Lista de programaciones -->
-                <div v-if="programacionesPorDia(day.value).length > 0" class="space-y-2">
+                <div
+v-if="programacionesPorDia(day.value).length > 0"
+class="space-y-2"
+>
                   <div
                     v-for="prog in programacionesPorDia(day.value)"
                     :key="prog.cod"
@@ -181,7 +256,10 @@
                   >
                     <div class="flex items-center gap-4">
                       <!-- Checkbox para modo seleccion -->
-                      <div v-if="modoSeleccion" class="flex items-center">
+                      <div
+v-if="modoSeleccion"
+class="flex items-center"
+>
                         <input
                           type="checkbox"
                           :checked="isProgramacionSeleccionada(prog)"
@@ -195,14 +273,27 @@
                       </div>
                       <span class="font-medium">{{ prog.radioNombre }}</span>
                     </div>
-                    <div v-if="!modoSeleccion" class="flex gap-2">
+                    <div
+v-if="!modoSeleccion"
+class="flex gap-2"
+>
                       <button
                         class="btn btn-secondary btn-sm"
                         title="Editar"
                         @click.stop="editarProgramacion(prog)"
                       >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                          <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+/>
                         </svg>
                         Editar
                       </button>
@@ -211,8 +302,18 @@
                         title="Eliminar"
                         @click.stop="eliminarProgramacion(prog)"
                       >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                          <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+/>
                         </svg>
                         Eliminar
                       </button>
@@ -221,12 +322,27 @@
                 </div>
 
                 <!-- Estado vacío -->
-                <div v-else class="text-center py-8 text-text-secondary">
-                  <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                <div
+v-else
+class="text-center py-8 text-text-secondary"
+>
+                  <svg
+class="w-12 h-12 mx-auto mb-4 opacity-50"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                    <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+/>
                   </svg>
                   <p>Sin programaciones para este dia</p>
-                  <p class="text-sm mt-2">Usa el boton "Nueva Programacion" para agregar</p>
+                  <p class="text-sm mt-2">
+Usa el boton "Nueva Programacion" para agregar
+</p>
                 </div>
               </div>
             </div>
@@ -236,15 +352,32 @@
     </div>
 
     <!-- Modal de Nueva Programacion Multiple -->
-    <Modal v-model="showNuevaProgramacionModal" size="lg" :closable="true" title="Nueva Programacion">
+    <Modal
+v-model="showNuevaProgramacionModal"
+size="lg"
+:closable="true"
+title="Nueva Programacion"
+>
       <template #default>
         <div class="p-6 space-y-6">
           <!-- Selector de Radio -->
           <div class="form-group">
             <label class="label">Radio / Carpeta de musica</label>
-            <select v-model="formProgramacion.codRadio" class="select">
-              <option :value="null" disabled>Seleccionar radio...</option>
-              <option v-for="r in radios" :key="'modal-radio-'+r.codRadio" :value="r.codRadio">
+            <select
+v-model="formProgramacion.codRadio"
+class="select"
+>
+              <option
+:value="null"
+disabled
+>
+Seleccionar radio...
+</option>
+              <option
+v-for="r in radios"
+:key="'modal-radio-'+r.codRadio"
+:value="r.codRadio"
+>
                 {{ r.nombre }}
               </option>
             </select>
@@ -263,9 +396,9 @@
                   : 'border-dark-border hover:border-primary-400'"
               >
                 <input
+                  v-model="formProgramacion.diasSeleccionados"
                   type="checkbox"
                   :value="day.value"
-                  v-model="formProgramacion.diasSeleccionados"
                   class="accent-primary-500"
                 >
                 <span>{{ day.number }}</span>
@@ -273,16 +406,32 @@
             </div>
             <!-- Botones de seleccion rapida -->
             <div class="flex flex-wrap gap-2 mt-3">
-              <button type="button" class="btn btn-secondary btn-sm" @click="seleccionarTodosDias">
+              <button
+type="button"
+class="btn btn-secondary btn-sm"
+@click="seleccionarTodosDias"
+>
                 Todos
               </button>
-              <button type="button" class="btn btn-secondary btn-sm" @click="seleccionarLunesViernes">
+              <button
+type="button"
+class="btn btn-secondary btn-sm"
+@click="seleccionarLunesViernes"
+>
                 Lun-Vie
               </button>
-              <button type="button" class="btn btn-secondary btn-sm" @click="seleccionarFinDeSemana">
+              <button
+type="button"
+class="btn btn-secondary btn-sm"
+@click="seleccionarFinDeSemana"
+>
                 Fin de semana
               </button>
-              <button type="button" class="btn btn-secondary btn-sm" @click="limpiarSeleccionDias">
+              <button
+type="button"
+class="btn btn-secondary btn-sm"
+@click="limpiarSeleccionDias"
+>
                 Limpiar
               </button>
             </div>
@@ -323,17 +472,38 @@
           </div>
 
           <!-- Alerta de Conflictos -->
-          <div v-if="conflictos.length > 0" class="alert alert-warning">
+          <div
+v-if="conflictos.length > 0"
+class="alert alert-warning"
+>
             <div class="flex items-start gap-3">
-              <svg class="w-6 h-6 flex-shrink-0 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <svg
+class="w-6 h-6 flex-shrink-0 text-yellow-500"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+/>
               </svg>
               <div>
-                <h4 class="font-semibold text-yellow-500">CONFLICTOS DETECTADOS</h4>
+                <h4 class="font-semibold text-yellow-500">
+CONFLICTOS DETECTADOS
+</h4>
                 <ul class="mt-2 space-y-1 text-sm">
-                  <li v-for="(conflicto, idx) in conflictos" :key="'conflicto-'+idx">
+                  <li
+v-for="(conflicto, idx) in conflictos"
+:key="'conflicto-'+idx"
+>
                     <strong>{{ conflicto.dia }}:</strong>
-                    <span v-for="(prog, pIdx) in conflicto.programaciones" :key="'prog-conflict-'+pIdx">
+                    <span
+v-for="(prog, pIdx) in conflicto.programaciones"
+:key="'prog-conflict-'+pIdx"
+>
                       {{ prog.radioNombre }} ({{ prog.horaInicio }}-{{ prog.horaFin }}){{ pIdx < conflicto.programaciones.length - 1 ? ', ' : '' }}
                     </span>
                     se superpone
@@ -344,7 +514,10 @@
           </div>
 
           <!-- Resumen -->
-          <div v-if="formProgramacion.diasSeleccionados.length > 0" class="p-4 bg-dark-secondary rounded-lg">
+          <div
+v-if="formProgramacion.diasSeleccionados.length > 0"
+class="p-4 bg-dark-secondary rounded-lg"
+>
             <p class="text-sm text-text-secondary">
               Se crearan <strong class="text-primary-500">{{ formProgramacion.diasSeleccionados.length }}</strong> programacion(es)
               para los dias seleccionados.
@@ -354,7 +527,10 @@
 
         <!-- Footer del modal -->
         <div class="flex justify-end gap-3 p-6 border-t border-dark-border">
-          <button class="btn btn-secondary" @click="cerrarModalNuevaProgramacion">
+          <button
+class="btn btn-secondary"
+@click="cerrarModalNuevaProgramacion"
+>
             Cancelar
           </button>
           <button
@@ -362,9 +538,25 @@
             :disabled="isLoading || !formProgramacion.codRadio || formProgramacion.diasSeleccionados.length === 0"
             @click="guardarProgramacionMultiple"
           >
-            <svg v-if="isLoading" class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+v-if="isLoading"
+class="animate-spin w-4 h-4 mr-2"
+fill="none"
+viewBox="0 0 24 24"
+>
+              <circle
+class="opacity-25"
+cx="12"
+cy="12"
+r="10"
+stroke="currentColor"
+stroke-width="4"
+/>
+              <path
+class="opacity-75"
+fill="currentColor"
+d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+/>
             </svg>
             Guardar Programacion
           </button>
@@ -373,18 +565,35 @@
     </Modal>
 
     <!-- Modal de Confirmación Eliminación Múltiple -->
-    <Modal v-model="showDeleteMultipleModal" title="Confirmar eliminacion multiple">
+    <Modal
+v-model="showDeleteMultipleModal"
+title="Confirmar eliminacion multiple"
+>
       <template #default>
         <div class="p-6">
           <div class="flex items-start gap-4">
             <div class="flex-shrink-0 w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
-              <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <svg
+class="w-6 h-6 text-red-500"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+/>
               </svg>
             </div>
             <div>
-              <p class="font-semibold text-lg">¿Eliminar {{ programacionesSeleccionadas.length }} programacion(es)?</p>
-              <p class="text-text-secondary mt-2">Esta accion no se puede deshacer.</p>
+              <p class="font-semibold text-lg">
+¿Eliminar {{ programacionesSeleccionadas.length }} programacion(es)?
+</p>
+              <p class="text-text-secondary mt-2">
+Esta accion no se puede deshacer.
+</p>
             </div>
           </div>
 
@@ -405,7 +614,10 @@
           </div>
         </div>
         <div class="flex justify-end gap-3 p-6 border-t border-dark-border">
-          <button class="btn btn-secondary" @click="cancelarEliminarMultiple">
+          <button
+class="btn btn-secondary"
+@click="cancelarEliminarMultiple"
+>
             Cancelar
           </button>
           <button
@@ -413,9 +625,25 @@
             :disabled="isLoading"
             @click="confirmarEliminarMultiple"
           >
-            <svg v-if="isLoading" class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+v-if="isLoading"
+class="animate-spin w-4 h-4 mr-2"
+fill="none"
+viewBox="0 0 24 24"
+>
+              <circle
+class="opacity-25"
+cx="12"
+cy="12"
+r="10"
+stroke="currentColor"
+stroke-width="4"
+/>
+              <path
+class="opacity-75"
+fill="currentColor"
+d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+/>
             </svg>
             Eliminar {{ programacionesSeleccionadas.length }} programacion(es)
           </button>
@@ -424,7 +652,10 @@
     </Modal>
 
     <!-- Modal de Confirmación Eliminar -->
-    <Modal v-model="showDeleteModal" title="Confirmar eliminacion">
+    <Modal
+v-model="showDeleteModal"
+title="Confirmar eliminacion"
+>
       <template #default>
         <div class="p-6">
           <p>¿Está seguro que desea eliminar la programación de <strong>{{ selectedProgramacion?.radioNombre }}</strong>?</p>
@@ -450,11 +681,15 @@
     </Modal>
 
     <!-- Modal de Edición de Horario -->
-    <Modal  v-model="showEditModal" size="lg" :colosable="true" title="Editar Programación">
+    <Modal
+v-model="showEditModal"
+size="lg"
+:colosable="true"
+title="Editar Programación"
+>
       <template #default> 
         <div>
-        
-          <div class="space-y-4">
+<div class="space-y-4">
             <div class="mb-4">
               <h4 class="text-lg font-medium">
 {{ editForm.radioNombre }}
@@ -557,7 +792,12 @@ for="edit-hora-fin"
     </Modal>
 
     <!-- Tour Button -->
-    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
+    <TourButton
+v-if="hasTour() && !isTourViewed()"
+variant="floating"
+size="md"
+:pulse="true"
+/>
   </div>
 </template>
 

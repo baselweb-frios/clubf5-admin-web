@@ -1,15 +1,24 @@
 <template>
   <div class="icon-picker">
-    <div class="icon-picker-trigger" @click="togglePicker">
+    <div
+class="icon-picker-trigger"
+@click="togglePicker"
+>
       <div class="selected-icon">
         <i :class="modelValue || 'fas fa-icons'" />
       </div>
       <span class="trigger-text">{{ modelValue || 'Seleccionar icono' }}</span>
-      <i class="fas fa-chevron-down trigger-arrow" :class="{ 'rotate-180': isOpen }" />
+      <i
+class="fas fa-chevron-down trigger-arrow"
+:class="{ 'rotate-180': isOpen }"
+/>
     </div>
 
     <transition name="fade">
-      <div v-if="isOpen" class="icon-picker-dropdown">
+      <div
+v-if="isOpen"
+class="icon-picker-dropdown"
+>
         <div class="dropdown-header">
           <base-input
             v-model="searchQuery"
@@ -42,14 +51,21 @@
           >
             <i :class="icon" />
           </button>
-          <div v-if="filteredIcons.length === 0" class="no-results">
+          <div
+v-if="filteredIcons.length === 0"
+class="no-results"
+>
             No se encontraron iconos
           </div>
         </div>
       </div>
     </transition>
 
-    <div v-if="isOpen" class="backdrop" @click="closePicker" />
+    <div
+v-if="isOpen"
+class="backdrop"
+@click="closePicker"
+/>
   </div>
 </template>
 

@@ -36,7 +36,12 @@
     <loading-overlay v-if="processing" />
 
     <!-- Tour Button -->
-    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
+    <TourButton
+v-if="hasTour() && !isTourViewed()"
+variant="floating"
+size="md"
+:pulse="true"
+/>
   </div>
 </template>
 
