@@ -11,3 +11,4 @@ npm-debug.log*
 node_modules/
 src/locales/en.json
 src/locales/es.json
+dev-dist
