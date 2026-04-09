@@ -280,7 +280,7 @@ d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, h } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ProfileModal from '@/components/ProfileModal.vue'
@@ -295,6 +295,21 @@ const sidebarOpen = ref(true)
 const showUserMenu = ref(false)
 const showProfileModal = ref(false)
 const isMobile = ref(false)
+
+// Observar cambios en autenticación para desconectar SignalR
+watch(
+  () => authStore.isAuthenticated,
+  async (isAuthenticated) => {
+    if (!isAuthenticated && signalR.isConnected.value) {
+      try {
+        await signalR.disconnect()
+        console.log('[SignalR] Desconectado por cambio de autenticación')
+      } catch (error) {
+        console.warn('[SignalR] Error al desconectar por auth:', error)
+      }
+    }
+  }
+)
 
 // Icon components
 const icons = {

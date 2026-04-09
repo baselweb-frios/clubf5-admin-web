@@ -229,20 +229,25 @@ export function useStoreSync() {
 
 /**
  * Hook to automatically initialize and cleanup SignalR sync
+ * 
+ * NOTA: Este hook solo limpia los listeners en onUnmounted, pero NO
+ * desconecta SignalR porque es un singleton compartido. La desconexión
+ * se maneja en DashboardLayout cuando el usuario hace logout.
  */
 export function useAutoStoreSync() {
-  const { initializeSync, disconnect } = useStoreSync()
+  const { initializeSync, cleanupEventListeners } = useStoreSync()
 
   onMounted(async () => {
     await initializeSync()
   })
 
-  onUnmounted(async () => {
-    await disconnect()
+  onUnmounted(() => {
+    // Solo limpiar listeners, NO desconectar SignalR (es singleton compartido)
+    cleanupEventListeners()
   })
 
   return {
     initializeSync,
-    disconnect
+    cleanupEventListeners
   }
 }

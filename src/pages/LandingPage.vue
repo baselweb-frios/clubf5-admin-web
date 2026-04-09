@@ -79,15 +79,6 @@ href="#"
                 <i class="fas fa-sign-in-alt" /> Login
               </a>
             </li>
-            <li v-if="canInstallPwa">
-              <a
-href="#"
-class="nav-install-link"
-@click.prevent="installPwa"
->
-                <i class="fas fa-download" /> Instalar App
-              </a>
-            </li>
           </ul>
           <div
 class="burger"
@@ -146,6 +137,14 @@ class="btn btn-outline"
                 Ver Caracteristicas
               </a>
             </template>
+            <button
+v-if="canInstallPwa"
+class="btn btn-install"
+@click="installPwa"
+>
+              <i class="fas fa-download" />
+              Instalar App
+            </button>
           </div>
         </div>
       </div>
@@ -884,22 +883,6 @@ onUnmounted(() => {
   background: rgba(1, 137, 221, 0.3);
 }
 
-.nav-install-link {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  color: #4ade80 !important;
-  transition: all 0.25s ease;
-}
-
-.nav-install-link:hover {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(34, 197, 94, 0.2));
-  color: #22c55e !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
-}
-
 .burger {
   display: none;
   flex-direction: column;
@@ -996,6 +979,28 @@ onUnmounted(() => {
 .btn-outline:hover {
   background: #ffffff;
   color: #000;
+}
+
+.btn-install {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+  animation: pulse-install 2s ease-in-out infinite;
+}
+
+.btn-install:hover {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(34, 197, 94, 0.5);
+}
+
+@keyframes pulse-install {
+  0%, 100% {
+    box-shadow: 0 8px 24px rgba(34, 197, 94, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(34, 197, 94, 0.5);
+  }
 }
 
 /* === SECTION STYLES === */

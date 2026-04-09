@@ -10,7 +10,7 @@ export default defineConfig({
     mkcert(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.svg'],
+      includeAssets: ['favicon.ico', 'ico-128.png', 'ico-256.png'],
       manifest: {
         name: 'ClubF5 Admin',
         short_name: 'ClubF5',
@@ -18,39 +18,60 @@ export default defineConfig({
         theme_color: '#1a1a2e',
         background_color: '#1a1a2e',
         display: 'standalone',
+        display_override: ['standalone', 'minimal-ui'],
         orientation: 'portrait',
         scope: '/',
         start_url: '/',
+        prefer_related_applications: false,
+        categories: ['business', 'productivity'],
+        shortcuts: [
+          {
+            name: 'Dashboard',
+            short_name: 'Dashboard',
+            description: 'Ir al panel principal',
+            url: '/dashboard',
+            icons: [{ src: 'ico-128.png', sizes: '128x128', type: 'image/png' }]
+          }
+        ],
         icons: [
           {
-            src: 'pwa-192x192.svg',
-            sizes: '192x192',
-            type: 'image/svg+xml'
+            src: 'ico-64.png',
+            sizes: '64x64',
+            type: 'image/png'
           },
           {
-            src: 'pwa-512x512.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml'
+            src: 'ico-128.png',
+            sizes: '128x128',
+            type: 'image/png'
           },
           {
-            src: 'pwa-512x512.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml',
+            src: 'ico-256.png',
+            sizes: '256x256',
+            type: 'image/png'
+          },
+          {
+            src: 'ico-256.png',
+            sizes: '256x256',
+            type: 'image/png',
             purpose: 'any maskable'
           }
         ]
       },
       workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        navigateFallback: 'index.html',
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
+            handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'google-fonts-cache',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
               },
               cacheableResponse: {
                 statuses: [0, 200]
@@ -64,14 +85,21 @@ export default defineConfig({
               cacheName: 'gstatic-fonts-cache',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
               },
               cacheableResponse: {
                 statuses: [0, 200]
               }
             }
+          },
+          {
+            urlPattern: /\/api\/.*/i,
+            handler: 'NetworkOnly'
           }
         ]
+      },
+      devOptions: {
+        enabled: true
       }
     })
   ],
