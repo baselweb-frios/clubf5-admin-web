@@ -10,12 +10,91 @@ import { useSignalRAuth } from './useSignalRAuth'
 export function useConnectionMonitor() {
   const connectedBranches = ref(new Map()) // userId -> branchInfo
   const lastHeartbeats = ref(new Map()) // userId -> timestamp
+  const reconnectionAttempts = ref(new Map()) // userId -> { attempts: number, lastAttempt: timestamp }
+  const branchLogs = ref(new Map()) // userId -> { messages: Array, lastUpdate: timestamp }
+  const globalLogs = ref([]) // Logs globales del monitor
   const heartbeatTimeout = 45000 // 45 segundos (30s heartbeat + 15s margen)
+  const maxReconnectionAttempts = 5 // Intentos máximos antes de marcar como desconectado
+  const maxLogsPerBranch = 10 // Máximo de logs por sucursal
 
   let heartbeatCheckInterval = null
 
   // Instancia de SignalR
   const signalR = useSignalRAuth()
+
+  /**
+   * Agrega un mensaje de log para una sucursal específica
+   * @param {string} userId - ID del usuario
+   * @param {string} message - Mensaje a registrar
+   * @param {string} [type='info'] - Tipo de log: 'info', 'success', 'warning', 'error'
+   */
+  const addBranchLog = (userId, message, type = 'info') => {
+    if (!userId) return
+    
+    const now = new Date()
+    const logEntry = {
+      message,
+      type,
+      timestamp: now.toISOString(),
+      time: now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    }
+
+    if (!branchLogs.value.has(userId)) {
+      branchLogs.value.set(userId, { messages: [], lastUpdate: now.toISOString() })
+    }
+
+    const userLogs = branchLogs.value.get(userId)
+    userLogs.messages.unshift(logEntry)
+    
+    // Mantener solo los últimos N logs
+    if (userLogs.messages.length > maxLogsPerBranch) {
+      userLogs.messages = userLogs.messages.slice(0, maxLogsPerBranch)
+    }
+    
+    userLogs.lastUpdate = now.toISOString()
+    branchLogs.value.set(userId, userLogs)
+    
+    console.log(`[ConnectionMonitor] ${message}`)
+  }
+
+  /**
+   * Agrega un log global del monitor
+   * @param {string} message - Mensaje a registrar
+   * @param {string} [type='info'] - Tipo de log
+   */
+  const addGlobalLog = (message, type = 'info') => {
+    const now = new Date()
+    globalLogs.value.unshift({
+      message,
+      type,
+      timestamp: now.toISOString(),
+      time: now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    })
+    
+    // Mantener solo los últimos 50 logs globales
+    if (globalLogs.value.length > 50) {
+      globalLogs.value = globalLogs.value.slice(0, 50)
+    }
+    
+    console.log(`[ConnectionMonitor] ${message}`)
+  }
+
+  /**
+   * Obtiene los logs de una sucursal específica
+   * @param {string} userId - ID del usuario
+   * @returns {Object|null}
+   */
+  const getBranchLogs = (userId) => {
+    return branchLogs.value.get(userId) || null
+  }
+
+  /**
+   * Limpia los logs de una sucursal
+   * @param {string} userId - ID del usuario
+   */
+  const clearBranchLogs = (userId) => {
+    branchLogs.value.delete(userId)
+  }
 
   /**
    * Verifica si una sucursal esta conectada por userId
@@ -81,7 +160,7 @@ export function useConnectionMonitor() {
     const sucursalId = data.sucursalId || data.SucursalId
 
     if (!userId) {
-      console.warn('[ConnectionMonitor] No se pudo registrar reproductor: userId faltante', data)
+      addGlobalLog(`No se pudo registrar reproductor: userId faltante`, 'warning')
       return
     }
 
@@ -110,14 +189,14 @@ export function useConnectionMonitor() {
       try {
         const groupName = `user_${username}`
         await signalR.joinGroup(groupName)
-        console.log(`[ConnectionMonitor] Unido al grupo: ${groupName}`)
+        addBranchLog(userId, `Unido al grupo: ${groupName}`, 'info')
       } catch (error) {
-        console.warn(`[ConnectionMonitor] No se pudo unir al grupo user_${username}:`, error)
+        addBranchLog(userId, `Error al unir al grupo user_${username}`, 'warning')
       }
     }
 
-    console.log(`[ConnectionMonitor] Reproductor registrado: ${branchName} (${userId})`)
-    console.log(`[ConnectionMonitor] Total reproductores: ${connectedBranches.value.size}`)
+    addBranchLog(userId, `Reproductor conectado`, 'success')
+    addGlobalLog(`Reproductor registrado: ${branchName} (${userId})`, 'success')
   }
 
   /**
@@ -134,17 +213,19 @@ export function useConnectionMonitor() {
     if (userId && connectedBranches.value.has(userId)) {
       const info = connectedBranches.value.get(userId)
       usernameToLeave = info.username || username
-      console.log(`[ConnectionMonitor] Sucursal desconectada: ${info.branchName} (${userId})`)
+      addBranchLog(userId, `Sucursal desconectada`, 'error')
       connectedBranches.value.delete(userId)
       lastHeartbeats.value.delete(userId)
+      reconnectionAttempts.value.delete(userId)
     } else if (username) {
       // Buscar por username si no tenemos userId
       for (const [uId, info] of connectedBranches.value) {
         if (info.username === username || info.branchName === username) {
           usernameToLeave = info.username || username
-          console.log(`[ConnectionMonitor] Sucursal desconectada: ${info.branchName} (${uId})`)
+          addBranchLog(uId, `Sucursal desconectada`, 'error')
           connectedBranches.value.delete(uId)
           lastHeartbeats.value.delete(uId)
+          reconnectionAttempts.value.delete(uId)
           break
         }
       }
@@ -155,13 +236,13 @@ export function useConnectionMonitor() {
       try {
         const groupName = `user_${usernameToLeave}`
         await signalR.leaveGroup(groupName)
-        console.log(`[ConnectionMonitor] Salido del grupo: ${groupName}`)
+        addGlobalLog(`Salido del grupo: ${groupName}`, 'info')
       } catch (error) {
-        console.warn(`[ConnectionMonitor] Error al salir del grupo:`, error)
+        addGlobalLog(`Error al salir del grupo: ${usernameToLeave}`, 'warning')
       }
     }
 
-    console.log(`[ConnectionMonitor] Total conectadas: ${connectedBranches.value.size}`)
+    addGlobalLog(`Total conectadas: ${connectedBranches.value.size}`, 'info')
   }
 
   /**
@@ -175,6 +256,12 @@ export function useConnectionMonitor() {
 
     const now = Date.now()
     lastHeartbeats.value.set(userId, now)
+
+    // Resetear contador de reintentos al recibir heartbeat válido
+    if (reconnectionAttempts.value.has(userId)) {
+      addBranchLog(userId, `Reconexión exitosa`, 'success')
+      reconnectionAttempts.value.delete(userId)
+    }
 
     if (connectedBranches.value.has(userId)) {
       const info = connectedBranches.value.get(userId)
@@ -198,11 +285,8 @@ export function useConnectionMonitor() {
       }
 
       connectedBranches.value.set(userId, info)
-      console.log(`[ConnectionMonitor] Heartbeat actualizado: ${info.branchName || userId}`, {
-        isPlaying: info.isPlaying,
-        mode: info.mode,
-        currentSong: info.currentSong
-      })
+      // Log silencioso para heartbeat normal (no saturar logs)
+      console.log(`[ConnectionMonitor] Heartbeat: ${info.branchName || userId}`)
     } else {
       // Si no esta registrada, registrarla ahora
       registerConnection({
@@ -216,11 +300,13 @@ export function useConnectionMonitor() {
   }
 
   /**
-   * Verifica heartbeats expirados y marca sucursales como desconectadas
+   * Verifica heartbeats expirados e intenta reconexión antes de marcar como desconectadas
+   * Realiza hasta 5 intentos de verificación antes de desconectar definitivamente
    */
-  const checkHeartbeatTimeouts = () => {
+  const checkHeartbeatTimeouts = async () => {
     const now = Date.now()
     const expiredUsers = []
+    const usersToDisconnect = []
 
     for (const [userId, lastHeartbeat] of lastHeartbeats.value) {
       if (now - lastHeartbeat > heartbeatTimeout) {
@@ -228,15 +314,54 @@ export function useConnectionMonitor() {
       }
     }
 
-    if (expiredUsers.length > 0) {
-      console.log(`[ConnectionMonitor] Detectados ${expiredUsers.length} heartbeats expirados`)
-      expiredUsers.forEach(userId => {
-        const info = connectedBranches.value.get(userId)
-        if (info) {
-          console.log(`[ConnectionMonitor] Timeout de heartbeat: ${info.branchName} (${userId})`)
-          registerDisconnection({ userId })
+    if (expiredUsers.length === 0) return
+
+    addGlobalLog(`Verificando ${expiredUsers.length} heartbeats expirados...`, 'warning')
+
+    for (const userId of expiredUsers) {
+      const info = connectedBranches.value.get(userId)
+      if (!info) continue
+
+      // Obtener o inicializar contador de reintentos
+      let attemptInfo = reconnectionAttempts.value.get(userId)
+      if (!attemptInfo) {
+        attemptInfo = { attempts: 0, lastAttempt: now }
+        reconnectionAttempts.value.set(userId, attemptInfo)
+      }
+
+      attemptInfo.attempts += 1
+      attemptInfo.lastAttempt = now
+
+      if (attemptInfo.attempts < maxReconnectionAttempts) {
+        // Marcar como "verificando" pero no desconectar aún
+        info.status = 'verifying'
+        connectedBranches.value.set(userId, info)
+        
+        addBranchLog(userId, `Verificando conexión (${attemptInfo.attempts}/${maxReconnectionAttempts})`, 'warning')
+        
+        // Intentar solicitar actualización del servidor
+        try {
+          if (signalR.connected()) {
+            await signalR.getOnlineUsers()
+          }
+        } catch (error) {
+          addBranchLog(userId, `Error verificando estado`, 'error')
         }
-      })
+      } else {
+        // Máximos intentos alcanzados, marcar para desconexión
+        addBranchLog(userId, `Sin respuesta después de ${maxReconnectionAttempts} intentos`, 'error')
+        usersToDisconnect.push(userId)
+      }
+    }
+
+    // Desconectar usuarios que agotaron sus intentos
+    for (const userId of usersToDisconnect) {
+      const info = connectedBranches.value.get(userId)
+      if (info) {
+        addBranchLog(userId, `Desconectado por timeout`, 'error')
+        registerDisconnection({ userId })
+        reconnectionAttempts.value.delete(userId)
+      }
     }
   }
 
@@ -247,10 +372,10 @@ export function useConnectionMonitor() {
     try {
       if (signalR.connected()) {
         await signalR.getOnlineUsers()
-        console.log('[ConnectionMonitor] Solicitada actualizacion de usuarios online')
+        addGlobalLog('Solicitada actualización de usuarios online', 'info')
       }
     } catch (error) {
-      console.error('[ConnectionMonitor] Error solicitando usuarios online:', error)
+      addGlobalLog('Error solicitando usuarios online', 'error')
     }
   }
 
@@ -268,15 +393,12 @@ export function useConnectionMonitor() {
 
     // Si no hay datos, salir
     if (userIds.length === 0 && onlineUsers.length === 0) {
-      console.log('[ConnectionMonitor] OnlineUsersUpdate recibido sin usuarios', data)
+      addGlobalLog('OnlineUsersUpdate recibido sin usuarios', 'warning')
       return
     }
 
-    console.log('[ConnectionMonitor] Sincronizando usuarios online:', {
-      totalUsers: data?.TotalUsers || data?.totalUsers || userIds.length || onlineUsers.length,
-      userIds,
-      onlineUsers
-    })
+    const totalUsers = data?.TotalUsers || data?.totalUsers || userIds.length || onlineUsers.length
+    addGlobalLog(`Sincronizando ${totalUsers} usuarios online`, 'info')
 
     // Crear set de userIds que estan online segun el servidor
     const serverOnlineUsers = new Set()
@@ -313,12 +435,12 @@ export function useConnectionMonitor() {
     // Remover sucursales que estan en local pero no en el servidor
     for (const userId of connectedBranches.value.keys()) {
       if (!serverOnlineUsers.has(userId)) {
-        console.log(`[ConnectionMonitor] Removiendo sucursal no presente en servidor: ${userId}`)
+        addBranchLog(userId, `No presente en servidor, removiendo`, 'warning')
         registerDisconnection({ userId })
       }
     }
 
-    console.log(`[ConnectionMonitor] Sincronizacion completada: ${connectedBranches.value.size} sucursales online`)
+    addGlobalLog(`Sincronización completada: ${connectedBranches.value.size} sucursales online`, 'success')
   }
 
   /**
@@ -327,7 +449,9 @@ export function useConnectionMonitor() {
   const clearAll = () => {
     connectedBranches.value.clear()
     lastHeartbeats.value.clear()
-    console.log('[ConnectionMonitor] Todas las conexiones limpiadas')
+    reconnectionAttempts.value.clear()
+    branchLogs.value.clear()
+    addGlobalLog('Todas las conexiones limpiadas', 'warning')
   }
 
   // Helper: normaliza claves comunes (PascalCase/camelCase) a nombres consistentes
@@ -391,32 +515,35 @@ export function useConnectionMonitor() {
     // Usuario conectado (ignorado - esperamos heartbeat)
     signalR.on('userConnected', (data) => {
       const payload = normalizeData(data)
-      console.log('[ConnectionMonitor] Evento userConnected (ignorado - esperando heartbeat):', payload)
+      const userId = payload.userId || payload.username
+      if (userId) {
+        addBranchLog(userId, 'Conexión detectada (esperando heartbeat)', 'info')
+      }
     })
 
     // Usuario desconectado
     signalR.on('userDisconnected', (data) => {
       const payload = normalizeData(data)
-      console.log('[ConnectionMonitor] Evento userDisconnected:', payload)
+      const userId = payload.userId || payload.username
+      if (userId) {
+        addBranchLog(userId, 'Evento de desconexión recibido', 'warning')
+      }
       registerDisconnection(payload)
     })
 
     // Actualizacion de usuarios online
-    signalR.on('onlineUsersUpdate', (data) => {
-      const payload = normalizeData(data)
-      console.log('[ConnectionMonitor] Evento onlineUsersUpdate (referencia):', payload)
-      // No forzar sync, pero ofrecemos la funcion si se necesita
-      // syncFromOnlineUsers(payload)
+    signalR.on('onlineUsersUpdate', () => {
+      addGlobalLog(`Actualización de usuarios online recibida`, 'info')
+      // No forzar sync automático, pero ofrecemos la función syncFromOnlineUsers si se necesita
     })
 
     // Heartbeat del reproductor
     signalR.on('playerHeartbeat', (data) => {
       const payload = normalizeData(data)
       const userId = payload.userId || payload.username
-      console.log('[ConnectionMonitor] playerHeartbeat - Reproductor detectado:', { userId, payload })
       if (userId) {
         if (!connectedBranches.value.has(userId)) {
-          console.log('[ConnectionMonitor] Nuevo reproductor detectado:', userId)
+          addBranchLog(userId, 'Nuevo reproductor detectado', 'success')
           registerConnection({
             userId,
             username: payload.username,
@@ -440,10 +567,9 @@ export function useConnectionMonitor() {
       if (eventName && String(eventName).toLowerCase() === 'player_heartbeat') {
         const payload = normalizeData(parsed)
         const userId = payload.userId || payload.username
-        console.log('[ConnectionMonitor] player_heartbeat en notification - Reproductor:', { userId, payload })
         if (userId) {
           if (!connectedBranches.value.has(userId)) {
-            console.log('[ConnectionMonitor] Nuevo reproductor detectado via notification:', userId)
+            addBranchLog(userId, 'Reproductor detectado via notificación', 'success')
             registerConnection({
               userId,
               username: payload.username,
@@ -463,8 +589,7 @@ export function useConnectionMonitor() {
 
   // Lifecycle
   onMounted(async () => {
-    console.log('[ConnectionMonitor] Iniciando monitor de REPRODUCTORES')
-    console.log('[ConnectionMonitor] Solo se registraran conexiones que envien player_heartbeat')
+    addGlobalLog('Iniciando monitor de reproductores', 'info')
 
     // Arranque robusto de SignalR con retries
     const maxAttempts = 5
@@ -476,16 +601,16 @@ export function useConnectionMonitor() {
       try {
         await signalR.connect()
         started = true
-        console.log(`[ConnectionMonitor] SignalR iniciado (intento ${attempt})`)
+        addGlobalLog(`SignalR conectado (intento ${attempt})`, 'success')
       } catch (err) {
-        console.warn(`[ConnectionMonitor] Error iniciando SignalR (intento ${attempt}):`, err)
+        addGlobalLog(`Error conectando SignalR (intento ${attempt})`, 'warning')
         const delay = Math.min(5000, 500 * attempt)
         await new Promise(r => setTimeout(r, delay))
       }
     }
 
     if (!started) {
-      console.error('[ConnectionMonitor] No se pudo iniciar SignalR despues de varios intentos')
+      addGlobalLog('No se pudo iniciar SignalR después de varios intentos', 'error')
     } else {
       // Configurar listeners una vez conectado
       setupListeners()
@@ -498,7 +623,7 @@ export function useConnectionMonitor() {
   })
 
   onUnmounted(async () => {
-    console.log('[ConnectionMonitor] Deteniendo monitor de conexiones')
+    addGlobalLog('Deteniendo monitor de conexiones', 'warning')
     if (heartbeatCheckInterval) {
       clearInterval(heartbeatCheckInterval)
     }
@@ -509,6 +634,9 @@ export function useConnectionMonitor() {
     // Estado
     connectedBranches,
     lastHeartbeats,
+    reconnectionAttempts,
+    branchLogs,
+    globalLogs,
     signalR,
 
     // Metodos de consulta
@@ -517,6 +645,7 @@ export function useConnectionMonitor() {
     getBranchInfo,
     getAllConnected,
     getConnectedCount,
+    getBranchLogs,
 
     // Metodos de gestion
     registerConnection,
@@ -524,7 +653,10 @@ export function useConnectionMonitor() {
     updateHeartbeat,
     syncFromOnlineUsers,
     requestOnlineUsersUpdate,
-    clearAll
+    clearAll,
+    clearBranchLogs,
+    addBranchLog,
+    addGlobalLog
   }
 }
 

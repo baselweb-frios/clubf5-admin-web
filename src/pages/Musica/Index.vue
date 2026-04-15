@@ -213,7 +213,7 @@ class="btn btn-primary"
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 import RadioServices from '@/services/RadioServices'
 import moment from 'moment'
@@ -260,6 +260,9 @@ const getProgramacionesByCli = async () => {
   try {
     const res = await RadioServices.getProgramacionesByCliente()
     programaciones.value = res
+    if(programaciones.value.length === 1) {
+      calendarRedirect(programaciones.value[0])
+    }
   } catch (error) {
     console.error('Error loading programaciones:', error)
   } finally {
@@ -336,7 +339,7 @@ const formatDate = (dateString) => {
 }
 
 // Lifecycle
-onMounted(() => {
+onBeforeMount(() => {
   getProgramacionesByCli()
 })
 </script>

@@ -30,13 +30,17 @@ export function useSucursal(options = {}) {
 
     return sucursales.value.map(sucursal => {
       const isConnected = connectionMonitor.isConnectedByUsername(sucursal.username)
-      const info = connectionMonitor.getBranchInfo(sucursal.username)                   
+      const info = connectionMonitor.getBranchInfo(sucursal.username)
+      const logs = connectionMonitor.getBranchLogs(sucursal.username)
 
       return {
         ...sucursal,
         ...info,
         conected: isConnected ? 1 : 0,
-        event: isConnected ? 'conectado' : 'desconectado'
+        event: isConnected ? 'conectado' : 'desconectado',
+        connectionLogs: logs?.messages || [],
+        connectionStatus: info?.status || (isConnected ? 'connected' : 'disconnected'),
+        lastLogUpdate: logs?.lastUpdate || null
       }
     })
   })
@@ -44,6 +48,11 @@ export function useSucursal(options = {}) {
   // Computed: Conteo de sucursales conectadas
   const connectedCount = computed(() => {
     return connectionMonitor ? connectionMonitor.getConnectedCount() : 0
+  })
+
+  // Computed: Logs globales del monitor
+  const globalConnectionLogs = computed(() => {
+    return connectionMonitor?.globalLogs?.value || []
   })
 
   /**
@@ -499,6 +508,7 @@ export function useSucursal(options = {}) {
     sucursalesConnected,
     connectedCount,
     connectionMonitor,
+    globalConnectionLogs,
 
     // Métodos - CRUD básico
     loadSucursales,
