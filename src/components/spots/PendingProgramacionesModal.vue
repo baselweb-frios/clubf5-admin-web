@@ -7,7 +7,7 @@ size="lg"
 >
     <template #header>
       <div class="flex items-center gap-3">
-        <i class="fa fa-clock-o text-primary-400" />
+        <i class="fas fa-clock text-primary-400" />
         <h3 class="text-lg font-semibold text-text-primary">
 Salidas pautadas pendientes
 </h3>
@@ -21,14 +21,14 @@ v-if="programaciones.length > 0"
 class="space-y-4"
 >
         <div class="alert alert-info">
-          <i class="fa fa-info-circle" />
+          <i class="fas fa-info-circle" />
           <p>Las salidas pautadas se guardarán en el servidor al confirmar.</p>
         </div>
 
         <!-- Lista de salidas pautadas pendientes -->
         <div>
           <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
-            <i class="fa fa-list-ul" />
+            <i class="fas fa-list-ul" />
             Todas las salidas pautadas ({{ programaciones.length }})
           </h4>
           <div
@@ -46,15 +46,22 @@ class="max-h-64 overflow-y-auto space-y-2"
               <div class="flex items-center gap-3 flex-1">
                 <span class="badge badge-info">{{ getWeekDayName(prog.clprsp_numeroDia) }}</span>
                 <span class="flex items-center gap-1 text-sm text-text-secondary">
-                  <i class="fa fa-clock-o" />
+                  <i class="fas fa-clock" />
                   {{ prog.clprsp_horaDesde.slice(0, 5) }}
                 </span>
                 <span
 v-if="prog.clprsp_orden"
 class="flex items-center gap-1 text-xs text-text-tertiary"
 >
-                  <i class="fa fa-layer-group" />
+                  <i class="fas fa-layer-group" />
                   Slot {{ prog.clprsp_orden }}
+                </span>
+                <span
+                  class="flex items-center gap-1 text-xs"
+                  :class="prog.clprsp_codigoReproductor ? 'text-primary-400' : 'text-text-tertiary'"
+                >
+                  <i class="fas fa-desktop" />
+                  {{ prog.clprsp_codigoReproductor || 'Todos' }}
                 </span>
               </div>
               <div class="text-sm font-medium text-text-primary truncate max-w-[150px]">
@@ -76,7 +83,7 @@ class="flex items-center justify-center gap-2 py-3 text-text-secondary"
 v-else-if="programaciones.length > 0"
 class="flex items-center justify-center gap-2 py-3 text-success-400"
 >
-              <i class="fa fa-check-circle" />
+              <i class="fas fa-check-circle" />
               <span class="text-sm">Has visto todas las {{ programaciones.length }} salidas pautadas pendientes</span>
             </div>
           </div>
@@ -89,7 +96,7 @@ class="flex items-center justify-center gap-2 py-3 text-success-400"
         class="btn btn-secondary"
         @click="$emit('clear')"
       >
-        <i class="fa fa-trash" />
+        <i class="fas fa-trash" />
         Limpiar Todo
       </button>
       <button
@@ -97,7 +104,7 @@ class="flex items-center justify-center gap-2 py-3 text-success-400"
         :disabled="isSaving || !hasValidProgramacion"
         @click="$emit('confirm')"
       >
-        <i class="fa fa-check" />
+        <i class="fas fa-check" />
         Confirmar y Guardar ({{ programaciones.length }} salidas pautadas)
       </button>
     </template>

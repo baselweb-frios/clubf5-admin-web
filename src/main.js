@@ -10,7 +10,8 @@ import moment from 'moment'
 
 // Import styles
 import './assets/css/main.css'
-import '@fortawesome/fontawesome-free/css/all.css'
+// FontAwesome se carga via CDN en index.html para mejor compatibilidad en producción
+// import '@fortawesome/fontawesome-free/css/all.css'
 import './assets/styles/driver-theme.css'
 
 // Import plugins

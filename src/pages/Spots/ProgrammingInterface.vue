@@ -506,6 +506,16 @@ export default {
       emitFilterChange()
     }, { deep: true })
 
+    // Sincronizar el reproductor seleccionado en filtros con el del formulario
+    // para que effectiveReproductor funcione correctamente al programar
+    watch(
+      () => filters.selectedReproductor.value,
+      (newValue) => {
+        form.selectedReproductor.value = newValue
+      },
+      { immediate: true }
+    )
+
     // ===== LIFECYCLE =====
     onMounted(async () => {
       // Conectar SignalR

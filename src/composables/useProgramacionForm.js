@@ -339,13 +339,21 @@ export function useProgramacionForm(options = {}) {
 
   /**
    * Obtiene el reproductor efectivo (el que se usa en las programaciones)
+   * Si es reproductor, retorna su username
+   * Si hay un reproductor seleccionado, lo retorna
+   * Si está en "Todos" (string vacío), retorna null (para que aplique a todos)
    * @returns {string|null}
    */
   const effectiveReproductor = computed(() => {
     if (isReproductor()) {
       return reproductorUsername()
     }
-    return selectedReproductor.value || null
+    // Si selectedReproductor tiene un valor específico (no vacío), usarlo
+    // Si es string vacío (Todos), retornar null para que aplique a todos los reproductores
+    if (selectedReproductor.value && selectedReproductor.value.trim() !== '') {
+      return selectedReproductor.value
+    }
+    return null
   })
 
   // ===== METHODS: TIME SLOTS =====
