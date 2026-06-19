@@ -154,19 +154,28 @@ class="flex flex-wrap border-b border-dark-border"
 
 
 
-          <!-- stream Tab -->
+          <!-- Stream / Fuente libre Tab -->
           <div
 v-if="activeTab === 'stream'"
 class="p-4 sm:p-6"
 >
             <div class="space-y-4">
+              <!-- Descripción -->
+              <div class="flex items-start gap-3 p-3 bg-info-500/10 border border-info-500/20 rounded-lg">
+                <i class="fas fa-info-circle text-info-400 mt-0.5" />
+                <p class="text-xs text-info-300">
+                  Cargá cualquier URL de <strong>audio</strong> o <strong>video</strong> de libre acceso: streams en vivo (HLS, DASH), archivos MP3, MP4, OGG, WAV, radios online, podcasts, etc.
+                </p>
+              </div>
+
+              <!-- Input URL -->
               <div class="form-group">
                 <label class="label flex items-center gap-2">
                   <i class="fas fa-link" />
-                  URL del Stream
+                  URL de la fuente
                   <i
                     class="fas fa-question-circle text-text-tertiary text-xs cursor-help"
-                    title="Ingresa la URL completa del stream. Formatos soportados: HLS (.m3u8), DASH (.mpd), HTTP streams."
+                    title="Cualquier URL HTTP/HTTPS que apunte a un archivo o stream de audio/video."
                   />
                 </label>
                 <div class="relative">
@@ -175,55 +184,90 @@ class="p-4 sm:p-6"
                     v-model="spot.spo_url"
                     type="url"
                     class="input pl-10 pr-10"
-                    placeholder="https://ejemplo.com/stream.m3u8"
+                    placeholder="https://ejemplo.com/radio.mp3  |  https://cdn.com/stream.m3u8"
                     @blur="validateStreamUrl"
-                    @input="streamUrlError = ''"
+                    @input="streamUrlError = ''; isValidStreamUrl = false"
                   >
                   <button
-                    v-if="spot.spo_url && spot.spo_url !== 'Formatos permitidos m3u8'"
+                    v-if="spot.spo_url"
                     class="absolute right-3 top-1/2 -translate-y-1/2 text-text-tertiary hover:text-text-primary transition-colors"
                     title="Limpiar URL"
-                    @click="spot.spo_url = 'Formatos permitidos m3u8'; streamUrlError = ''"
+                    @click="spot.spo_url = ''; streamUrlError = ''; isValidStreamUrl = false"
                   >
                     <i class="fas fa-times-circle" />
                   </button>
                 </div>
                 <p
-v-if="streamUrlError"
-class="text-sm text-danger-400 mt-1 flex items-center gap-1"
->
+                  v-if="streamUrlError"
+                  class="text-sm text-danger-400 mt-1 flex items-center gap-1"
+                >
                   <i class="fas fa-exclamation-triangle" />
                   {{ streamUrlError }}
                 </p>
                 <p
-v-else
-class="text-xs text-text-tertiary mt-1 flex items-center gap-1"
->
+                  v-else
+                  class="text-xs text-text-tertiary mt-1 flex items-center gap-1"
+                >
                   <i class="fas fa-lightbulb text-warning-400" />
-                  Formatos aceptados: .m3u8 (HLS), .mpd (DASH), URLs HTTP/HTTPS
+                  Formatos: MP3, WAV, OGG, AAC, FLAC, MP4, WebM, .m3u8 (HLS), .mpd (DASH), radios online...
                 </p>
               </div>
 
-              <!-- Stream Preview -->
+              <!-- Preview panel -->
               <div
-v-if="isValidStreamUrl"
-class="p-4 bg-dark-secondary rounded-lg border border-dark-border"
->
-                <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary mb-3">
-                  <i class="fas fa-broadcast-tower text-success-400" />
-                  Vista Previa del Stream
+                v-if="isValidStreamUrl"
+                class="p-4 bg-dark-secondary rounded-lg border border-dark-border space-y-3"
+              >
+                <h4 class="flex items-center gap-2 text-sm font-semibold text-text-primary">
+                  <i
+                    :class="getStreamMediaCategory(spot.spo_url) === 'audio' ? 'fas fa-headphones text-primary-400' : 'fas fa-film text-primary-400'"
+                  />
+                  Vista previa
                 </h4>
-                <div class="space-y-2">
+
+                <!-- Info row -->
+                <div class="space-y-1.5">
                   <div class="flex items-center gap-2 text-sm">
                     <i class="fas fa-link text-text-tertiary" />
-                    <span class="text-text-secondary">URL:</span>
-                    <span class="text-text-primary truncate">{{ spot.spo_url }}</span>
+                    <span class="text-text-secondary flex-shrink-0">URL:</span>
+                    <span class="text-text-primary truncate text-xs">{{ spot.spo_url }}</span>
                   </div>
                   <div class="flex items-center gap-2 text-sm">
                     <i class="fas fa-file-code text-text-tertiary" />
-                    <span class="text-text-secondary">Tipo:</span>
-                    <span class="text-text-primary">{{ getStreamType(spot.spo_url) }}</span>
+                    <span class="text-text-secondary flex-shrink-0">Tipo:</span>
+                    <span class="badge badge-info text-xs">{{ getStreamType(spot.spo_url) }}</span>
                   </div>
+                </div>
+
+                <!-- Audio player -->
+                <div v-if="getStreamMediaCategory(spot.spo_url) === 'audio'">
+                  <audio
+                    :src="spot.spo_url"
+                    controls
+                    class="w-full"
+                    @error="streamUrlError = 'No se pudo cargar la fuente. Verificá que la URL sea pública y accesible.'; isValidStreamUrl = false"
+                  />
+                </div>
+
+                <!-- Video player -->
+                <div v-else-if="getStreamMediaCategory(spot.spo_url) === 'video'">
+                  <video
+                    :src="spot.spo_url"
+                    controls
+                    class="w-full max-h-[280px] rounded-lg"
+                    @error="streamUrlError = 'No se pudo cargar la fuente. Verificá que la URL sea pública y accesible.'; isValidStreamUrl = false"
+                  >
+                    Tu navegador no soporta la reproducción de video.
+                  </video>
+                </div>
+
+                <!-- Stream indeterminado (HLS/DASH sin player nativo) -->
+                <div
+                  v-else
+                  class="flex items-center gap-2 text-sm text-text-secondary"
+                >
+                  <i class="fas fa-broadcast-tower text-success-400" />
+                  Stream configurado. La reproducción se realizará en el reproductor.
                 </div>
               </div>
             </div>
@@ -442,33 +486,33 @@ Todos
                         :key="language"
                         :value="language"
                       >
-                        {{ capitalizeFirst(language) }}
+                        {{ translateLanguage(language) }}
                       </option>
                     </select>
                   </div>
 
-                  <!-- Category Filter (reutilizando useCase) -->
+                  <!-- Age Filter -->
                   <div
-v-if="availableFilters.useCases.length > 0"
+v-if="availableFilters.ages.length > 0"
 class="form-group"
 >
                     <label class="label text-xs flex items-center gap-1">
-                      <i class="fas fa-folder" />
-                      Categoria
+                      <i class="fas fa-user-clock" />
+                      Edad
                     </label>
                     <select
-v-model="voiceFilters.useCase"
+v-model="voiceFilters.age"
 class="select text-sm"
 >
                       <option value="all">
 Todas
 </option>
                       <option
-                        v-for="category in availableFilters.useCases"
-                        :key="category"
-                        :value="category"
+                        v-for="age in availableFilters.ages"
+                        :key="age"
+                        :value="age"
                       >
-                        {{ capitalizeFirst(category) }}
+                        {{ translateAge(age) }}
                       </option>
                     </select>
                   </div>
@@ -863,10 +907,10 @@ const filteredVoices = computed(() => {
       if (voiceLanguage !== voiceFilters.accent) return false
     }
 
-    // Category filter (usando useCase filter)
-    if (voiceFilters.useCase !== 'all') {
-      const voiceCategory = voice.category?.toLowerCase()
-      if (voiceCategory !== voiceFilters.useCase) return false
+    // Age filter
+    if (voiceFilters.age !== 'all') {
+      const voiceAge = voice.labels?.age?.toLowerCase()
+      if (voiceAge !== voiceFilters.age) return false
     }
 
     return true
@@ -939,10 +983,10 @@ const validateFields = () => {
       }
     }
   } else if (spot.spo_mediaTipo === 'streaming') {
-    if (!spot.spo_url || spot.spo_url === 'Formatos permitidos m3u8') {
+    if (!spot.spo_url) {
       return {
         valid: false,
-        error: 'Debe ingresar una URL de streaming válida'
+        error: 'Debe ingresar una URL de la fuente de audio/video'
       }
     }
 
@@ -1199,25 +1243,21 @@ const extractFiltersFromVoices = () => {
 
   const genders = new Set()
   const languages = new Set()
-  const categories = new Set()
+  const ages = new Set()
 
   locutores.value.forEach(voice => {
     // Labels de la variacion
     if (voice.labels) {
       if (voice.labels.gender) genders.add(voice.labels.gender.toLowerCase())
       if (voice.labels.language) languages.add(voice.labels.language.toLowerCase())
+      if (voice.labels.age) ages.add(voice.labels.age.toLowerCase())
     }
-    // Categoria de la voz
-    if (voice.category) categories.add(voice.category.toLowerCase())
   })
 
   availableFilters.genders = Array.from(genders).sort()
   // Reutilizamos accents para idiomas
   availableFilters.accents = Array.from(languages).sort()
-  // Reutilizamos useCases para categorias
-  availableFilters.useCases = Array.from(categories).sort()
-  // Limpiamos ages ya que no se usa en la nueva estructura
-  availableFilters.ages = []
+  availableFilters.ages = Array.from(ages).sort()
 }
 
 const clearFilters = () => {
@@ -1255,6 +1295,30 @@ const capitalizeFirst = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
+const translateAge = (age) => {
+  const map = {
+    young: 'Joven',
+    middle_aged: 'Adulto',
+    old: 'Mayor',
+    elderly: 'Anciano'
+  }
+  return map[age?.toLowerCase()] ?? capitalizeFirst(age)
+}
+
+const translateLanguage = (language) => {
+  const map = {
+    enamerican: 'En (Americano)',
+    enaustralian: 'En (Australiano)',
+    enbritish: 'En (Británico)',
+    encanadian: 'En (Canadiense)',
+    esargentine: 'Es (Argentino)',
+    esspanish: 'Es (Español)',
+    eslatinamerican: 'Es (Latinoamericano)',
+    espeninsular: 'Es (Mexicano)',
+  }
+  return map[language?.trim().toLowerCase().replace(/[\s()]/g, '')] ?? capitalizeFirst(language)
+}
+
 const getActiveFiltersCount = () => {
   let count = 0
   if (voiceFilters.search) count++
@@ -1267,7 +1331,7 @@ const getActiveFiltersCount = () => {
 const validateStreamUrl = () => {
   const url = spot.spo_url
 
-  if (!url || url === 'Formatos permitidos m3u8') {
+  if (!url) {
     streamUrlError.value = ''
     isValidStreamUrl.value = false
     return
@@ -1282,32 +1346,38 @@ const validateStreamUrl = () => {
       return
     }
 
-    const validExtensions = ['.m3u8', '.mpd', '.mp4', '.webm']
-    const hasValidExtension = validExtensions.some(ext => url.toLowerCase().includes(ext))
-
-    if (!hasValidExtension) {
-      streamUrlError.value = 'Formato no válido. Usa: .m3u8 (HLS), .mpd (DASH), o HTTP streams'
-      isValidStreamUrl.value = false
-      return
-    }
-
     streamUrlError.value = ''
     isValidStreamUrl.value = true
-  } catch (error) {
-    streamUrlError.value = 'URL inválida. Ingresa una URL completa (ej: https://ejemplo.com/stream.m3u8)'
+  } catch {
+    streamUrlError.value = 'URL inválida. Ingresá una URL completa (ej: https://ejemplo.com/radio.mp3)'
     isValidStreamUrl.value = false
   }
 }
 
 const getStreamType = (url) => {
   if (!url) return 'Desconocido'
-
   const lowerUrl = url.toLowerCase()
   if (lowerUrl.includes('.m3u8')) return 'HLS (HTTP Live Streaming)'
   if (lowerUrl.includes('.mpd')) return 'DASH (Dynamic Adaptive Streaming)'
-  if (lowerUrl.includes('.mp4') || lowerUrl.includes('.webm')) return 'HTTP Progressive Streaming'
+  if (lowerUrl.includes('.mp3')) return 'MP3 Audio'
+  if (lowerUrl.includes('.wav')) return 'WAV Audio'
+  if (lowerUrl.includes('.ogg')) return 'OGG Audio'
+  if (lowerUrl.includes('.aac')) return 'AAC Audio'
+  if (lowerUrl.includes('.flac')) return 'FLAC Audio'
+  if (lowerUrl.includes('.mp4')) return 'MP4 Video'
+  if (lowerUrl.includes('.webm')) return 'WebM Video'
+  if (lowerUrl.includes('.mov')) return 'MOV Video'
+  return 'Stream HTTP'
+}
 
-  return 'HTTP Stream'
+const getStreamMediaCategory = (url) => {
+  if (!url) return 'stream'
+  const lowerUrl = url.toLowerCase()
+  const audioExts = ['.mp3', '.wav', '.ogg', '.aac', '.flac', '.opus', '.wma']
+  const videoExts = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.ogv']
+  if (audioExts.some(e => lowerUrl.includes(e))) return 'audio'
+  if (videoExts.some(e => lowerUrl.includes(e))) return 'video'
+  return 'stream'
 }
 
 const validateFileSize = (fileObj) => {

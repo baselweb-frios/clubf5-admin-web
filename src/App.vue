@@ -14,12 +14,16 @@ mode="out-in"
 />
       </transition>
     </router-view>
+    <TourDevEditor />
+    <UpdateNotification />
   </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import TourDevEditor from '@/components/TourDevEditor.vue'
+import UpdateNotification from '@/components/UpdateNotification.vue'
 
 const authStore = useAuthStore()
 

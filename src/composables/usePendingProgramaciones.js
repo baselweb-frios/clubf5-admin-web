@@ -346,7 +346,7 @@ export function usePendingProgramaciones(options = {}) {
 
         // Callback de éxito
         if (onSuccess) {
-          onSuccess(normalizedProgramaciones.length)
+          await onSuccess(normalizedProgramaciones.length)
         }
 
       } finally {

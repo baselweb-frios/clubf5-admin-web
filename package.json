@@ -1,6 +1,6 @@
 {
   "name": "clubf5-admin-web",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "ClubF5 Admin Web Application - Sistema de gestión de radio y publicidad",
   "type": "module",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.1",
-    "@microsoft/signalr": "^7.0.14",
+    "@microsoft/signalr": "^8.0.17",
     "@vueuse/core": "^10.7.0",
     "axios": "^1.6.2",
     "driver.js": "^1.4.0",

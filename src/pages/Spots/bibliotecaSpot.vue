@@ -299,9 +299,13 @@ import ProgrammingInterface from './ProgrammingInterface.vue'
 import { LoadingOverlay } from '@/components'
 import Modal from '@/components/ui/Modal.vue'
 import { useDriverTour } from '@/composables/useDriverTour'
+import { useSignalRAuth } from '@/composables/useSignalRAuth'
 
 // Router
 const router = useRouter()
+
+// SignalR
+const signalR = useSignalRAuth()
 
 // Driver.js tour
 const { startTour, hasTour, isTourViewed } = useDriverTour({ autoStart: true })
@@ -667,6 +671,8 @@ const handleDelete = async (spotsToDelete) => {
     proxy.$toast(`Spot(s) eliminado(s): ${results.filter(r => r).join(', ')}`, 'success')
     await loadSpots()
     selectedSpots.value = []
+
+    await notifyAllReproductores('spots_deleted', results.filter(r => r).length)
   } catch (error) {
     proxy.$toast('Error al eliminar el/los spot(s)', 'error')
     console.error('Error deleting spots:', error)
@@ -786,7 +792,14 @@ const handleDeleteProgramaciones = async (programacionesToDelete) => {
 
     await loadProgramaciones()
     selectedProgramaciones.value = []
-    
+
+    // Notificar reproductores afectados
+    const reproductoresAfectados = [...new Set(programacionesToDelete.map(p => p.clprsp_codigoReproductor).filter(Boolean))]
+    if (reproductoresAfectados.length > 0) {
+      await notifyReproductoresLista(reproductoresAfectados, 'programaciones_deleted', successResults.length)
+    } else {
+      await notifyAllReproductores('programaciones_deleted', successResults.length)
+    }
   } catch (error) {
     proxy.$toast('Error al eliminar las programaciones', 'error')
     console.error('Error deleting programaciones:', error)
@@ -809,9 +822,54 @@ const handleCalendarProgramSpots = async (calendarData) => {
     proxy.$toast(`Programación de calendario guardada correctamente (${calendarData.programas.length} programas)`, 'success')
 
     await loadProgramaciones()
+
+    // Notificar reproductores para que actualicen sus spots
+    await notifyAllReproductores('spots_programmed', calendarData.programas.length)
   } catch (error) {
     console.error('Error detallado al guardar la programación del calendario:', error)
     proxy.$toast('Error al guardar la programación del calendario: ' + (error.message || error), 'error')
+  }
+}
+
+const notifyAllReproductores = async (action, count = 0) => {
+  try {
+    if (!signalR || !signalR.isConnected.value) return
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    const notificationData = {
+      type: 'SpotsUpdated',
+      action,
+      timestamp: new Date().toISOString(),
+      source: { userId: user.unique_name },
+      data: { count, targetReproductor: 'Todos' }
+    }
+    await Promise.all(
+      reproductores.value.map(r =>
+        signalR.sendToGroup(`player_${r.clisuc_nombre}`, 'SpotsUpdated', notificationData)
+      )
+    )
+  } catch (error) {
+    console.warn('[SignalR] Error notificando reproductores:', error)
+  }
+}
+
+const notifyReproductoresLista = async (lista, action, count = 0) => {
+  try {
+    if (!signalR || !signalR.isConnected.value) return
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    const notificationData = {
+      type: 'SpotsUpdated',
+      action,
+      timestamp: new Date().toISOString(),
+      source: { userId: user.unique_name },
+      data: { count, targetReproductor: lista }
+    }
+    await Promise.all(
+      lista.map(nombre =>
+        signalR.sendToGroup(`player_${nombre}`, 'SpotsUpdated', notificationData)
+      )
+    )
+  } catch (error) {
+    console.warn('[SignalR] Error notificando reproductores:', error)
   }
 }
 

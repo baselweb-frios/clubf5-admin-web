@@ -36,6 +36,7 @@ export function useSignalRAuth() {
 
   const connect = async (hubUrl = import.meta.env.VITE_HUB_URL || import.meta.env.VITE_API_BASE_URL_WS + 'data-hub') => {
     // Si ya esta conectado, retornar
+    console.log('[SignalR] Intentando conectar a:', hubUrl);
     if (sharedConnection && sharedIsConnected.value) {
       console.log('[SignalR] Ya conectado, reutilizando conexion existente')
       return
@@ -243,6 +244,11 @@ export function useSignalRAuth() {
         sharedConnection.on('Sucursal.ModoChanged', (data) => {
           console.log('[SignalR] Modo Changed:', data)
           notifyListeners('sucursalModoChanged', data)
+        })
+
+        sharedConnection.on('SpotsUpdated', (data) => {
+          console.log('[SignalR] SpotsUpdated recibido:', data)
+          notifyListeners('spotsUpdated', data)
         })
 
         sharedConnection.on('Spot.Delete.Result', (data) => {
@@ -479,6 +485,22 @@ export function useSignalRAuth() {
     if (sharedConnection && sharedIsConnected.value) {
       await sharedConnection.invoke('SendMessageToGroup', groupName, message)
     }
+  }
+
+  /**
+   * Envía un evento con nombre a un grupo específico.
+   * El receptor lo recibe vía el handler 'Receive' con { event, ...data }.
+   * @param {string} groupName - Nombre del grupo (ej: 'player_Reproductor1')
+   * @param {string} event - Nombre del evento (ej: 'SpotsUpdated')
+   * @param {object} data - Payload del mensaje
+   */
+  const sendToGroup = async (groupName, event, data = {}) => {
+    if (!sharedConnection || !sharedIsConnected.value) {
+      console.warn(`[SignalR] sendToGroup: no conectado, no se puede enviar '${event}' a '${groupName}'`)
+      return
+    }
+    const message = JSON.stringify({ event, ...data })
+    await sharedConnection.invoke('SendMessageToGroup', groupName, message)
   }
 
   const sendMessageToBranch = async (message) => {
@@ -745,6 +767,7 @@ export function useSignalRAuth() {
     sendMessageToAll,
     sendMessageToUser,
     sendMessageToGroup,
+    sendToGroup,
     sendMessageToBranch,
     joinGroup,
     leaveGroup,

@@ -277,7 +277,7 @@ class="alert alert-warning mt-2"
 </template>
 
 <script>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 
 // Composables
 import { useClientConfig } from '@/composables/useClientConfig'
@@ -394,36 +394,38 @@ export default {
     }
 
     const handleProgramMinutes = (data) => {
-      const { hour, minutes, days } = data
+      const { hours, minutes, days } = data
 
       const programaciones = []
-      const hourNum = parseInt(hour.split(':')[0])
       const reproductor = form.effectiveReproductor.value
 
       days.forEach(day => {
-        minutes.forEach(minute => {
-          const timeString = `${hourNum.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`
+        hours.forEach(hour => {
+          const hourNum = parseInt(hour.split(':')[0])
+          minutes.forEach(minute => {
+            const timeString = `${hourNum.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`
 
-          // Calcular slots ocupados
-          const ocupados = filteredProgramaciones.value.filter(prog => {
-            return prog.clprsp_numeroDia == day && prog.clprsp_horaDesde == timeString
-          })
-          let slot = ocupados.length > 0 ? ocupados.length : 1
+            // Calcular slots ocupados
+            const ocupados = filteredProgramaciones.value.filter(prog => {
+              return prog.clprsp_numeroDia == day && prog.clprsp_horaDesde == timeString
+            })
+            let slot = ocupados.length > 0 ? ocupados.length : 1
 
-          form.selectedSpots.value.forEach(spot => {
-            if (slot <= 5) {
-              programaciones.push({
-                clprsp_numeroDia: day,
-                clprsp_horaDesde: timeString,
-                clprsp_codigoSpot: spot.spo_codigo,
-                clprsp_codigoReproductor: reproductor,
-                clprsp_orden: slot,
-                _spot: spot,
-                _isNew: true,
-                _isPending: true
-              })
-              slot++
-            }
+            form.selectedSpots.value.forEach(spot => {
+              if (slot <= 5) {
+                programaciones.push({
+                  clprsp_numeroDia: day,
+                  clprsp_horaDesde: timeString,
+                  clprsp_codigoSpot: spot.spo_codigo,
+                  clprsp_codigoReproductor: reproductor,
+                  clprsp_orden: slot,
+                  _spot: spot,
+                  _isNew: true,
+                  _isPending: true
+                })
+                slot++
+              }
+            })
           })
         })
       })
@@ -436,17 +438,95 @@ export default {
       showPendingModal.value = false
     }
 
+    /**
+     * Resuelve conflictos de slots antes de guardar.
+     * - Si el slot ya está ocupado, busca el primer slot libre (1-5).
+     * - Si no hay slots libres para ese horario/día, descarta la programación.
+     * @param {Array} pendingList - Programaciones pendientes a resolver
+     * @param {Array} existingList - Programaciones ya guardadas en el servidor
+     * @returns {{ programaciones: Array, discarded: number }}
+     */
+    const resolveSlotConflicts = (pendingList, existingList) => {
+      const MAX_SLOTS = 5
+
+      // Mapa: "day_timeString" => Set de slots ocupados
+      const occupiedSlots = new Map()
+
+      // Cargar slots ya guardados
+      existingList.forEach(prog => {
+        const key = `${prog.clprsp_numeroDia}_${prog.clprsp_horaDesde}`
+        if (!occupiedSlots.has(key)) {
+          occupiedSlots.set(key, new Set())
+        }
+        const slot = prog.clprsp_orden
+        if (slot != null) {
+          occupiedSlots.get(key).add(Number(slot))
+        }
+      })
+
+      const resolved = []
+      let discarded = 0
+
+      pendingList.forEach(prog => {
+        const key = `${prog.clprsp_numeroDia}_${prog.clprsp_horaDesde}`
+        if (!occupiedSlots.has(key)) {
+          occupiedSlots.set(key, new Set())
+        }
+        const slots = occupiedSlots.get(key)
+
+        // Buscar el primer slot libre entre 1 y MAX_SLOTS
+        let freeSlot = null
+        for (let s = 1; s <= MAX_SLOTS; s++) {
+          if (!slots.has(s)) {
+            freeSlot = s
+            break
+          }
+        }
+
+        if (freeSlot !== null) {
+          slots.add(freeSlot)
+          resolved.push({ ...prog, clprsp_orden: freeSlot })
+        } else {
+          discarded++
+          console.warn(
+            `[Slots] Descartada programación (sin slots libres): día=${prog.clprsp_numeroDia} hora=${prog.clprsp_horaDesde} spot=${prog.clprsp_codigoSpot}`
+          )
+        }
+      })
+
+      return { programaciones: resolved, discarded }
+    }
+
     const handleConfirmProgramaciones = async () => {
       showPendingModal.value = false
-      
+
+      // Resolver conflictos de slots contra las programaciones existentes
+      const { programaciones: resolved, discarded } = resolveSlotConflicts(
+        pending.pendingProgramaciones.value,
+        props.programaciones
+      )
+
+      if (discarded > 0) {
+        console.warn(`[Slots] ${discarded} programación(es) descartada(s) por no tener slots disponibles.`)
+      }
+
+      // Actualizar la lista de pendientes con los slots resueltos
+      pending.pendingProgramaciones.value = resolved
+
+      if (pending.pendingProgramaciones.value.length === 0) {
+        console.warn('[Slots] Todas las programaciones fueron descartadas por slots ocupados.')
+        return
+      }
+
       try {
         await pending.confirmAndSaveProgramaciones({
           codigoProgramacion: props.codigoProgramacion,
           effectiveReproductor: form.effectiveReproductor.value,
-          onSuccess: (count) => {
-            // Recargar programaciones y notificar
+          onSuccess: async (count) => {
+            // Recargar programaciones, notificar y emitir refresh
+            await notifyReproductores(count)
             pending.reloadProgramacionesFromServer(props.codigoProgramacion)
-            notifyReproductores(count)
+            emit('refresh-programaciones')
           },
           onError: (error) => {
             console.error('Error guardando programaciones:', error)
@@ -466,16 +546,25 @@ export default {
       filters.handlePageSizeChange()
     }
 
-    const notifyReproductores = async (count) => {
+    const notifyReproductores = async (count, action = 'spots_programmed') => {
       try {
-        if (!signalR || !signalR.isConnected.value) return
+        if (!signalR || !signalR.isConnected.value) {
+          console.warn('[SignalR] No conectado, no se puede notificar reproductores')
+          return
+        }
+
+        if (!props.reproductores || props.reproductores.length === 0) {
+          console.warn('[SignalR] No hay reproductores disponibles para notificar')
+          return
+        }
 
         const currentUser = form.getUsuario()
         const cliente = form.getCliente()
+        const effectiveReproductor = form.effectiveReproductor.value
 
         const notificationData = {
           type: 'SpotsUpdated',
-          action: 'spots_programmed',
+          action,
           timestamp: new Date().toISOString(),
           source: {
             userId: currentUser.unique_name,
@@ -484,16 +573,22 @@ export default {
           },
           data: {
             count,
-            targetReproductor: form.effectiveReproductor.value
+            targetReproductor: effectiveReproductor || 'Todos'
           }
         }
 
-        // Enviar notificación via SignalR
-        if (form.effectiveReproductor.value && form.effectiveReproductor.value !== 'Todos') {
-          await signalR.sendToGroup(`player_${form.effectiveReproductor.value}`, 'SpotsUpdated', notificationData)
-        }
+        console.log(`[SignalR] Enviando notificación '${action}' a ${props.reproductores.length} reproductor(es):`, notificationData)
+
+        // Siempre enviar a TODOS los reproductores para que cada uno actualice
+        await Promise.all(
+          props.reproductores.map(r =>
+            signalR.sendToGroup(`player_${r.clisuc_nombre}`, 'SpotsUpdated', notificationData)
+          )
+        )
+
+        console.log(`[SignalR] ✅ Notificación enviada a ${props.reproductores.length} reproductor(es)`)
       } catch (error) {
-        console.warn('Error notificando reproductores:', error)
+        console.warn('[SignalR] Error notificando reproductores:', error)
       }
     }
 
@@ -518,16 +613,6 @@ export default {
 
     // ===== LIFECYCLE =====
     onMounted(async () => {
-      // Conectar SignalR
-      if (signalR && !signalR.isConnected.value) {
-        try {
-          const hubUrl = import.meta.env.VITE_API_BASE_URL_WS + 'hubs/notifications'
-          await signalR.connect(hubUrl)
-        } catch (error) {
-          console.warn('Error conectando SignalR:', error)
-        }
-      }
-
       // Cargar configuración del cliente
       await clientConfig.loadClientConfiguration()
 
@@ -548,12 +633,6 @@ export default {
       // Si es reproductor, setear automáticamente
       if (form.isReproductor()) {
         filters.selectedReproductor.value = form.reproductorUsername()
-      }
-    })
-
-    onBeforeUnmount(() => {
-      if (signalR && signalR.isConnected.value) {
-        signalR.disconnect()
       }
     })
 

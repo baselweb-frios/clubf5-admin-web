@@ -3,6 +3,10 @@ import vue from '@vitejs/plugin-vue'
 import mkcert from 'vite-plugin-mkcert'
 import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath, URL } from 'node:url'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
+const { version } = require('./package.json')
 
 export default defineConfig({
   plugins: [
@@ -134,5 +138,8 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['vue', 'vue-router', 'pinia', 'axios']
+  },
+  define: {
+    __APP_VERSION__: JSON.stringify(version)
   }
 })

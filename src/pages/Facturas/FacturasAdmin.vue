@@ -1,73 +1,52 @@
 <template>
   <div class="page-wrapper page-content">
     <!-- Alert Notifications -->
-    <div
-v-if="alertMsg"
-:class="['alert', alertTypeClass]"
->
+    <div v-if="alertMsg" :class="['alert', alertTypeClass]">
       <i :class="getAlertIcon(alertType)" />
       <div class="ml-3 flex-1">
-{{ alertMsg }}
-</div>
-      <button
-class="btn btn-ghost btn-sm"
-aria-label="Cerrar notificación"
-@click="alertMsg = ''"
->
+        {{ alertMsg }}
+      </div>
+      <button class="btn btn-ghost btn-sm" aria-label="Cerrar notificación" @click="alertMsg = ''">
         <i class="fas fa-times" />
       </button>
     </div>
 
     <!-- Main Content Card -->
-    <BaseCard
-title="Gestión de Recibos"
-subtitle="Comprobantes internos de pago"
-:hover="false"
-shadow="2xl"
->
+    <BaseCard title="Gestión de Recibos" subtitle="Comprobantes internos de pago" :hover="false" shadow="2xl">
       <template #actions>
-        <button
-class="btn btn-secondary"
-title="Recargar recibos"
-@click="loadFacturas"
->
+        <button class="btn btn-secondary" title="Recargar recibos" @click="loadFacturas">
           <i class="fas fa-sync-alt" />
           <span>Refrescar</span>
         </button>
-        <button
-class="btn btn-primary"
-@click="openCreateModal"
->
+        <button class="btn btn-primary" @click="openCreateModal">
           <i class="fas fa-plus" />
           <span>Nuevo Recibo</span>
         </button>
       </template>
 
       <!-- Disclaimer -->
-      <div class="alert alert-warning">
-        <i class="fas fa-exclamation-triangle" />
+      <div class="alert alert-warning mb-5">
+        <i class="fas fa-exclamation-triangle flex-shrink-0" />
         <div>
           <strong>Nota importante:</strong> Los recibos generados por este sistema son comprobantes internos de pago y
-          <strong>NO tienen validez fiscal</strong>. Al registrar un pago, puede adjuntar la factura fiscal oficial emitida por su sistema de facturación.
+          <strong>NO tienen validez fiscal</strong>. Al registrar un pago, puede adjuntar la factura fiscal oficial
+          emitida por su sistema de facturación.
         </div>
       </div>
 
       <!-- Estadísticas -->
-      <div
-v-if="estadisticas"
-class="grid-responsive-3"
->
+      <div v-if="estadisticas" class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon stat-icon-info">
             <i class="fas fa-receipt" />
           </div>
           <div class="stat-content">
             <div class="stat-label">
-Total Recibos
-</div>
+              Total Recibos
+            </div>
             <div class="stat-value">
-{{ estadisticas.total_facturas || 0 }}
-</div>
+              {{ estadisticas.total_facturas || 0 }}
+            </div>
           </div>
         </div>
 
@@ -77,14 +56,14 @@ Total Recibos
           </div>
           <div class="stat-content">
             <div class="stat-label">
-Pendientes
-</div>
+              Pendientes
+            </div>
             <div class="stat-value">
-{{ estadisticas.facturas_pendientes || 0 }}
-</div>
+              {{ estadisticas.facturas_pendientes || 0 }}
+            </div>
             <div class="stat-subvalue">
-{{ formatCurrency(estadisticas.monto_pendiente || 0) }}
-</div>
+              {{ formatCurrency(estadisticas.monto_pendiente || 0) }}
+            </div>
           </div>
         </div>
 
@@ -94,14 +73,14 @@ Pendientes
           </div>
           <div class="stat-content">
             <div class="stat-label">
-Pagados
-</div>
+              Pagados
+            </div>
             <div class="stat-value">
-{{ estadisticas.facturas_pagadas || 0 }}
-</div>
+              {{ estadisticas.facturas_pagadas || 0 }}
+            </div>
             <div class="stat-subvalue">
-{{ formatCurrency(estadisticas.monto_pagado || 0) }}
-</div>
+              {{ formatCurrency(estadisticas.monto_pagado || 0) }}
+            </div>
           </div>
         </div>
 
@@ -111,131 +90,87 @@ Pagados
           </div>
           <div class="stat-content">
             <div class="stat-label">
-Monto Total
-</div>
+              Monto Total
+            </div>
             <div class="stat-value">
-{{ formatCurrency(estadisticas.monto_total || 0) }}
-</div>
+              {{ formatCurrency(estadisticas.monto_total || 0) }}
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Loading State -->
-      <loading-spinner
-v-if="loading"
-:loading="true"
-text="Cargando recibos..."
-/>
+      <loading-spinner v-if="loading" :loading="true" text="Cargando recibos..." />
 
       <!-- Tabla de Recibos -->
-      <div v-else>
-        <DataTable
-:columns="columns"
-:rows="facturas"
-:loading="loading"
-:config="tableConfig"
->
+      <div v-else class="mt-2">
+        <DataTable :columns="columns" :rows="facturas" :loading="loading" :config="tableConfig">
           <template #cliente_nombre="{ row }">
             <div class="client-info">
               <div class="client-avatar">
-{{ getInitials(row.cliente_nombre) }}
-</div>
+                {{ getInitials(row.cliente_nombre) }}
+              </div>
               <div class="client-details">
                 <div class="client-name truncate-2">
-{{ row.cliente_nombre }}
-</div>
+                  {{ row.cliente_nombre }}
+                </div>
                 <div class="client-email text-xs text-text-tertiary">
-{{ row.cliente_email }}
-</div>
+                  {{ row.cliente_email }}
+                </div>
               </div>
             </div>
           </template>
 
           <template #fac_fecha="{ row }">
-{{ formatDate(row.fac_fecha) }}
-</template>
+            {{ formatDate(row.fac_fecha) }}
+          </template>
           <template #fac_vencimiento="{ row }">
-{{ formatDate(row.fac_vencimiento) }}
-</template>
+            {{ formatDate(row.fac_vencimiento) }}
+          </template>
           <template #fac_total="{ row }">
-{{ formatCurrency(row.fac_total) }}
-</template>
+            {{ formatCurrency(row.fac_total) }}
+          </template>
 
           <template #fac_estado="{ row }">
             <span :class="['badge', getStatusClass(row.fac_estado)]">
-              <i
-class="fas"
-:class="getStatusIcon(row.fac_estado)"
-/>
+              <i class="fas" :class="getStatusIcon(row.fac_estado)" />
               {{ getStatusLabel(row.fac_estado) }}
             </span>
           </template>
 
           <template #fac_pdf_factura="{ row }">
-            <span
-v-if="row.fac_pdf_factura"
-class="pdf-attached"
-title="Ver factura adjunta"
-@click="verPdfFactura(row)"
->
+            <span v-if="row.fac_pdf_factura" class="pdf-attached" title="Ver factura adjunta"
+              @click="verPdfFactura(row)">
               <i class="fas fa-file-pdf" />
               Adjunta
             </span>
-            <span
-v-else-if="row.fac_estado === 'G'"
-class="pdf-missing"
->Pendiente</span>
+            <span v-else-if="row.fac_estado === 'G'" class="pdf-missing">Pendiente</span>
             <span v-else>-</span>
           </template>
 
           <template #actions="{ row }">
             <div class="action-buttons">
-              <button
-class="btn-icon"
-title="Ver detalle"
-@click="verDetalleFactura(row)"
->
-<i class="fas fa-eye" />
-</button>
-              <button
-v-if="row.fac_estado === 'P'"
-class="btn-icon"
-title="Editar recibo"
-@click="editarFactura(row)"
->
-<i class="fas fa-edit" />
-</button>
-              <button
-v-if="row.fac_estado === 'P'"
-class="btn-icon btn-success"
-title="Registrar pago"
-@click="openPagarModal(row)"
->
-<i class="fas fa-check" />
-</button>
-              <button
-v-if="row.fac_estado === 'G' && !row.fac_pdf_factura"
-class="btn-icon btn-info"
-title="Adjuntar factura PDF"
-@click="openSubirPdfModal(row)"
->
-<i class="fas fa-upload" />
-</button>
-              <button
-v-if="row.fac_estado !== 'A'"
-class="btn-icon btn-warning"
-title="Anular recibo"
-@click="confirmarAnular(row)"
->
-<i class="fas fa-ban" />
-</button>
-              <button
-class="btn-icon btn-danger"
-title="Eliminar recibo"
-@click="confirmarEliminar(row)"
->
-<i class="fas fa-trash" />
-</button>
+              <button class="btn-icon" title="Ver detalle" @click="verDetalleFactura(row)">
+                <i class="fas fa-eye" />
+              </button>
+              <button v-if="row.fac_estado === 'P'" class="btn-icon" title="Editar recibo" @click="editarFactura(row)">
+                <i class="fas fa-edit" />
+              </button>
+              <button v-if="row.fac_estado === 'P'" class="btn-icon btn-success" title="Registrar pago"
+                @click="openPagarModal(row)">
+                <i class="fas fa-check" />
+              </button>
+              <button v-if="row.fac_estado === 'G' && !row.fac_pdf_factura" class="btn-icon btn-info"
+                title="Adjuntar factura PDF" @click="openSubirPdfModal(row)">
+                <i class="fas fa-upload" />
+              </button>
+              <button v-if="row.fac_estado !== 'A'" class="btn-icon btn-warning" title="Anular recibo"
+                @click="confirmarAnular(row)">
+                <i class="fas fa-ban" />
+              </button>
+              <button class="btn-icon btn-danger" title="Eliminar recibo" @click="confirmarEliminar(row)">
+                <i class="fas fa-trash" />
+              </button>
             </div>
           </template>
         </DataTable>
@@ -243,11 +178,7 @@ title="Eliminar recibo"
     </BaseCard>
 
     <!-- Modal Crear/Editar Recibo -->
-    <Modal
-v-model="showModal"
-size="xl"
-:title="editMode ? 'Editar Recibo' : 'Nuevo Recibo'"
->
+    <Modal v-model="showModal" size="xl" :title="editMode ? 'Editar Recibo' : 'Nuevo Recibo'">
       <form @submit.prevent="guardarFactura">
         <!-- Datos Principales -->
         <div class="form-section">
@@ -261,13 +192,7 @@ size="xl"
                 <i class="fas fa-hashtag" />
                 Número de Recibo
               </label>
-              <input
-                v-model="formData.fac_numero"
-                type="text"
-                class="input"
-                :disabled="editMode"
-                readonly
-              >
+              <input v-model="formData.fac_numero" type="text" class="input" :disabled="editMode" readonly>
             </div>
 
             <div class="form-group">
@@ -275,20 +200,11 @@ size="xl"
                 <i class="fas fa-user" />
                 Cliente
               </label>
-              <select
-v-model="formData.cli_codigo"
-class="select"
-:disabled="editMode"
-required
->
+              <select v-model="formData.cli_codigo" class="select" :disabled="editMode" required>
                 <option value="">
-Seleccione un cliente
-</option>
-                <option
-v-for="cliente in clientes"
-:key="cliente.cli_codigo"
-:value="cliente.cli_codigo"
->
+                  Seleccione un cliente
+                </option>
+                <option v-for="cliente in clientes" :key="cliente.cli_codigo" :value="cliente.cli_codigo">
                   {{ cliente.nombre }} ({{ cliente.username }})
                 </option>
               </select>
@@ -299,12 +215,7 @@ v-for="cliente in clientes"
                 <i class="fas fa-calendar" />
                 Fecha de Emisión
               </label>
-              <input
-                v-model="formData.fac_fecha"
-                type="date"
-                class="input"
-                required
-              >
+              <input v-model="formData.fac_fecha" type="date" class="input" required>
             </div>
 
             <div class="form-group">
@@ -312,11 +223,7 @@ v-for="cliente in clientes"
                 <i class="fas fa-calendar-check" />
                 Fecha de Vencimiento
               </label>
-              <input
-                v-model="formData.fac_vencimiento"
-                type="date"
-                class="input"
-              >
+              <input v-model="formData.fac_vencimiento" type="date" class="input">
             </div>
 
             <div class="form-group form-group-full">
@@ -324,12 +231,8 @@ v-for="cliente in clientes"
                 <i class="fas fa-comment" />
                 Observaciones
               </label>
-              <textarea
-                v-model="formData.fac_observaciones"
-                class="input"
-                rows="2"
-                placeholder="Observaciones adicionales"
-              />
+              <textarea v-model="formData.fac_observaciones" class="input" rows="2"
+                placeholder="Observaciones adicionales" />
             </div>
           </div>
         </div>
@@ -341,73 +244,33 @@ v-for="cliente in clientes"
               <i class="fas fa-list" />
               Detalles del Recibo
             </h3>
-            <button
-type="button"
-class="btn btn-secondary btn-sm"
-@click="agregarDetalle"
->
+            <button type="button" class="btn btn-secondary btn-sm" @click="agregarDetalle">
               <i class="fas fa-plus" />
               Agregar Línea
             </button>
           </div>
 
           <div class="detalles-container">
-            <div
-              v-for="(detalle, index) in formData.detalles"
-              :key="index"
-              class="detalle-row"
-            >
+            <div v-for="(detalle, index) in formData.detalles" :key="index" class="detalle-row">
               <div class="detalle-order">
-{{ index + 1 }}
-</div>
-              <div class="detalle-fields">
-                <input
-                  v-model="detalle.det_concepto"
-                  type="text"
-                  class="input"
-                  placeholder="Concepto o descripción"
-                  required
-                >
-                <input
-                  v-model.number="detalle.det_cantidad"
-                  type="number"
-                  step="0.01"
-                  class="input input-small"
-                  placeholder="Cant."
-                  required
-                  @input="calcularSubtotalDetalle(detalle)"
-                >
-                <input
-                  v-model.number="detalle.det_precio_unitario"
-                  type="number"
-                  step="0.01"
-                  class="input input-medium"
-                  placeholder="Precio Unit."
-                  required
-                  @input="calcularSubtotalDetalle(detalle)"
-                >
-                <input
-                  :value="formatCurrency(detalle.det_subtotal)"
-                  type="text"
-                  class="input input-medium"
-                  placeholder="Subtotal"
-                  readonly
-                >
+                {{ index + 1 }}
               </div>
-              <button
-                type="button"
-                class="btn-icon btn-danger"
-                title="Eliminar línea"
-                @click="eliminarDetalle(index)"
-              >
+              <div class="detalle-fields">
+                <input v-model="detalle.det_concepto" type="text" class="input" placeholder="Concepto o descripción"
+                  required>
+                <input v-model.number="detalle.det_cantidad" type="number" step="0.01" class="input input-small"
+                  placeholder="Cant." required @input="calcularSubtotalDetalle(detalle)">
+                <input v-model.number="detalle.det_precio_unitario" type="number" step="0.01" class="input input-medium"
+                  placeholder="Precio Unit." required @input="calcularSubtotalDetalle(detalle)">
+                <input :value="formatCurrency(detalle.det_subtotal)" type="text" class="input input-medium"
+                  placeholder="Subtotal" readonly>
+              </div>
+              <button type="button" class="btn-icon btn-danger" title="Eliminar línea" @click="eliminarDetalle(index)">
                 <i class="fas fa-trash" />
               </button>
             </div>
 
-            <div
-v-if="formData.detalles.length === 0"
-class="empty-detalles"
->
+            <div v-if="formData.detalles.length === 0" class="empty-detalles">
               <i class="fas fa-inbox" />
               <p>No hay líneas agregadas. Haga clic en "Agregar Línea" para comenzar.</p>
             </div>
@@ -422,13 +285,8 @@ class="empty-detalles"
             <div class="total-row">
               <span class="total-label">
                 IVA (
-                <input
-                  v-model.number="tasaImpuesto"
-                  type="number"
-                  step="1"
-                  class="input-inline"
-                  @input="calcularTotales"
-                >%):
+                <input v-model.number="tasaImpuesto" type="number" step="1" class="input-inline"
+                  @input="calcularTotales">%):
               </span>
               <span class="total-value">{{ formatCurrency(formData.fac_impuesto) }}</span>
             </div>
@@ -441,34 +299,19 @@ class="empty-detalles"
       </form>
 
       <template #footer>
-        <button
-type="button"
-class="btn btn-secondary"
-@click="closeModal"
->
+        <button type="button" class="btn btn-secondary" @click="closeModal">
           <i class="fas fa-times" />
           Cancelar
         </button>
-        <button
-class="btn btn-primary"
-:disabled="saving || formData.detalles.length === 0"
-@click="guardarFactura"
->
-          <i
-class="fas"
-:class="saving ? 'fa-spinner fa-spin' : 'fa-save'"
-/>
+        <button class="btn btn-primary" :disabled="saving || formData.detalles.length === 0" @click="guardarFactura">
+          <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-save'" />
           {{ saving ? 'Guardando...' : 'Guardar Recibo' }}
         </button>
       </template>
     </Modal>
 
     <!-- Modal Ver Detalle -->
-    <Modal
-v-model="showDetalleModal"
-size="lg"
-title="Detalle de Recibo"
->
+    <Modal v-model="showDetalleModal" size="lg" title="Detalle de Recibo">
       <div v-if="facturaDetalle">
         <!-- Disclaimer en detalle -->
         <div class="alert alert-warning">
@@ -495,12 +338,10 @@ title="Detalle de Recibo"
               <span class="detalle-label">Teléfono:</span>
               <span class="detalle-value">{{ facturaDetalle.cliente_telefono }}</span>
             </div>
-            <div
-v-if="facturaDetalle.cliente_domicilio"
-class="detalle-item"
->
+            <div v-if="facturaDetalle.cliente_domicilio" class="detalle-item">
               <span class="detalle-label">Domicilio:</span>
-              <span class="detalle-value">{{ facturaDetalle.cliente_domicilio }}, {{ facturaDetalle.cliente_localidad }}</span>
+              <span class="detalle-value">{{ facturaDetalle.cliente_domicilio }}, {{ facturaDetalle.cliente_localidad
+                }}</span>
             </div>
           </div>
         </div>
@@ -527,44 +368,26 @@ class="detalle-item"
             <div class="detalle-item">
               <span class="detalle-label">Estado:</span>
               <span :class="['badge', getStatusClass(facturaDetalle.fac_estado)]">
-                <i
-class="fas"
-:class="getStatusIcon(facturaDetalle.fac_estado)"
-/>
+                <i class="fas" :class="getStatusIcon(facturaDetalle.fac_estado)" />
                 {{ getStatusLabel(facturaDetalle.fac_estado) }}
               </span>
             </div>
-            <div
-v-if="facturaDetalle.fac_fecha_pago"
-class="detalle-item"
->
+            <div v-if="facturaDetalle.fac_fecha_pago" class="detalle-item">
               <span class="detalle-label">Fecha de Pago:</span>
               <span class="detalle-value">{{ formatDate(facturaDetalle.fac_fecha_pago) }}</span>
             </div>
-            <div
-v-if="facturaDetalle.fac_metodo_pago"
-class="detalle-item"
->
+            <div v-if="facturaDetalle.fac_metodo_pago" class="detalle-item">
               <span class="detalle-label">Método de Pago:</span>
               <span class="detalle-value">{{ facturaDetalle.fac_metodo_pago }}</span>
             </div>
-            <div
-v-if="facturaDetalle.fac_pdf_factura"
-class="detalle-item"
->
+            <div v-if="facturaDetalle.fac_pdf_factura" class="detalle-item">
               <span class="detalle-label">Factura Fiscal:</span>
-              <button
-class="btn btn-sm btn-info"
-@click="verPdfFactura(facturaDetalle)"
->
+              <button class="btn btn-sm btn-info" @click="verPdfFactura(facturaDetalle)">
                 <i class="fas fa-file-pdf" />
                 Ver Factura
               </button>
             </div>
-            <div
-v-if="facturaDetalle.fac_observaciones"
-class="detalle-item detalle-item-full"
->
+            <div v-if="facturaDetalle.fac_observaciones" class="detalle-item detalle-item-full">
               <span class="detalle-label">Observaciones:</span>
               <span class="detalle-value">{{ facturaDetalle.fac_observaciones }}</span>
             </div>
@@ -582,66 +405,54 @@ class="detalle-item detalle-item-full"
               <tr>
                 <th>Concepto</th>
                 <th class="text-right">
-Cantidad
-</th>
+                  Cantidad
+                </th>
                 <th class="text-right">
-Precio Unit.
-</th>
+                  Precio Unit.
+                </th>
                 <th class="text-right">
-Subtotal
-</th>
+                  Subtotal
+                </th>
               </tr>
             </thead>
             <tbody>
-              <tr
-v-for="detalle in facturaDetalle.detalles"
-:key="detalle.det_codigo"
->
+              <tr v-for="detalle in facturaDetalle.detalles" :key="detalle.det_codigo">
                 <td>{{ detalle.det_concepto }}</td>
                 <td class="text-right">
-{{ detalle.det_cantidad }}
-</td>
+                  {{ detalle.det_cantidad }}
+                </td>
                 <td class="text-right">
-{{ formatCurrency(detalle.det_precio_unitario) }}
-</td>
+                  {{ formatCurrency(detalle.det_precio_unitario) }}
+                </td>
                 <td class="text-right">
-{{ formatCurrency(detalle.det_subtotal) }}
-</td>
+                  {{ formatCurrency(detalle.det_subtotal) }}
+                </td>
               </tr>
             </tbody>
             <tfoot>
               <tr>
-                <td
-colspan="3"
-class="text-right"
->
-<strong>Subtotal:</strong>
-</td>
+                <td colspan="3" class="text-right">
+                  <strong>Subtotal:</strong>
+                </td>
                 <td class="text-right">
-<strong>{{ formatCurrency(facturaDetalle.fac_subtotal) }}</strong>
-</td>
+                  <strong>{{ formatCurrency(facturaDetalle.fac_subtotal) }}</strong>
+                </td>
               </tr>
               <tr>
-                <td
-colspan="3"
-class="text-right"
->
-<strong>IVA:</strong>
-</td>
+                <td colspan="3" class="text-right">
+                  <strong>IVA:</strong>
+                </td>
                 <td class="text-right">
-<strong>{{ formatCurrency(facturaDetalle.fac_impuesto) }}</strong>
-</td>
+                  <strong>{{ formatCurrency(facturaDetalle.fac_impuesto) }}</strong>
+                </td>
               </tr>
               <tr class="total-final-row">
-                <td
-colspan="3"
-class="text-right"
->
-<strong>Total:</strong>
-</td>
+                <td colspan="3" class="text-right">
+                  <strong>Total:</strong>
+                </td>
                 <td class="text-right">
-<strong>{{ formatCurrency(facturaDetalle.fac_total) }}</strong>
-</td>
+                  <strong>{{ formatCurrency(facturaDetalle.fac_total) }}</strong>
+                </td>
               </tr>
             </tfoot>
           </table>
@@ -649,10 +460,7 @@ class="text-right"
       </div>
 
       <template #footer>
-        <button
-class="btn btn-secondary"
-@click="showDetalleModal = false"
->
+        <button class="btn btn-secondary" @click="showDetalleModal = false">
           <i class="fas fa-times" />
           Cerrar
         </button>
@@ -660,23 +468,14 @@ class="btn btn-secondary"
     </Modal>
 
     <!-- Modal Registrar Pago -->
-    <Modal
-v-model="showPagarModal"
-size="md"
-title="Registrar Pago"
->
+    <Modal v-model="showPagarModal" size="md" title="Registrar Pago">
       <form @submit.prevent="marcarPagada">
         <div class="form-group">
           <label class="label">
             <i class="fas fa-calendar" />
             Fecha de Pago
           </label>
-          <input
-            v-model="pagoData.fac_fecha_pago"
-            type="date"
-            class="input"
-            required
-          >
+          <input v-model="pagoData.fac_fecha_pago" type="date" class="input" required>
         </div>
 
         <div class="form-group">
@@ -684,32 +483,28 @@ title="Registrar Pago"
             <i class="fas fa-credit-card" />
             Método de Pago
           </label>
-          <select
-v-model="pagoData.fac_metodo_pago"
-class="select"
-required
->
+          <select v-model="pagoData.fac_metodo_pago" class="select" required>
             <option value="">
-Seleccione un método
-</option>
+              Seleccione un método
+            </option>
             <option value="Efectivo">
-Efectivo
-</option>
+              Efectivo
+            </option>
             <option value="Transferencia">
-Transferencia Bancaria
-</option>
+              Transferencia Bancaria
+            </option>
             <option value="Tarjeta">
-Tarjeta de Crédito/Débito
-</option>
+              Tarjeta de Crédito/Débito
+            </option>
             <option value="MercadoPago">
-MercadoPago
-</option>
+              MercadoPago
+            </option>
             <option value="Cheque">
-Cheque
-</option>
+              Cheque
+            </option>
             <option value="Otro">
-Otro
-</option>
+              Otro
+            </option>
           </select>
         </div>
 
@@ -719,41 +514,20 @@ Otro
             Adjuntar Factura Fiscal (PDF)
             <span class="form-label-optional">(Opcional)</span>
           </label>
-          <div
-class="file-upload-area"
-@click="triggerFileInput"
-@dragover.prevent
-@drop.prevent="handleFileDrop"
->
-            <input
-              ref="fileInput"
-              type="file"
-              accept="application/pdf"
-              hidden
-              @change="handleFileSelect"
-            >
-            <div
-v-if="!pagoData.archivoFactura"
-class="file-upload-placeholder"
->
+          <div class="file-upload-area" @click="triggerFileInput" @dragover.prevent @drop.prevent="handleFileDrop">
+            <input ref="fileInput" type="file" accept="application/pdf" hidden @change="handleFileSelect">
+            <div v-if="!pagoData.archivoFactura" class="file-upload-placeholder">
               <i class="fas fa-cloud-upload-alt" />
               <p>Haga clic o arrastre un archivo PDF aquí</p>
               <span class="file-upload-hint">Factura fiscal oficial (máx. 5MB)</span>
             </div>
-            <div
-v-else
-class="file-upload-selected"
->
+            <div v-else class="file-upload-selected">
               <i class="fas fa-file-pdf" />
               <div class="file-info">
                 <span class="file-name">{{ pagoData.archivoFactura.name }}</span>
                 <span class="file-size">{{ formatFileSize(pagoData.archivoFactura.size) }}</span>
               </div>
-              <button
-type="button"
-class="file-remove-btn"
-@click.stop="removeFile"
->
+              <button type="button" class="file-remove-btn" @click.stop="removeFile">
                 <i class="fas fa-times" />
               </button>
             </div>
@@ -766,75 +540,40 @@ class="file-remove-btn"
       </form>
 
       <template #footer>
-        <button
-type="button"
-class="btn btn-secondary"
-@click="showPagarModal = false"
->
+        <button type="button" class="btn btn-secondary" @click="showPagarModal = false">
           <i class="fas fa-times" />
           Cancelar
         </button>
-        <button
-class="btn btn-success"
-:disabled="saving"
-@click="marcarPagada"
->
-          <i
-class="fas"
-:class="saving ? 'fa-spinner fa-spin' : 'fa-check'"
-/>
+        <button class="btn btn-success" :disabled="saving" @click="marcarPagada">
+          <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-check'" />
           {{ saving ? 'Procesando...' : 'Confirmar Pago' }}
         </button>
       </template>
     </Modal>
 
     <!-- Modal Subir PDF de Factura -->
-    <Modal
-v-model="showSubirPdfModal"
-size="md"
-title="Adjuntar Factura Fiscal"
->
+    <Modal v-model="showSubirPdfModal" size="md" title="Adjuntar Factura Fiscal">
       <form @submit.prevent="subirPdfFactura">
         <div class="form-group">
           <label class="label">
             <i class="fas fa-file-pdf" />
             Archivo de Factura Fiscal (PDF)
           </label>
-          <div
-class="file-upload-area"
-@click="triggerSubirFileInput"
-@dragover.prevent
-@drop.prevent="handleSubirFileDrop"
->
-            <input
-              ref="subirFileInput"
-              type="file"
-              accept="application/pdf"
-              hidden
-              @change="handleSubirFileSelect"
-            >
-            <div
-v-if="!archivoSubir"
-class="file-upload-placeholder"
->
+          <div class="file-upload-area" @click="triggerSubirFileInput" @dragover.prevent
+            @drop.prevent="handleSubirFileDrop">
+            <input ref="subirFileInput" type="file" accept="application/pdf" hidden @change="handleSubirFileSelect">
+            <div v-if="!archivoSubir" class="file-upload-placeholder">
               <i class="fas fa-cloud-upload-alt" />
               <p>Haga clic o arrastre un archivo PDF aquí</p>
               <span class="file-upload-hint">Factura fiscal oficial (máx. 5MB)</span>
             </div>
-            <div
-v-else
-class="file-upload-selected"
->
+            <div v-else class="file-upload-selected">
               <i class="fas fa-file-pdf" />
               <div class="file-info">
                 <span class="file-name">{{ archivoSubir.name }}</span>
                 <span class="file-size">{{ formatFileSize(archivoSubir.size) }}</span>
               </div>
-              <button
-type="button"
-class="file-remove-btn"
-@click.stop="archivoSubir = null"
->
+              <button type="button" class="file-remove-btn" @click.stop="archivoSubir = null">
                 <i class="fas fa-times" />
               </button>
             </div>
@@ -843,34 +582,19 @@ class="file-remove-btn"
       </form>
 
       <template #footer>
-        <button
-type="button"
-class="btn btn-secondary"
-@click="showSubirPdfModal = false"
->
+        <button type="button" class="btn btn-secondary" @click="showSubirPdfModal = false">
           <i class="fas fa-times" />
           Cancelar
         </button>
-        <button
-class="btn btn-primary"
-:disabled="saving || !archivoSubir"
-@click="subirPdfFactura"
->
-          <i
-class="fas"
-:class="saving ? 'fa-spinner fa-spin' : 'fa-upload'"
-/>
+        <button class="btn btn-primary" :disabled="saving || !archivoSubir" @click="subirPdfFactura">
+          <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-upload'" />
           {{ saving ? 'Subiendo...' : 'Subir Factura' }}
         </button>
       </template>
     </Modal>
 
     <!-- Modal Confirmación Anular -->
-    <Modal
-v-model="showAnularModal"
-size="sm"
-title="Anular Recibo"
->
+    <Modal v-model="showAnularModal" size="sm" title="Anular Recibo">
       <p class="confirm-message">
         ¿Está seguro de que desea anular el recibo <strong>{{ facturaAnular?.fac_numero }}</strong>?
       </p>
@@ -880,33 +604,19 @@ title="Anular Recibo"
       </div>
 
       <template #footer>
-        <button
-class="btn btn-secondary"
-@click="showAnularModal = false"
->
+        <button class="btn btn-secondary" @click="showAnularModal = false">
           <i class="fas fa-times" />
           Cancelar
         </button>
-        <button
-class="btn btn-warning"
-:disabled="saving"
-@click="anularFactura"
->
-          <i
-class="fas"
-:class="saving ? 'fa-spinner fa-spin' : 'fa-ban'"
-/>
+        <button class="btn btn-warning" :disabled="saving" @click="anularFactura">
+          <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-ban'" />
           {{ saving ? 'Anulando...' : 'Anular Recibo' }}
         </button>
       </template>
     </Modal>
 
     <!-- Modal Confirmación Eliminar -->
-    <Modal
-v-model="showDeleteModal"
-size="sm"
-title="Eliminar Recibo"
->
+    <Modal v-model="showDeleteModal" size="sm" title="Eliminar Recibo">
       <p class="confirm-message">
         ¿Está seguro de que desea eliminar el recibo <strong>{{ facturaEliminar?.fac_numero }}</strong>?
       </p>
@@ -916,22 +626,12 @@ title="Eliminar Recibo"
       </div>
 
       <template #footer>
-        <button
-class="btn btn-secondary"
-@click="showDeleteModal = false"
->
+        <button class="btn btn-secondary" @click="showDeleteModal = false">
           <i class="fas fa-times" />
           Cancelar
         </button>
-        <button
-class="btn btn-danger"
-:disabled="saving"
-@click="eliminarFactura"
->
-          <i
-class="fas"
-:class="saving ? 'fa-spinner fa-spin' : 'fa-trash'"
-/>
+        <button class="btn btn-danger" :disabled="saving" @click="eliminarFactura">
+          <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-trash'" />
           {{ saving ? 'Eliminando...' : 'Eliminar Recibo' }}
         </button>
       </template>
@@ -1496,5 +1196,402 @@ onMounted(async () => {
 })
 </script>
 
-<style src="@/assets/css/main.css"></style>
+<style scoped>
+/* ===== STATS GRID ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  margin-top: 1.25rem;
+}
+@media (min-width: 640px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1280px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
 
+/* ===== STAT CARDS ===== */
+:deep(.stat-card),
+.stat-card {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  padding: 1.125rem 1.25rem !important;
+  background: #111111 !important;
+  border: 1px solid #2a2a2a !important;
+  border-radius: 0.875rem !important;
+  transition: all 0.2s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 60%);
+  pointer-events: none;
+}
+.stat-card:hover {
+  background: #1a1a1a !important;
+  border-color: #3a3a3a !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(59,130,246,0.1) !important;
+  transform: translateY(-1px);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}
+.stat-icon-info    { background: rgba(14,165,233,0.12); color: #38bdf8; box-shadow: 0 0 0 1px rgba(14,165,233,0.2); }
+.stat-icon-warning { background: rgba(245,158,11,0.12); color: #fbbf24; box-shadow: 0 0 0 1px rgba(245,158,11,0.2); }
+.stat-icon-success { background: rgba(34,197,94,0.12);  color: #4ade80; box-shadow: 0 0 0 1px rgba(34,197,94,0.2); }
+.stat-icon-primary { background: rgba(59,130,246,0.12); color: #60a5fa; box-shadow: 0 0 0 1px rgba(59,130,246,0.2); }
+
+.stat-content { flex: 1; min-width: 0; }
+.stat-label {
+  font-size: 0.6875rem;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+.stat-value {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.stat-subvalue {
+  font-size: 0.6875rem;
+  color: #52525b;
+  margin-top: 0.2rem;
+}
+
+/* ===== CLIENT INFO ===== */
+.client-info { display: flex; align-items: center; gap: 0.625rem; }
+.client-avatar {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.02em;
+}
+.client-details { min-width: 0; }
+.client-name {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #e4e4e7;
+  line-height: 1.3;
+}
+.client-email {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+}
+
+/* ===== PDF BADGES ===== */
+.pdf-attached {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.2rem 0.625rem;
+  background: rgba(239,68,68,0.1);
+  color: #f87171;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid rgba(239,68,68,0.2);
+}
+.pdf-attached:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.4); }
+.pdf-missing { font-size: 0.6875rem; color: #52525b; font-style: italic; }
+
+/* ===== ACTION BUTTONS ===== */
+.action-buttons { display: flex; align-items: center; gap: 0.3rem; }
+.btn-icon {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+  background: #1a1a1a;
+  color: #71717a;
+  font-size: 0.6875rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-icon:hover                          { background: #252525; color: #e4e4e7; border-color: #3a3a3a; }
+.btn-icon.btn-success                    { color: #4ade80; border-color: rgba(34,197,94,0.25); }
+.btn-icon.btn-success:hover              { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.5); }
+.btn-icon.btn-danger                     { color: #f87171; border-color: rgba(239,68,68,0.25); }
+.btn-icon.btn-danger:hover               { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.5); }
+.btn-icon.btn-warning                    { color: #fbbf24; border-color: rgba(245,158,11,0.25); }
+.btn-icon.btn-warning:hover              { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.5); }
+.btn-icon.btn-info                       { color: #38bdf8; border-color: rgba(14,165,233,0.25); }
+.btn-icon.btn-info:hover                 { background: rgba(14,165,233,0.12); border-color: rgba(14,165,233,0.5); }
+
+/* ===== FORM SECTIONS (modal create/edit) ===== */
+.form-section {
+  background: #0f0f0f;
+  border: 1px solid #242424;
+  border-radius: 0.75rem;
+  padding: 1.125rem 1.25rem;
+  margin-bottom: 0.875rem;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 1rem;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid #1e1e1e;
+}
+.section-title i { color: #3b82f6; font-size: 0.75rem; }
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.section-title-row .section-title { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+@media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+.form-group-full { grid-column: 1 / -1; }
+
+/* ===== DETALLES LINES ===== */
+.detalles-container { display: flex; flex-direction: column; gap: 0.5rem; }
+.detalle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #111;
+  border: 1px solid #242424;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  transition: border-color 0.15s;
+}
+.detalle-row:hover { border-color: rgba(59,130,246,0.4); }
+.detalle-order {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 50%;
+  background: #1f1f1f;
+  border: 1px solid #2a2a2a;
+  color: #52525b;
+  font-size: 0.625rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.detalle-fields {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 72px 110px 100px;
+  gap: 0.375rem;
+  align-items: center;
+}
+@media (max-width: 700px) { .detalle-fields { grid-template-columns: 1fr 60px; } }
+.input-small  { width: 72px !important; min-width: 0; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.input-medium { width: 110px !important; min-width: 0; padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+.input-inline {
+  width: 50px;
+  display: inline-block;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  color: #e4e4e7;
+  text-align: center;
+  padding: 2px 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  vertical-align: middle;
+  transition: border-color 0.15s;
+}
+.input-inline:focus { outline: none; border-color: #3b82f6; background: #111; }
+
+.empty-detalles {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #3f3f46;
+  border: 2px dashed #1e1e1e;
+  border-radius: 0.5rem;
+  margin-top: 0.25rem;
+}
+.empty-detalles i { font-size: 1.75rem; display: block; margin-bottom: 0.5rem; }
+.empty-detalles p { font-size: 0.8125rem; }
+
+/* ===== TOTALES ===== */
+.totales-container {
+  margin-top: 0.875rem;
+  background: #0d0d0d;
+  border: 1px solid #1e1e1e;
+  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+}
+.total-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.5rem;
+  padding: 0.375rem 0;
+  border-bottom: 1px solid #1a1a1a;
+}
+.total-row:last-child { border-bottom: none; }
+.total-label {
+  font-size: 0.8125rem;
+  color: #71717a;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+}
+.total-value {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  min-width: 100px;
+  text-align: right;
+}
+.total-row-final .total-label {
+  color: #60a5fa;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+.total-row-final .total-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #60a5fa;
+}
+
+/* ===== DETALLE VIEW MODAL ===== */
+.detalle-section {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #1e1e1e;
+}
+.detalle-section:last-child { border-bottom: none; margin-bottom: 0; }
+.detalle-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #3b82f6;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 0.75rem;
+}
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.625rem;
+}
+@media (max-width: 480px) { .detalle-grid { grid-template-columns: 1fr; } }
+.detalle-item { display: flex; flex-direction: column; gap: 0.2rem; }
+.detalle-item-full { grid-column: 1 / -1; }
+.detalle-label {
+  font-size: 0.625rem;
+  color: #52525b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+.detalle-value { font-size: 0.875rem; color: #d4d4d8; }
+.total-final-row { background: rgba(59,130,246,0.04); border-radius: 0 0 0.25rem 0.25rem; }
+
+/* ===== FILE UPLOAD ===== */
+.file-upload-area {
+  border: 2px dashed #242424;
+  border-radius: 0.625rem;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #0d0d0d;
+}
+.file-upload-area:hover {
+  border-color: #3b82f6;
+  background: rgba(59,130,246,0.04);
+}
+.file-upload-placeholder { text-align: center; }
+.file-upload-placeholder i { font-size: 1.75rem; color: #3f3f46; display: block; margin-bottom: 0.5rem; }
+.file-upload-placeholder p { font-size: 0.8125rem; color: #71717a; margin-bottom: 0.2rem; }
+.file-upload-hint { font-size: 0.6875rem; color: #3f3f46; }
+
+.file-upload-selected { display: flex; align-items: center; gap: 0.75rem; }
+.file-upload-selected > i { font-size: 2rem; color: #f87171; flex-shrink: 0; }
+.file-info { flex: 1; min-width: 0; }
+.file-name { font-size: 0.875rem; color: #e4e4e7; display: block; font-weight: 500; }
+.file-size { font-size: 0.6875rem; color: #71717a; }
+.file-remove-btn {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: rgba(239,68,68,0.1);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  transition: all 0.15s;
+  padding: 0;
+}
+.file-remove-btn:hover { background: rgba(239,68,68,0.25); border-color: rgba(239,68,68,0.5); }
+
+/* ===== MISC ===== */
+.form-label-optional {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: #52525b;
+  margin-left: 0.25rem;
+}
+.form-help-text {
+  font-size: 0.6875rem;
+  color: #52525b;
+  margin-top: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.confirm-message {
+  font-size: 0.9375rem;
+  color: #d4d4d8;
+  margin-bottom: 0.875rem;
+  line-height: 1.5;
+}
+.row-inactive { opacity: 0.5; }
+</style>

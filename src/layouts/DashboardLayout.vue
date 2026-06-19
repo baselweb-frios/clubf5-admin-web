@@ -249,7 +249,7 @@ d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3
       <footer class="py-4 px-6 border-t border-dark-border">
         <div class="flex-between flex-wrap gap-4 text-sm text-text-tertiary">
           <p>2024 Club F5. Todos los derechos reservados.</p>
-          <p>v1.0.0</p>
+          <p>v{{ appVersion }}</p>
         </div>
       </footer>
     </div>
@@ -285,6 +285,8 @@ import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ProfileModal from '@/components/ProfileModal.vue'
 import { useSignalRAuth } from '@/composables/useSignalRAuth'
+
+const appVersion = __APP_VERSION__
 
 const router = useRouter()
 const route = useRoute()
@@ -374,7 +376,8 @@ const sidebarLinks = computed(() => {
     links.push({ name: 'Paquetes y Precios', icon: 'list-alt', path: '/paquetes' })
     links.push({ name: 'Locutores (Voces IA)', icon: 'cog', path: '/voces-elevenlabs' })
     links.push({ name: 'Editor de pagina', icon: 'building', path: '/landing-editor' })
-    links.push({ name: 'OBS API Console', icon: 'cloud', path: '/obs-api-console' })
+    links.push({ name: 'Logs del Sistema', icon: 'document', path: '/event-log' })
+    links.push({ name: 'Banco de Pruebas de Email', icon: 'document', path: '/email-test' })
   }
 
   return links

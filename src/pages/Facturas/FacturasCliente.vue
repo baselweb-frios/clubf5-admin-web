@@ -238,12 +238,8 @@ class="modal-backdrop"
           <div class="flex-start gap-3">
             <i class="fas fa-receipt text-lg text-info-400" />
             <div>
-              <h2 class="text-lg font-bold text-text-primary">
-Detalle de Recibo
-</h2>
-              <p class="text-xs text-text-secondary">
-{{ facturaDetalle?.fac_numero }}
-</p>
+              <h2 class="text-lg font-bold text-text-primary">Detalle de Recibo</h2>
+              <p class="text-xs text-text-secondary">{{ facturaDetalle?.fac_numero }}</p>
             </div>
           </div>
           <button
@@ -255,10 +251,7 @@ aria-label="Cerrar modal"
           </button>
         </div>
 
-        <div
-v-if="facturaDetalle"
-class="modal-body overflow-y-auto"
->
+        <div v-if="facturaDetalle" class="modal-body overflow-y-auto">
           <!-- Información del Recibo -->
           <div class="mb-6">
             <h4 class="flex-start gap-2 text-sm font-semibold text-text-primary mb-4">
@@ -273,35 +266,15 @@ class="modal-body overflow-y-auto"
               <div>
                 <span class="text-xs text-text-secondary block mb-1">Fecha:</span>
                 <span class="text-sm font-medium text-text-primary">{{ formatDate(facturaDetalle.fac_fecha) }}</span>
-                  </div>
-                  <div class="detalle-item">
-                    <span class="detalle-label">Vencimiento:</span>
-                    <span class="detalle-value">{{ formatDate(facturaDetalle.fac_vencimiento) }}</span>
-                  </div>
-                  <div class="detalle-item">
-                    <span class="detalle-label">Estado:</span>
-                    <span :class="['status-badge', getStatusClass(facturaDetalle.fac_estado)]">
-                      <i
-class="fas"
-:class="getStatusIcon(facturaDetalle.fac_estado)"
-/>
-                      {{ getStatusLabel(facturaDetalle.fac_estado) }}
-                    </span>
-                  </div>
-                  <div
-v-if="facturaDetalle.fac_fecha_pago"
-class="detalle-item"
->
-                    <span class="detalle-label">Fecha de Pago:</span>
-                    <span class="detalle-value">{{ formatDate(facturaDetalle.fac_fecha_pago) }}</span>
               </div>
               <div>
                 <span class="text-xs text-text-secondary block mb-1">Vencimiento:</span>
                 <span class="text-sm font-medium text-text-primary">{{ formatDate(facturaDetalle.fac_vencimiento) }}</span>
               </div>
               <div>
-                <span class="text-xs text-text-secondary block mb-1">Estatus:</span>
+                <span class="text-xs text-text-secondary block mb-1">Estado:</span>
                 <span :class="['badge', 'badge-' + getBadgeVariant(facturaDetalle.fac_estado)]">
+                  <i class="fas" :class="getStatusIcon(facturaDetalle.fac_estado)" />
                   {{ getStatusLabel(facturaDetalle.fac_estado) }}
                 </span>
               </div>
@@ -313,10 +286,14 @@ class="detalle-item"
                 <span class="text-xs text-text-secondary block mb-1">Método de Pago:</span>
                 <span class="text-sm font-medium text-text-primary">{{ facturaDetalle.fac_metodo_pago }}</span>
               </div>
-              <div
-v-if="facturaDetalle.fac_observaciones"
-class="col-span-2"
->
+              <div v-if="facturaDetalle.fac_pdf_factura" class="col-span-2">
+                <span class="text-xs text-text-secondary block mb-1">Factura Fiscal:</span>
+                <button class="btn btn-sm btn-secondary" @click="verPdfFactura(facturaDetalle)">
+                  <i class="fas fa-file-pdf text-danger-400" />
+                  Ver Factura PDF
+                </button>
+              </div>
+              <div v-if="facturaDetalle.fac_observaciones" class="col-span-2">
                 <span class="text-xs text-text-secondary block mb-1">Observaciones:</span>
                 <span class="text-sm text-text-primary">{{ facturaDetalle.fac_observaciones }}</span>
               </div>

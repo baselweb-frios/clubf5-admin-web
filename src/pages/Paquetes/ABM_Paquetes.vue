@@ -1,18 +1,11 @@
 <template>
   <div class="page-wrapper">
     <!-- Alert Notifications -->
-    <div
-v-if="alertMsg"
-class="p-4 max-w-md mx-auto mb-6"
->
+    <div v-if="alertMsg" class="p-4 max-w-md mx-auto mb-6">
       <div :class="['alert', `alert-${getAlertVariant(alertType)}`]">
         <i class="fas fa-info-circle flex-shrink-0" />
         <span>{{ alertMsg }}</span>
-        <button
-class="ml-auto flex-shrink-0"
-aria-label="Cerrar"
-@click="alertMsg = ''"
->
+        <button class="ml-auto flex-shrink-0" aria-label="Cerrar" @click="alertMsg = ''">
           <i class="fas fa-times" />
         </button>
       </div>
@@ -23,31 +16,22 @@ aria-label="Cerrar"
       <div class="card">
         <div class="flex-between mb-6 pb-6 border-b border-dark-border">
           <h1 class="text-2xl font-bold text-text-primary">
-Gestión de Paquetes
-</h1>
-          <button
-class="btn btn-primary"
-@click="abrirModalNuevo"
->
+            Gestión de Paquetes
+          </h1>
+          <button class="btn btn-primary" @click="abrirModalNuevo">
             <i class="fas fa-plus" />
             Nuevo Paquete
           </button>
         </div>
 
         <!-- Loading State -->
-        <div
-v-if="loading"
-class="flex-center py-12"
->
+        <div v-if="loading" class="flex-center py-12">
           <div class="spinner" />
           <span class="ml-3 text-text-secondary">Cargando paquetes...</span>
         </div>
 
         <!-- Data Table -->
-        <div
-v-else
-class="table-container"
->
+        <div v-else class="table-container">
           <table class="table">
             <thead>
               <tr>
@@ -58,24 +42,18 @@ class="table-container"
                 <th>Max. Spots</th>
                 <th>Límite IA</th>
                 <th class="text-right">
-Acciones
-</th>
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="paquetes.length === 0">
-                <td
-colspan="7"
-class="text-center py-8 text-text-tertiary"
->
+                <td colspan="7" class="text-center py-8 text-text-tertiary">
                   <i class="fas fa-inbox text-2xl mb-2 block" />
                   <p>No se encontraron paquetes</p>
                 </td>
               </tr>
-              <tr
-v-for="paq in paquetes"
-:key="paq.paq_codigo"
->
+              <tr v-for="paq in paquetes" :key="paq.paq_codigo">
                 <td>
                   <span class="font-medium text-text-primary">{{ paq.paq_codigo }}</span>
                 </td>
@@ -86,18 +64,12 @@ v-for="paq in paquetes"
                 <td>{{ paq.paq_ia_limit || '-' }}</td>
                 <td>
                   <div class="flex-end gap-1.5">
-                    <button
-class="btn btn-ghost btn-icon btn-sm text-primary-400"
-title="Editar"
-@click="editarPaquete(paq)"
->
+                    <button class="btn btn-ghost btn-icon btn-sm text-primary-400" title="Editar"
+                      @click="editarPaquete(paq)">
                       <i class="fas fa-pencil" />
                     </button>
-                    <button
-class="btn btn-ghost btn-icon btn-sm text-danger-400"
-title="Eliminar"
-@click="eliminarPaquete(paq)"
->
+                    <button class="btn btn-ghost btn-icon btn-sm text-danger-400" title="Eliminar"
+                      @click="eliminarPaquete(paq)">
                       <i class="fas fa-trash" />
                     </button>
                   </div>
@@ -110,113 +82,86 @@ title="Eliminar"
     </div>
 
     <!-- Create/Edit Modal -->
-    <div
-v-if="showModal"
-class="modal-backdrop"
-@click.self="showModal = false"
->
-      <div class="modal max-w-md">
+    <div v-if="showModal" class="modal-backdrop">
+      <div class="modal max-w-lg w-full">
         <div class="modal-header">
           <h2 class="text-lg font-bold text-text-primary">
-{{ form.title }}
-</h2>
-          <button
-class="btn btn-ghost btn-icon"
-aria-label="Cerrar"
-@click="showModal = false"
->
+            {{ form.title }}
+          </h2>
+          <button class="btn btn-ghost btn-icon" aria-label="Cerrar" @click="cerrarModal">
             <i class="fas fa-times" />
           </button>
         </div>
 
         <div class="modal-body">
           <div class="space-y-4">
-            <div class="form-group">
-              <label class="label">Descripción</label>
-              <input
-v-model="paquete.paq_descri"
-type="text"
-class="input"
-placeholder="Ingrese la descripción del paquete"
-required
->
+            <!-- ID (solo edición) -->
+            <div v-if="paquete.paq_codigo" class="form-group">
+              <label class="label text-text-tertiary">ID del Paquete</label>
+              <input :value="paquete.paq_codigo" type="text" class="input opacity-60 cursor-not-allowed" readonly>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <div class="form-group">
+              <label class="label">
+                Descripción
+                <span class="text-danger-400 ml-0.5">*</span>
+              </label>
+              <input
+                v-model="paquete.paq_descri"
+                type="text"
+                class="input"
+                :class="{ 'border-danger-500': formErrors.paq_descri }"
+                placeholder="Ingrese la descripción del paquete"
+                autofocus
+              >
+              <p v-if="formErrors.paq_descri" class="text-danger-400 text-xs mt-1">
+                {{ formErrors.paq_descri }}
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
               <div class="form-group">
                 <label class="label">Cant. Equipos</label>
-                <input
-v-model.number="paquete.paq_canequ"
-type="number"
-class="input"
-placeholder="Equipos"
-min="0"
->
+                <input v-model.number="paquete.paq_canequ" type="number" class="input" placeholder="0" min="0">
               </div>
               <div class="form-group">
-                <label class="label">Precio</label>
-                <input
-v-model.number="paquete.paq_precio"
-type="number"
-class="input"
-placeholder="Precio"
-min="0"
-step="0.01"
->
+                <label class="label">Precio (ARS)</label>
+                <input v-model.number="paquete.paq_precio" type="number" class="input" placeholder="0.00" min="0" step="0.01">
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-4">
               <div class="form-group">
                 <label class="label">Max. Spots</label>
-                <input
-v-model.number="paquete.paq_maxspo"
-type="number"
-class="input"
-placeholder="Spots"
-min="0"
->
+                <input v-model.number="paquete.paq_maxspo" type="number" class="input" placeholder="0" min="0">
               </div>
               <div class="form-group">
                 <label class="label">Límite IA</label>
-                <input
-v-model.number="paquete.paq_ia_limit"
-type="number"
-class="input"
-placeholder="IA"
-min="0"
->
+                <input v-model.number="paquete.paq_ia_limit" type="number" class="input" placeholder="0" min="0">
               </div>
             </div>
 
             <div class="form-group">
               <label class="label">Características</label>
               <textarea
-v-model="paquete.paq_caract"
-class="input"
-rows="3"
-placeholder="Descripción de características"
-/>
+                v-model="paquete.paq_caract"
+                class="input resize-y"
+                rows="4"
+                placeholder="Descripción de características del paquete..."
+              />
             </div>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button
-class="btn btn-secondary"
-@click="showModal = false"
->
-Cancelar
-</button>
-          <button
-class="btn btn-primary"
-:disabled="saving"
-@click="guardarPaquete"
->
-            <i
-class="fas"
-:class="saving ? 'fa-spinner fa-spin' : 'fa-save'"
-/>
+          <span class="text-xs text-text-tertiary mr-auto">
+            <span class="text-danger-400">*</span> Campo requerido
+          </span>
+          <button class="btn btn-secondary" :disabled="saving" @click="cerrarModal">
+            Cancelar
+          </button>
+          <button class="btn btn-primary" :disabled="saving" @click="guardarPaquete">
+            <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-save'" />
             {{ form.submitLabel }}
           </button>
         </div>
@@ -237,6 +182,7 @@ const alertType = ref('info');
 const showModal = ref(false);
 const saving = ref(false);
 const loading = ref(false);
+const formErrors = ref({});
 
 // Form data
 const paquetes = ref([]);
@@ -270,8 +216,14 @@ const cargarPaquetes = async () => {
 };
 
 // Methods
+const cerrarModal = () => {
+  showModal.value = false;
+  formErrors.value = {};
+};
+
 const abrirModalNuevo = () => {
   resetForm();
+  formErrors.value = {};
   form.value = {
     title: 'Nuevo Paquete',
     submitLabel: 'Crear',
@@ -281,6 +233,7 @@ const abrirModalNuevo = () => {
 
 const editarPaquete = (paq) => {
   paquete.value = { ...paq };
+  formErrors.value = {};
   form.value = {
     title: 'Editar Paquete',
     submitLabel: 'Guardar',
@@ -289,12 +242,14 @@ const editarPaquete = (paq) => {
 };
 
 const guardarPaquete = async () => {
-  try {
-    if (!paquete.value.paq_descri) {
-      mostrarAlerta('La descripción es requerida', 'warning');
-      return;
-    }
+  formErrors.value = {};
 
+  if (!paquete.value.paq_descri?.trim()) {
+    formErrors.value.paq_descri = 'La descripción es requerida';
+    return;
+  }
+
+  try {
     saving.value = true;
 
     if (paquete.value.paq_codigo) {
@@ -303,6 +258,7 @@ const guardarPaquete = async () => {
       mostrarAlerta('Paquete actualizado correctamente', 'success');
     } else {
       // Create new
+      paquete.value.paq_codigo = paquetes.value.length + 1; // Ensure code is set for backend
       await paqueteService.create(paquete.value);
       mostrarAlerta('Paquete creado correctamente', 'success');
     }
@@ -345,6 +301,7 @@ const resetForm = () => {
     paq_maxspo: 0,
     paq_ia_limit: 0,
   };
+  formErrors.value = {};
 };
 
 const mostrarAlerta = (mensaje, tipo = 'info') => {
@@ -376,4 +333,3 @@ const getAlertVariant = (type) => {
 // Load data on mount
 cargarPaquetes();
 </script>
-

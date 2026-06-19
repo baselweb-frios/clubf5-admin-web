@@ -363,6 +363,13 @@ class="form-alert show"
             {{ registroAlert.message }}
           </div>
 
+          <!-- DEV ONLY: Auto-fill button -->
+          <div v-if="isDev" class="dev-autofill">
+            <button type="button" class="btn-dev-fill" @click="fillWithFakeData">
+              <i class="fas fa-magic" /> Rellenar con datos ficticios
+            </button>
+          </div>
+
           <form @submit.prevent="handleRegistroSubmit">
             <div class="form-group">
               <label>Nombre completo <span class="required">*</span></label>
@@ -483,6 +490,9 @@ const route = useRoute()
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
+// Dev mode flag
+const isDev = import.meta.env.DEV
 
 // Landing Page Content (loaded from service)
 const landingContent = ref(null)
@@ -713,6 +723,17 @@ const handleRegistroSubmit = async () => {
   } finally {
     registroLoading.value = false
   }
+}
+
+const fillWithFakeData = () => {
+  const random = Math.floor(Math.random() * 9000) + 1000
+  registroForm.nombre = `Usuario Test ${random}`
+  registroForm.email = `baselwebhard@gmail.com`
+  registroForm.telefono = `+54 9 351 ${random}-${random}`
+  registroForm.domicilio = `Calle Falsa ${random}`
+  registroForm.localidad = 'Córdoba'
+  registroForm.password = 'test1234'
+  registroForm.confirmPassword = 'test1234'
 }
 
 const handleKeydown = (e) => {
@@ -1542,6 +1563,34 @@ onUnmounted(() => {
 .form-info i {
   color: #0189DD;
   margin-right: 0.5rem;
+}
+
+/* DEV auto-fill */
+.dev-autofill {
+  margin-bottom: 1.25rem;
+}
+
+.btn-dev-fill {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px dashed rgba(234, 179, 8, 0.5);
+  border-radius: 8px;
+  color: #fbbf24;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-dev-fill:hover {
+  background: rgba(234, 179, 8, 0.25);
+  border-color: rgba(234, 179, 8, 0.8);
 }
 
 /* Spinner */

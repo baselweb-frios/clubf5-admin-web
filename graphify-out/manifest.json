@@ -1,0 +1,987 @@
+{
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/jsconfig.json": {
+    "mtime": 1761863478.8095238,
+    "ast_hash": "b89431a06e004ee3b48ca28c641509bc",
+    "semantic_hash": "b89431a06e004ee3b48ca28c641509bc"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/package.json": {
+    "mtime": 1780138544.106498,
+    "ast_hash": "a1814d07b799773058e9a9c7b19dd91e",
+    "semantic_hash": "a1814d07b799773058e9a9c7b19dd91e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/postcss.config.js": {
+    "mtime": 1761863517.4210238,
+    "ast_hash": "734699bacfd7f35e8a4680c0a98a7080",
+    "semantic_hash": "734699bacfd7f35e8a4680c0a98a7080"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/skills-lock.json": {
+    "mtime": 1778096538.247158,
+    "ast_hash": "49ca3e8b48d371990713a208e34548d4",
+    "semantic_hash": "49ca3e8b48d371990713a208e34548d4"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/App.vue": {
+    "mtime": 1779907951.7790365,
+    "ast_hash": "1d819b74ebadcb471bc058fae3ba1824",
+    "semantic_hash": "1d819b74ebadcb471bc058fae3ba1824"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/LoginModal.vue": {
+    "mtime": 1775499401.554009,
+    "ast_hash": "da594567067dbd7ead39e483c7d7f29e",
+    "semantic_hash": "da594567067dbd7ead39e483c7d7f29e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/NotificationPlugin/NotificationTemplate.vue": {
+    "mtime": 1768400479.0226128,
+    "ast_hash": "178f179a62a9f6dcb1ac7a6a508b3cf1",
+    "semantic_hash": "178f179a62a9f6dcb1ac7a6a508b3cf1"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/PendingInvoicesAlert.vue": {
+    "mtime": 1768400479.0236125,
+    "ast_hash": "9faa99c81a5e74f37a084cf78e54a6bb",
+    "semantic_hash": "9faa99c81a5e74f37a084cf78e54a6bb"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ProfileModal.vue": {
+    "mtime": 1768400481.0246143,
+    "ast_hash": "d64f050bdcaaa9aca41c72bbbd4f8fc6",
+    "semantic_hash": "d64f050bdcaaa9aca41c72bbbd4f8fc6"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/SignalRStatus.vue": {
+    "mtime": 1768400479.025638,
+    "ast_hash": "a6f797de32ad96752b5a20654f8498d1",
+    "semantic_hash": "a6f797de32ad96752b5a20654f8498d1"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/TourButton.vue": {
+    "mtime": 1775499401.558261,
+    "ast_hash": "4e50d68be41b99f4c99acde5704d6772",
+    "semantic_hash": "4e50d68be41b99f4c99acde5704d6772"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/TourDevEditor.vue": {
+    "mtime": 1778102494.4496508,
+    "ast_hash": "9723a2c9f930034042a819e43cb4ae8a",
+    "semantic_hash": "9723a2c9f930034042a819e43cb4ae8a"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/UpdateNotification.vue": {
+    "mtime": 1779907951.7780366,
+    "ast_hash": "96c08365ff4e7d279df3d7172786a5cf",
+    "semantic_hash": "96c08365ff4e7d279df3d7172786a5cf"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/index.js": {
+    "mtime": 1763682100.9584243,
+    "ast_hash": "0a4ccf79e334e093c5d2781897d86051",
+    "semantic_hash": "0a4ccf79e334e093c5d2781897d86051"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/layout/ContentFooter.vue": {
+    "mtime": 1768400479.0261507,
+    "ast_hash": "efa2077a82b8ff18f28b5f0da5704c97",
+    "semantic_hash": "efa2077a82b8ff18f28b5f0da5704c97"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/layout/SidebarLink.vue": {
+    "mtime": 1768400479.0271494,
+    "ast_hash": "2b8590f2e21f82d4e56437d5b7390c58",
+    "semantic_hash": "2b8590f2e21f82d4e56437d5b7390c58"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/modals/ConfiguracionClienteModal.vue": {
+    "mtime": 1768400481.0291488,
+    "ast_hash": "c5e4e337d463d6b6cf875d4dba2cfd3f",
+    "semantic_hash": "c5e4e337d463d6b6cf875d4dba2cfd3f"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/spots/MinuteSelectorPanel.vue": {
+    "mtime": 1778099733.2800722,
+    "ast_hash": "107ac251881422bd8885f1c910bd65ef",
+    "semantic_hash": "107ac251881422bd8885f1c910bd65ef"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/spots/PendingProgramacionesModal.vue": {
+    "mtime": 1776293434.5362213,
+    "ast_hash": "8d483eed2fd286eb42081966d7060f26",
+    "semantic_hash": "8d483eed2fd286eb42081966d7060f26"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/spots/ProgramacionesTable.vue": {
+    "mtime": 1775499401.5751328,
+    "ast_hash": "e591293a620b550636a00111150b6237",
+    "semantic_hash": "e591293a620b550636a00111150b6237"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/spots/SpotSelectorModal.vue": {
+    "mtime": 1775499401.5784495,
+    "ast_hash": "609f08f47aa75d2383a158c41df095fe",
+    "semantic_hash": "609f08f47aa75d2383a158c41df095fe"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/spots/index.js": {
+    "mtime": 1775499401.5784495,
+    "ast_hash": "9cc312074e298b8cd9c2039d59097ab3",
+    "semantic_hash": "9cc312074e298b8cd9c2039d59097ab3"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/BaseButton.vue": {
+    "mtime": 1768400479.0301504,
+    "ast_hash": "4992c2850fc711eb7c89fe8362f34326",
+    "semantic_hash": "4992c2850fc711eb7c89fe8362f34326"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/BaseCard.vue": {
+    "mtime": 1768400479.031154,
+    "ast_hash": "3dd9af0bb057cf3148d61ff19448ad35",
+    "semantic_hash": "3dd9af0bb057cf3148d61ff19448ad35"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/BaseDateInput.vue": {
+    "mtime": 1768400479.0321517,
+    "ast_hash": "022a075cdaeefe02cb59cf8cc1692f18",
+    "semantic_hash": "022a075cdaeefe02cb59cf8cc1692f18"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/BaseInput.vue": {
+    "mtime": 1768400479.033685,
+    "ast_hash": "415dee551c08b5d473b22a7bc7ae3c2c",
+    "semantic_hash": "415dee551c08b5d473b22a7bc7ae3c2c"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/BaseSelect.vue": {
+    "mtime": 1768400479.034679,
+    "ast_hash": "371774d90683fb023db04b4ec1a7806d",
+    "semantic_hash": "371774d90683fb023db04b4ec1a7806d"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/ConfigurationBlocker.vue": {
+    "mtime": 1768400479.0356786,
+    "ast_hash": "01ad3971e2728b20ff7574b3b1bd1073",
+    "semantic_hash": "01ad3971e2728b20ff7574b3b1bd1073"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/DataTable.vue": {
+    "mtime": 1768400479.036678,
+    "ast_hash": "4613751eb13a976dc78dbc186fccdf46",
+    "semantic_hash": "4613751eb13a976dc78dbc186fccdf46"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/LoadingOverlay.vue": {
+    "mtime": 1775499401.592006,
+    "ast_hash": "7435473193cf8c96526fb73ed9bdfa87",
+    "semantic_hash": "7435473193cf8c96526fb73ed9bdfa87"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/LoadingSpinner.vue": {
+    "mtime": 1768400479.0386784,
+    "ast_hash": "9a468e050aa3b10ba06660ad705ca9be",
+    "semantic_hash": "9a468e050aa3b10ba06660ad705ca9be"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/Modal.vue": {
+    "mtime": 1769286369.1370072,
+    "ast_hash": "125356730d0baa5762d9b4dade24bf37",
+    "semantic_hash": "125356730d0baa5762d9b4dade24bf37"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/SavingProgressOverlay.vue": {
+    "mtime": 1775499401.5982614,
+    "ast_hash": "0b9b7e5172c430fd0dcde532b68d612c",
+    "semantic_hash": "0b9b7e5172c430fd0dcde532b68d612c"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/components/ui/TagSpot.vue": {
+    "mtime": 1775499401.604233,
+    "ast_hash": "155cf62aa063bb4ac2aa876b0e17f592",
+    "semantic_hash": "155cf62aa063bb4ac2aa876b0e17f592"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useAppUpdate.js": {
+    "mtime": 1779907951.7790365,
+    "ast_hash": "0518988336297ad0aa1a78cdb88e0df6",
+    "semantic_hash": "0518988336297ad0aa1a78cdb88e0df6"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useClientConfig.js": {
+    "mtime": 1775499401.6086056,
+    "ast_hash": "747b05a537661e33da27088804daa016",
+    "semantic_hash": "747b05a537661e33da27088804daa016"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useConnectionMonitor.js": {
+    "mtime": 1776124685.209538,
+    "ast_hash": "de1f2016216c2f98b557b51b34d2e830",
+    "semantic_hash": "de1f2016216c2f98b557b51b34d2e830"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useDispatcher.js": {
+    "mtime": 1763133895.7346065,
+    "ast_hash": "c881211ba44c7be544eca3f3eac205ab",
+    "semantic_hash": "c881211ba44c7be544eca3f3eac205ab"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useDriverTour.js": {
+    "mtime": 1775499401.613659,
+    "ast_hash": "d9585d421062c99a1f7e16e8da9d1690",
+    "semantic_hash": "d9585d421062c99a1f7e16e8da9d1690"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useI18n.js": {
+    "mtime": 1762287040.0199857,
+    "ast_hash": "9275af4fea518c4d969842b2e12edbc4",
+    "semantic_hash": "9275af4fea518c4d969842b2e12edbc4"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/usePendingProgramaciones.js": {
+    "mtime": 1779411108.1222262,
+    "ast_hash": "54555ed41ac283e08e94cd06dae807b0",
+    "semantic_hash": "54555ed41ac283e08e94cd06dae807b0"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/usePlayerControl.js": {
+    "mtime": 1765398694.4007072,
+    "ast_hash": "de0c021ead888c712b9f419f2a1e920b",
+    "semantic_hash": "de0c021ead888c712b9f419f2a1e920b"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useProgramacionFilters.js": {
+    "mtime": 1775499401.613659,
+    "ast_hash": "d0edf21c80171116eac3ca46136f614b",
+    "semantic_hash": "d0edf21c80171116eac3ca46136f614b"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useProgramacionForm.js": {
+    "mtime": 1776290988.1775756,
+    "ast_hash": "c3c99d8e927cf3a18690799e50ae4fe0",
+    "semantic_hash": "c3c99d8e927cf3a18690799e50ae4fe0"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useRadio.js": {
+    "mtime": 1765379796.2417953,
+    "ast_hash": "54731dcb9aeff90f7a1cfc34df77ceac",
+    "semantic_hash": "54731dcb9aeff90f7a1cfc34df77ceac"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useRemoteControl.js": {
+    "mtime": 1765364451.5153632,
+    "ast_hash": "e26be4d1b5a66866b5dc6dddf3d11fba",
+    "semantic_hash": "e26be4d1b5a66866b5dc6dddf3d11fba"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useSignalRAuth.js": {
+    "mtime": 1779823960.7799127,
+    "ast_hash": "3de52828d17b77f91c6904ec48e466fe",
+    "semantic_hash": "3de52828d17b77f91c6904ec48e466fe"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useSignalRAutoConnect.js": {
+    "mtime": 1775700371.8012037,
+    "ast_hash": "72fc95726095224954c803d1a7f5dbda",
+    "semantic_hash": "72fc95726095224954c803d1a7f5dbda"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useSpot.js": {
+    "mtime": 1765379773.2908769,
+    "ast_hash": "aa8076b08c69ed02588602d8715b25d7",
+    "semantic_hash": "aa8076b08c69ed02588602d8715b25d7"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useStoreLoader.js": {
+    "mtime": 1763385649.6470592,
+    "ast_hash": "31e7eca2dd2c915b5f31e9882a6f2743",
+    "semantic_hash": "31e7eca2dd2c915b5f31e9882a6f2743"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useStoreSync.js": {
+    "mtime": 1775700371.8168168,
+    "ast_hash": "5ae60a1ec265e17b9d72eff87a4ba7eb",
+    "semantic_hash": "5ae60a1ec265e17b9d72eff87a4ba7eb"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useSucursal.js": {
+    "mtime": 1776124685.2105236,
+    "ast_hash": "e3fcfdb22bfd1539db56e72f3a057b54",
+    "semantic_hash": "e3fcfdb22bfd1539db56e72f3a057b54"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/composables/useToast.js": {
+    "mtime": 1763553690.5743504,
+    "ast_hash": "b842b4da8de6044fdd9b79ba3dfc9e88",
+    "semantic_hash": "b842b4da8de6044fdd9b79ba3dfc9e88"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/config/driverTours.js": {
+    "mtime": 1778102159.0319386,
+    "ast_hash": "d69b8fd39944802e11e5178f2afffd3d",
+    "semantic_hash": "d69b8fd39944802e11e5178f2afffd3d"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/layouts/DashboardLayout.vue": {
+    "mtime": 1780138698.0056477,
+    "ast_hash": "90180c1ba85c25e1452d4347d8cb9b1d",
+    "semantic_hash": "90180c1ba85c25e1452d4347d8cb9b1d"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/layouts/DynamicLayout.vue": {
+    "mtime": 1768400479.043686,
+    "ast_hash": "a72eba46f623f188253d00cb86436657",
+    "semantic_hash": "a72eba46f623f188253d00cb86436657"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/layouts/LoginLayout.vue": {
+    "mtime": 1768400479.0446877,
+    "ast_hash": "471e3ab7b6626daef40a7c2c708dac77",
+    "semantic_hash": "471e3ab7b6626daef40a7c2c708dac77"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/main.js": {
+    "mtime": 1776293591.167402,
+    "ast_hash": "d87518deaa8b16e3bd2b55b99d8cc9e1",
+    "semantic_hash": "d87518deaa8b16e3bd2b55b99d8cc9e1"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/EmailTestBench.vue": {
+    "mtime": 1780145386.4223888,
+    "ast_hash": "ad886528a3b45e561c364b888bd0b597",
+    "semantic_hash": "ad886528a3b45e561c364b888bd0b597"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/EventLog/Index.vue": {
+    "mtime": 1780137943.6147003,
+    "ast_hash": "f66c4b3afc82a2f2ffcb8721acc777c8",
+    "semantic_hash": "f66c4b3afc82a2f2ffcb8721acc777c8"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/LandingEditor/Index.vue": {
+    "mtime": 1775499401.663453,
+    "ast_hash": "d696251c932874ab42abfd9bc060ed77",
+    "semantic_hash": "d696251c932874ab42abfd9bc060ed77"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/LandingEditor/components/FeaturesSection.vue": {
+    "mtime": 1775499401.6694553,
+    "ast_hash": "545c849f58aedbcfbef211f7404cb624",
+    "semantic_hash": "545c849f58aedbcfbef211f7404cb624"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/LandingEditor/components/FooterSection.vue": {
+    "mtime": 1775499401.672567,
+    "ast_hash": "aa0e6a5756d73b019093626dcc116ae8",
+    "semantic_hash": "aa0e6a5756d73b019093626dcc116ae8"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/LandingEditor/components/HeroSection.vue": {
+    "mtime": 1775499401.6782806,
+    "ast_hash": "cde8fc0e396e5e54ce8f560269c9d7ef",
+    "semantic_hash": "cde8fc0e396e5e54ce8f560269c9d7ef"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/LandingEditor/components/IconPicker.vue": {
+    "mtime": 1775499401.682135,
+    "ast_hash": "4a6471be307ba0a23c4d4e35cd10b539",
+    "semantic_hash": "4a6471be307ba0a23c4d4e35cd10b539"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/LandingEditor/components/PlatformsSection.vue": {
+    "mtime": 1775499401.6869893,
+    "ast_hash": "ae596f40bfdf55a0c57c37f48d2c144d",
+    "semantic_hash": "ae596f40bfdf55a0c57c37f48d2c144d"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/LandingEditor/components/PreviewModal.vue": {
+    "mtime": 1775499401.6949587,
+    "ast_hash": "528232a59b607ff91969f8994c64bf1a",
+    "semantic_hash": "528232a59b607ff91969f8994c64bf1a"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/LandingEditor/components/StatsSection.vue": {
+    "mtime": 1775499401.6989596,
+    "ast_hash": "464dae60face9f18b65e24e9105a879b",
+    "semantic_hash": "464dae60face9f18b65e24e9105a879b"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/ObsApiConsole/Index.vue": {
+    "mtime": 1775499401.7050576,
+    "ast_hash": "b0109197667eefea1ad89554ed20548d",
+    "semantic_hash": "b0109197667eefea1ad89554ed20548d"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/ObsApiConsole/components/ObsBrowsePanel.vue": {
+    "mtime": 1775499401.7104657,
+    "ast_hash": "3377adfe6ae76453b9feefe3b0973e74",
+    "semantic_hash": "3377adfe6ae76453b9feefe3b0973e74"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/ObsApiConsole/components/ObsOperationsPanel.vue": {
+    "mtime": 1775499401.7154744,
+    "ast_hash": "8a9f608248f85f75e769ceb81d431f17",
+    "semantic_hash": "8a9f608248f85f75e769ceb81d431f17"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/ObsApiConsole/components/ObsTransferPanel.vue": {
+    "mtime": 1775499401.7205026,
+    "ast_hash": "f22b841c512a30b23dbeedaba473cf05",
+    "semantic_hash": "f22b841c512a30b23dbeedaba473cf05"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/ObsApiConsole/components/ObsUtilitiesPanel.vue": {
+    "mtime": 1775499401.7274737,
+    "ast_hash": "c1782fff1d1f2c628cb9307f0f83bd4b",
+    "semantic_hash": "c1782fff1d1f2c628cb9307f0f83bd4b"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/VocesElevenLabs/Index.vue": {
+    "mtime": 1775499401.7374675,
+    "ast_hash": "df376698f446946fd6a7e6e8088e99f9",
+    "semantic_hash": "df376698f446946fd6a7e6e8088e99f9"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/VocesElevenLabs/components/VariacionForm.vue": {
+    "mtime": 1775499401.7457626,
+    "ast_hash": "bcf71188e0339f229eec7df292e68fbf",
+    "semantic_hash": "bcf71188e0339f229eec7df292e68fbf"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/VocesElevenLabs/components/VocesList.vue": {
+    "mtime": 1775499401.7633307,
+    "ast_hash": "5f607367eb1e67930e97d21b75c7b40b",
+    "semantic_hash": "5f607367eb1e67930e97d21b75c7b40b"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Admin/VocesElevenLabs/components/VozDetailModal.vue": {
+    "mtime": 1775499401.770846,
+    "ast_hash": "4984ec2f88778eda049bf39e28f25166",
+    "semantic_hash": "4984ec2f88778eda049bf39e28f25166"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Categorias/ABM_Categorias.vue": {
+    "mtime": 1768400481.0466864,
+    "ast_hash": "5c55ff03537a5a2f57f31111df7dd160",
+    "semantic_hash": "5c55ff03537a5a2f57f31111df7dd160"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Categorias/Index.vue": {
+    "mtime": 1768400479.0476878,
+    "ast_hash": "eacf87eb9b6c8d01cbd532c7f78d7b21",
+    "semantic_hash": "eacf87eb9b6c8d01cbd532c7f78d7b21"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/ConfiguracionCliente/index.vue": {
+    "mtime": 1775499401.7770002,
+    "ast_hash": "5c4fd7f29aaabccecda22d2b349ec7bd",
+    "semantic_hash": "5c4fd7f29aaabccecda22d2b349ec7bd"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Dashboard.vue": {
+    "mtime": 1775499401.7867973,
+    "ast_hash": "e52c1a8689b4e91b453fb01c93c37590",
+    "semantic_hash": "e52c1a8689b4e91b453fb01c93c37590"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Facturas/FacturasAdmin.vue": {
+    "mtime": 1780004864.9207742,
+    "ast_hash": "ae4bc50c4dad7f1c5cb45669124ef3d6",
+    "semantic_hash": "ae4bc50c4dad7f1c5cb45669124ef3d6"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Facturas/FacturasCliente.vue": {
+    "mtime": 1780005870.0750835,
+    "ast_hash": "c32793e15381caa82b88fd7e693f1d55",
+    "semantic_hash": "c32793e15381caa82b88fd7e693f1d55"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/ForgotPassword.vue": {
+    "mtime": 1775499401.8016534,
+    "ast_hash": "762abb6b3cd315da69cd1fb9b6620939",
+    "semantic_hash": "762abb6b3cd315da69cd1fb9b6620939"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/LandingPage.vue": {
+    "mtime": 1780425881.4210215,
+    "ast_hash": "1cefafd920dabd336dd24e981763b601",
+    "semantic_hash": "1cefafd920dabd336dd24e981763b601"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Login.vue": {
+    "mtime": 1775499401.8137715,
+    "ast_hash": "d300b3e420eb0477d7945bcd4bbaa74d",
+    "semantic_hash": "d300b3e420eb0477d7945bcd4bbaa74d"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Musica/GenerosMusicales.vue": {
+    "mtime": 1768400481.0568209,
+    "ast_hash": "a99a70f24702b9ac7570aad72dda4735",
+    "semantic_hash": "a99a70f24702b9ac7570aad72dda4735"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Musica/GestionArchivos.vue": {
+    "mtime": 1775763681.3293614,
+    "ast_hash": "9544b498f45520a75748c7c8dac0d15e",
+    "semantic_hash": "9544b498f45520a75748c7c8dac0d15e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Musica/Index.vue": {
+    "mtime": 1775781779.72255,
+    "ast_hash": "99a91b07a438a9e45df2887ebb3dfcf1",
+    "semantic_hash": "99a91b07a438a9e45df2887ebb3dfcf1"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Musica/SubgenerosMusicales.vue": {
+    "mtime": 1768400481.0608208,
+    "ast_hash": "2d21bf9dd30e1c5aeae7cbac08bedabb",
+    "semantic_hash": "2d21bf9dd30e1c5aeae7cbac08bedabb"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Musica/altaProgramacion.vue": {
+    "mtime": 1768400481.0618207,
+    "ast_hash": "c78cdfbb7fd2bfebc5f0d5a6f7d06030",
+    "semantic_hash": "c78cdfbb7fd2bfebc5f0d5a6f7d06030"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Musica/programacionSemanal.vue": {
+    "mtime": 1775782509.8146589,
+    "ast_hash": "2420271de50e00284b92858a592eb8bc",
+    "semantic_hash": "2420271de50e00284b92858a592eb8bc"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/NotFound.vue": {
+    "mtime": 1768400479.0643983,
+    "ast_hash": "bf3b21d23d0146b44fb2513ace52ed74",
+    "semantic_hash": "bf3b21d23d0146b44fb2513ace52ed74"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Paquetes/ABM_Paquetes.vue": {
+    "mtime": 1780137310.162028,
+    "ast_hash": "6449c17eb8caf56a871885e881ad1eed",
+    "semantic_hash": "6449c17eb8caf56a871885e881ad1eed"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Profile/Profile.vue": {
+    "mtime": 1775784840.999214,
+    "ast_hash": "27b5111b3fa1f120ddb916be32c5ed5f",
+    "semantic_hash": "27b5111b3fa1f120ddb916be32c5ed5f"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Radios/Index.vue": {
+    "mtime": 1775499401.8297012,
+    "ast_hash": "711268a00cc39042ca23e695ad61d50d",
+    "semantic_hash": "711268a00cc39042ca23e695ad61d50d"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Radios/components/ManageRadioRelations.vue": {
+    "mtime": 1768400481.069392,
+    "ast_hash": "7f4416262e8e229f04f019bcaa046602",
+    "semantic_hash": "7f4416262e8e229f04f019bcaa046602"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Radios/components/ObsMusicBrowser.vue": {
+    "mtime": 1768400481.0703936,
+    "ast_hash": "3b5d6451c88d667a72731d25ffa8055c",
+    "semantic_hash": "3b5d6451c88d667a72731d25ffa8055c"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Radios/components/RadioForm.vue": {
+    "mtime": 1775777297.026852,
+    "ast_hash": "f8fc70af22e93ed739b9eaa3fa4b3a66",
+    "semantic_hash": "f8fc70af22e93ed739b9eaa3fa4b3a66"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Radios/components/RadioList.vue": {
+    "mtime": 1775849885.5049267,
+    "ast_hash": "60e132c8d29a27eb89ebe170b86f942a",
+    "semantic_hash": "60e132c8d29a27eb89ebe170b86f942a"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/ResetPassword.vue": {
+    "mtime": 1775499401.845288,
+    "ast_hash": "b2ebca275329da766b12da4a02e90378",
+    "semantic_hash": "b2ebca275329da766b12da4a02e90378"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Spots/ProgrammingInterface.vue": {
+    "mtime": 1778800642.4038968,
+    "ast_hash": "8b45a8142250d18b05caad60f280e3fd",
+    "semantic_hash": "8b45a8142250d18b05caad60f280e3fd"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Spots/ProgrammingInterface2.vue": {
+    "mtime": 1775499401.8638039,
+    "ast_hash": "ba154cef1d292dc745876ab7b3ffbcb4",
+    "semantic_hash": "ba154cef1d292dc745876ab7b3ffbcb4"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Spots/SpotTable.vue": {
+    "mtime": 1775499401.8638039,
+    "ast_hash": "e0b4ea4e35d288d063b992531483a8a0",
+    "semantic_hash": "e0b4ea4e35d288d063b992531483a8a0"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Spots/administrarProgramacion.vue": {
+    "mtime": 1775499401.8803449,
+    "ast_hash": "332e11936abd871518ede3502dcfcc36",
+    "semantic_hash": "332e11936abd871518ede3502dcfcc36"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Spots/altaProgramacionSpots.vue": {
+    "mtime": 1775499401.8881686,
+    "ast_hash": "e6c3c64a8b8448238c24e3ff191b2ab8",
+    "semantic_hash": "e6c3c64a8b8448238c24e3ff191b2ab8"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Spots/altaSpot.vue": {
+    "mtime": 1779910425.0872445,
+    "ast_hash": "f51aec2d5600cca16c42a6f23086118e",
+    "semantic_hash": "f51aec2d5600cca16c42a6f23086118e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Spots/bibliotecaSpot.vue": {
+    "mtime": 1779411108.1222262,
+    "ast_hash": "275643913e9fb49ea8f40ad65a38b88f",
+    "semantic_hash": "275643913e9fb49ea8f40ad65a38b88f"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Spots/programaSpot.vue": {
+    "mtime": 1768400479.0845017,
+    "ast_hash": "d4b76f55065a602aac73cc2fd8acb192",
+    "semantic_hash": "d4b76f55065a602aac73cc2fd8acb192"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Sucursales/GestionSucursalesCards.vue": {
+    "mtime": 1776819533.1999738,
+    "ast_hash": "fc5a407f1453557298d8c4f1b0dd4aac",
+    "semantic_hash": "fc5a407f1453557298d8c4f1b0dd4aac"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/pages/Usuarios/UsuariosUnificado.vue": {
+    "mtime": 1780340768.2188025,
+    "ast_hash": "c6dcc47b011d6a07c21bc1a38018c3bd",
+    "semantic_hash": "c6dcc47b011d6a07c21bc1a38018c3bd"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/plugins/driverTour.js": {
+    "mtime": 1775499401.9263477,
+    "ast_hash": "5167a0eada2274f96f230b909fbaf208",
+    "semantic_hash": "5167a0eada2274f96f230b909fbaf208"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/plugins/toast.js": {
+    "mtime": 1762457905.5672479,
+    "ast_hash": "c621849ba7033d063e4e6d760368452a",
+    "semantic_hash": "c621849ba7033d063e4e6d760368452a"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/router/guards.js": {
+    "mtime": 1762286965.9468956,
+    "ast_hash": "447ce5a9744a417c72ec11033fe626e3",
+    "semantic_hash": "447ce5a9744a417c72ec11033fe626e3"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/router/index.js": {
+    "mtime": 1768400481.0890815,
+    "ast_hash": "83749052cc41fb9aa12814a9d31c03cb",
+    "semantic_hash": "83749052cc41fb9aa12814a9d31c03cb"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/router/routes/administrador.js": {
+    "mtime": 1780137943.6147003,
+    "ast_hash": "99616189279073a2dbbe5d1ccf5656c2",
+    "semantic_hash": "99616189279073a2dbbe5d1ccf5656c2"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/router/routes/cliente.js": {
+    "mtime": 1768400480.0910673,
+    "ast_hash": "e5a3557726311cdf2c14c44d1ebef10a",
+    "semantic_hash": "e5a3557726311cdf2c14c44d1ebef10a"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/router/routes/reproductor.js": {
+    "mtime": 1768400479.092067,
+    "ast_hash": "8b252a9db5fae780bae3026fe8673b22",
+    "semantic_hash": "8b252a9db5fae780bae3026fe8673b22"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/AdminServices.js": {
+    "mtime": 1766760760.5181906,
+    "ast_hash": "8a798d328f26e0b77c8120d5db492209",
+    "semantic_hash": "8a798d328f26e0b77c8120d5db492209"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ApiElevenLabs.js": {
+    "mtime": 1763133892.8514,
+    "ast_hash": "4cbdcfd2dd55beb061e65a7e0250dd38",
+    "semantic_hash": "4cbdcfd2dd55beb061e65a7e0250dd38"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ApiElevenLabsGenVoz.js": {
+    "mtime": 1759522061.0,
+    "ast_hash": "ad27b699ee67487b9595a3167740358e",
+    "semantic_hash": "ad27b699ee67487b9595a3167740358e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ClienteConfigServices.js": {
+    "mtime": 1764865943.7555366,
+    "ast_hash": "f5c5904ffe13eaddccc95a56349c000f",
+    "semantic_hash": "f5c5904ffe13eaddccc95a56349c000f"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ClienteHorarioServices.js": {
+    "mtime": 1759893257.0,
+    "ast_hash": "0c22f0ce343602ee307ab85eb2b4dc57",
+    "semantic_hash": "0c22f0ce343602ee307ab85eb2b4dc57"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ClienteModoReproduccionSpot.js": {
+    "mtime": 1705088012.0338016,
+    "ast_hash": "e4dc8cefd4b50b9a480ad33c10d0b480",
+    "semantic_hash": "e4dc8cefd4b50b9a480ad33c10d0b480"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ClientePaqueteServices.js": {
+    "mtime": 1705088012.0437984,
+    "ast_hash": "3e0d5559abf3f05cbdf0b748aa7e3907",
+    "semantic_hash": "3e0d5559abf3f05cbdf0b748aa7e3907"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ClienteProgramacionRadioServices.js": {
+    "mtime": 1759840241.0,
+    "ast_hash": "39819e1029f2f9e07599f254a2043fa3",
+    "semantic_hash": "39819e1029f2f9e07599f254a2043fa3"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ClienteProgramacionServices.js": {
+    "mtime": 1764343318.9050112,
+    "ast_hash": "7d17230f6286e993efbd98090086ff1f",
+    "semantic_hash": "7d17230f6286e993efbd98090086ff1f"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ClienteProgramacionSpotServices.js": {
+    "mtime": 1765224653.6757872,
+    "ast_hash": "489f5594782d6e186b9ae7327bf938c8",
+    "semantic_hash": "489f5594782d6e186b9ae7327bf938c8"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ClienteProvisorioServices.js": {
+    "mtime": 1765970128.8653955,
+    "ast_hash": "f6583657f64c52ea3a54218c64e32d1b",
+    "semantic_hash": "f6583657f64c52ea3a54218c64e32d1b"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ClienteServices.js": {
+    "mtime": 1764214050.6382914,
+    "ast_hash": "98a9bbf9f5891c0cce798cfc4c805740",
+    "semantic_hash": "98a9bbf9f5891c0cce798cfc4c805740"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ClienteSucursalProgramacionServices.js": {
+    "mtime": 1705088012.1158197,
+    "ast_hash": "61c0c59360387ce711f043a36da68064",
+    "semantic_hash": "61c0c59360387ce711f043a36da68064"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ConfigValidationService.js": {
+    "mtime": 1766751553.353968,
+    "ast_hash": "5fb4c304b6c5e625cbf929e9256609c0",
+    "semantic_hash": "5fb4c304b6c5e625cbf929e9256609c0"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ControlAireServices.js": {
+    "mtime": 1758310675.8027518,
+    "ast_hash": "32fcfe63e247f245524da2e0505194c0",
+    "semantic_hash": "32fcfe63e247f245524da2e0505194c0"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/DiaHabilService.js": {
+    "mtime": 1759893332.0,
+    "ast_hash": "28298981f6ed508e05d59ff2f023a2f1",
+    "semantic_hash": "28298981f6ed508e05d59ff2f023a2f1"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ElevenLabsService.js": {
+    "mtime": 1769286370.2369423,
+    "ast_hash": "e004595a6525584205a24ae2ed8458ff",
+    "semantic_hash": "e004595a6525584205a24ae2ed8458ff"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/EmailApiService.js": {
+    "mtime": 1768400481.0920672,
+    "ast_hash": "01f58d2220e283a02a4831cc4e604019",
+    "semantic_hash": "01f58d2220e283a02a4831cc4e604019"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/EmailTestServices.js": {
+    "mtime": 1766838824.9967692,
+    "ast_hash": "4b2c0b86205f5152b5565e8cbd87cfac",
+    "semantic_hash": "4b2c0b86205f5152b5565e8cbd87cfac"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/EstiloServices.js": {
+    "mtime": 1764731705.1584103,
+    "ast_hash": "38bfa87db04bd8152fd8279fab628db1",
+    "semantic_hash": "38bfa87db04bd8152fd8279fab628db1"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/EventLogServices.js": {
+    "mtime": 1766753614.645155,
+    "ast_hash": "768496a6b9a44391f73f0de152a66078",
+    "semantic_hash": "768496a6b9a44391f73f0de152a66078"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/FacturaServices.js": {
+    "mtime": 1766775283.729172,
+    "ast_hash": "f7c5c33655b1c3c0bb928f6e2af357e1",
+    "semantic_hash": "f7c5c33655b1c3c0bb928f6e2af357e1"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/FiltroServices.js": {
+    "mtime": 1705088012.1478107,
+    "ast_hash": "c881c1dbab657cf0fc04f4df66ace29e",
+    "semantic_hash": "c881c1dbab657cf0fc04f4df66ace29e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/GeneroMusicalServices.js": {
+    "mtime": 1763567120.967029,
+    "ast_hash": "6979d6b10c9182fbcff3bdadce0a1f9a",
+    "semantic_hash": "6979d6b10c9182fbcff3bdadce0a1f9a"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/GeneroMusicalSubServices.js": {
+    "mtime": 1764155337.437143,
+    "ast_hash": "6f9a5cca139d7b3b679a77e403056952",
+    "semantic_hash": "6f9a5cca139d7b3b679a77e403056952"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/IndexedDb.js": {
+    "mtime": 1725580920.0,
+    "ast_hash": "f531f4ea62ab446f80d403c74ece735d",
+    "semantic_hash": "f531f4ea62ab446f80d403c74ece735d"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/LandingPageService.js": {
+    "mtime": 1775499401.9399996,
+    "ast_hash": "a53d3d9e4a1672bed809022f80d375c6",
+    "semantic_hash": "a53d3d9e4a1672bed809022f80d375c6"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/LocutorServices.js": {
+    "mtime": 1705088012.1868248,
+    "ast_hash": "763b8fdee9bbac664fc2abd0a8dee841",
+    "semantic_hash": "763b8fdee9bbac664fc2abd0a8dee841"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/NotificarPagoServices.js": {
+    "mtime": 1705088012.2018158,
+    "ast_hash": "d133fd089b9bfb7826db5987499f9caf",
+    "semantic_hash": "d133fd089b9bfb7826db5987499f9caf"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/PaqueteServices.js": {
+    "mtime": 1765970128.8683205,
+    "ast_hash": "82a7bac5b28f6b4a9f28d0d8031ac016",
+    "semantic_hash": "82a7bac5b28f6b4a9f28d0d8031ac016"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/PedidoSpotServices.js": {
+    "mtime": 1705088012.209824,
+    "ast_hash": "935319016261a245dbe3f0ef4220d71c",
+    "semantic_hash": "935319016261a245dbe3f0ef4220d71c"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ProfileService.js": {
+    "mtime": 1765970131.8695424,
+    "ast_hash": "d9f84d4cfe810e7d3a54ebdff1dc1947",
+    "semantic_hash": "d9f84d4cfe810e7d3a54ebdff1dc1947"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/RadioServiceNew.js": {
+    "mtime": 1763133895.8514,
+    "ast_hash": "c68f3644c231d96ad8e2f27dc595b856",
+    "semantic_hash": "c68f3644c231d96ad8e2f27dc595b856"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/RadioServices.js": {
+    "mtime": 1764731683.67328,
+    "ast_hash": "8dbed27783c5b7fa41ddc846484c780c",
+    "semantic_hash": "8dbed27783c5b7fa41ddc846484c780c"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/RequestElevenLabsServices.js": {
+    "mtime": 1759522028.0,
+    "ast_hash": "d93dbc281f2cf89b557ce0497fdde202",
+    "semantic_hash": "d93dbc281f2cf89b557ce0497fdde202"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/ResumenSpotServices.js": {
+    "mtime": 1758310701.8496654,
+    "ast_hash": "4f90e7ac50f8642605c9c30ee5c72feb",
+    "semantic_hash": "4f90e7ac50f8642605c9c30ee5c72feb"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/RitmoServices.js": {
+    "mtime": 1764731702.0365736,
+    "ast_hash": "b7fb5a04431afea0d4c30ba1e16f1fc8",
+    "semantic_hash": "b7fb5a04431afea0d4c30ba1e16f1fc8"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/SpotRepetidoras.js": {
+    "mtime": 1710098971.0,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/SpotServiceNew.js": {
+    "mtime": 1763402642.5822337,
+    "ast_hash": "0883d319c64acd4180d9cb952eb3f845",
+    "semantic_hash": "0883d319c64acd4180d9cb952eb3f845"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/SpotServices.js": {
+    "mtime": 1764245084.8384929,
+    "ast_hash": "373930e4edd20a288c425fb644507776",
+    "semantic_hash": "373930e4edd20a288c425fb644507776"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/SucursalServiceNew.js": {
+    "mtime": 1764246840.0305696,
+    "ast_hash": "5df0e46f7d8d5ebe5359ef4bed191723",
+    "semantic_hash": "5df0e46f7d8d5ebe5359ef4bed191723"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/SucursalServices.js": {
+    "mtime": 1764767077.0395007,
+    "ast_hash": "e7bbe311a0ce7a9768b1238e0c621e10",
+    "semantic_hash": "e7bbe311a0ce7a9768b1238e0c621e10"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/TipoEmpresaServices.js": {
+    "mtime": 1764731708.5219145,
+    "ast_hash": "0df972e65b2126324ae898991bc1505b",
+    "semantic_hash": "0df972e65b2126324ae898991bc1505b"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/UserServices.js": {
+    "mtime": 1768400481.0930672,
+    "ast_hash": "a45b34f1653a5a67417a68ac6db9976f",
+    "semantic_hash": "a45b34f1653a5a67417a68ac6db9976f"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/VozElevenLabsServices.js": {
+    "mtime": 1779909738.4158518,
+    "ast_hash": "ba12feb72528d8506807b3fac3bd6d5e",
+    "semantic_hash": "ba12feb72528d8506807b3fac3bd6d5e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/api.js": {
+    "mtime": 1775499401.9451983,
+    "ast_hash": "bf9e2e7bb41b48c4c005e9f0d3f74936",
+    "semantic_hash": "bf9e2e7bb41b48c4c005e9f0d3f74936"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/apiSpotify.js": {
+    "mtime": 1720540576.0,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/apimusic.js": {
+    "mtime": 1762457269.5550094,
+    "ast_hash": "d8ce3d59c3a4fd7c0b2a7513c9f9da17",
+    "semantic_hash": "d8ce3d59c3a4fd7c0b2a7513c9f9da17"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/dispatcherService.js": {
+    "mtime": 1763133895.8679855,
+    "ast_hash": "ea130f3f1a99be23e3cd5a14e94960d6",
+    "semantic_hash": "ea130f3f1a99be23e3cd5a14e94960d6"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/infoServices.js": {
+    "mtime": 1705088012.3868456,
+    "ast_hash": "4d5d78a2f53147b26347d4a4461cfe65",
+    "semantic_hash": "4d5d78a2f53147b26347d4a4461cfe65"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/obsServices.js": {
+    "mtime": 1775499401.9608276,
+    "ast_hash": "fd7342ff5078cddf0fe2dbdfa258def7",
+    "semantic_hash": "fd7342ff5078cddf0fe2dbdfa258def7"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/services/obsServicesApi.js": {
+    "mtime": 1768400481.0940688,
+    "ast_hash": "d5975beb71ba6715dbf10d5c2a517af4",
+    "semantic_hash": "d5975beb71ba6715dbf10d5c2a517af4"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/auth.js": {
+    "mtime": 1767110298.277253,
+    "ast_hash": "6ebe0f6e280d3fd928e11132088cf0af",
+    "semantic_hash": "6ebe0f6e280d3fd928e11132088cf0af"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/clientes.js": {
+    "mtime": 1762459497.6429904,
+    "ast_hash": "39c37169a202a6b1d81b687bb2c67752",
+    "semantic_hash": "39c37169a202a6b1d81b687bb2c67752"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/eventLogs.js": {
+    "mtime": 1766753672.1969423,
+    "ast_hash": "5bd176fb60dc2e633287d89627e37dba",
+    "semantic_hash": "5bd176fb60dc2e633287d89627e37dba"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/facturas.js": {
+    "mtime": 1765970130.8712575,
+    "ast_hash": "165abe1014874cf65828ddda262ec0ae",
+    "semantic_hash": "165abe1014874cf65828ddda262ec0ae"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/generosMusicales.js": {
+    "mtime": 1762459541.362784,
+    "ast_hash": "650ee635d4b0d54a4aa060e1bce6c92e",
+    "semantic_hash": "650ee635d4b0d54a4aa060e1bce6c92e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/locutores.js": {
+    "mtime": 1763385639.176808,
+    "ast_hash": "d5d2daf0a3d2036d649fe25b2ca4f831",
+    "semantic_hash": "d5d2daf0a3d2036d649fe25b2ca4f831"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/pedidosSpots.js": {
+    "mtime": 1762459514.261907,
+    "ast_hash": "b4f7a3666c7818fa38ca0fae32e11c8f",
+    "semantic_hash": "b4f7a3666c7818fa38ca0fae32e11c8f"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/programacion.js": {
+    "mtime": 1762286907.4754767,
+    "ast_hash": "d9b419a7f77a57830d9f9a9c2c3e9f97",
+    "semantic_hash": "d9b419a7f77a57830d9f9a9c2c3e9f97"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/programacionSpots.js": {
+    "mtime": 1765224682.758584,
+    "ast_hash": "539d89fd2cc5c7e9d610dcdc41c2d67e",
+    "semantic_hash": "539d89fd2cc5c7e9d610dcdc41c2d67e"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/radios.js": {
+    "mtime": 1762459337.702432,
+    "ast_hash": "65ff1f3ed4176e4746c98b1cc0f4a6a1",
+    "semantic_hash": "65ff1f3ed4176e4746c98b1cc0f4a6a1"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/spots.js": {
+    "mtime": 1763560608.6584687,
+    "ast_hash": "9f8c05520903b53a99b27e8e5b863ebb",
+    "semantic_hash": "9f8c05520903b53a99b27e8e5b863ebb"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/stores/sucursales.js": {
+    "mtime": 1762459316.7019343,
+    "ast_hash": "69f40bce24e0080cc34eb1049470feb9",
+    "semantic_hash": "69f40bce24e0080cc34eb1049470feb9"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/utils/constants.js": {
+    "mtime": 1762287172.7275648,
+    "ast_hash": "68a7587feeb347eb21ea616b561e88dd",
+    "semantic_hash": "68a7587feeb347eb21ea616b561e88dd"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/utils/helpers.js": {
+    "mtime": 1762287177.8856928,
+    "ast_hash": "62f9f33931091aefccb914d6c4431491",
+    "semantic_hash": "62f9f33931091aefccb914d6c4431491"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/utils/storeHelpers.js": {
+    "mtime": 1762459304.010496,
+    "ast_hash": "5bc514b36990174b44e93dcbf158b97c",
+    "semantic_hash": "5bc514b36990174b44e93dcbf158b97c"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/utils/validators.js": {
+    "mtime": 1762287179.284206,
+    "ast_hash": "abea2f7f1a2b53318c64fb674234c4cb",
+    "semantic_hash": "abea2f7f1a2b53318c64fb674234c4cb"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/tailwind.config.js": {
+    "mtime": 1763677682.7756512,
+    "ast_hash": "fd22b5bf58c69e757bac3c8412c272b7",
+    "semantic_hash": "fd22b5bf58c69e757bac3c8412c272b7"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/vite.config.js": {
+    "mtime": 1779907951.7760365,
+    "ast_hash": "90b79094898d47e4ca54a7a93ef02eb7",
+    "semantic_hash": "90b79094898d47e4ca54a7a93ef02eb7"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/.agents/skills/frontend-design/LICENSE.txt": {
+    "mtime": 1778096503.4280097,
+    "ast_hash": "2ee41112a44fe7014dce33e26468ba93",
+    "semantic_hash": "2ee41112a44fe7014dce33e26468ba93"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/index.html": {
+    "mtime": 1776293591.167402,
+    "ast_hash": "a5af28519a65391b2a943b8a4b342360",
+    "semantic_hash": "a5af28519a65391b2a943b8a4b342360"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/public/ico-128.png": {
+    "mtime": 1775700371.7633877,
+    "ast_hash": "096b8bd42dab197ced36e291921cb7ad",
+    "semantic_hash": "096b8bd42dab197ced36e291921cb7ad"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/public/ico-16.png": {
+    "mtime": 1775700371.7673872,
+    "ast_hash": "b327cdc38429232ad89f486ba3c673a8",
+    "semantic_hash": "b327cdc38429232ad89f486ba3c673a8"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/public/ico-256.png": {
+    "mtime": 1775700371.7855625,
+    "ast_hash": "3b59a60a87a82dcc13b6d2095558f3dc",
+    "semantic_hash": "3b59a60a87a82dcc13b6d2095558f3dc"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/public/ico-32.png": {
+    "mtime": 1775700371.7855625,
+    "ast_hash": "3ae01f09732bab44de59f1dc6c017dcb",
+    "semantic_hash": "3ae01f09732bab44de59f1dc6c017dcb"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/public/ico-48.png": {
+    "mtime": 1775700371.7855625,
+    "ast_hash": "b31e6694fe7ca648a91fe658231ab0f5",
+    "semantic_hash": "b31e6694fe7ca648a91fe658231ab0f5"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/public/ico-64.png": {
+    "mtime": 1775700371.8012037,
+    "ast_hash": "0a36331f3a0428dc1b95e33a61b77600",
+    "semantic_hash": "0a36331f3a0428dc1b95e33a61b77600"
+  },
+  "/home/facundo/Documentos/BaselWeb/Clubf5.com/frontend/admin.clubf5/src/assets/img/Image_202601090921.jpeg": {
+    "mtime": 1768400479.0206246,
+    "ast_hash": "9b4d91bb9f0b7165c6337f4fe1931984",
+    "semantic_hash": "9b4d91bb9f0b7165c6337f4fe1931984"
+  }
+}

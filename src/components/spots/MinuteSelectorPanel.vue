@@ -35,14 +35,29 @@ class="space-y-4"
       <!-- Selector de Hora -->
       <div class="form-group">
         <div class="flex items-center justify-between mb-2">
-          <label class="label mb-0">Horas disponibles:</label>
-          <span
-            v-if="selectedHour"
-            class="flex items-center gap-1 text-sm text-primary-400"
+          <label class="label mb-0">
+            Horas disponibles:
+            <span class="text-xs text-text-tertiary font-normal ml-1">(1° click = inicio, 2° click = fin)</span>
+          </label>
+          <div
+            v-if="selectedHourStart"
+            class="flex items-center gap-2 text-sm text-primary-400"
           >
             <i class="fa fa-clock-o" />
-            Hora seleccionada: <strong>{{ selectedHour }}</strong>
-          </span>
+            <span v-if="!selectedHourEnd">
+              Inicio: <strong>{{ selectedHourStart }}</strong>
+              <span class="text-text-tertiary ml-1 text-xs">→ elige hora fin</span>
+            </span>
+            <span
+              v-else
+              class="flex items-center gap-1"
+            >
+              <strong>{{ selectedHourStart }}</strong>
+              <i class="fa fa-arrow-right mx-1 text-xs" />
+              <strong>{{ selectedHourEnd }}</strong>
+              <span class="badge badge-info ml-1 text-xs">{{ selectedHoursArray.length }} h</span>
+            </span>
+          </div>
         </div>
         <div class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-12 gap-2">
           <div
@@ -68,7 +83,7 @@ class="flex items-center gap-2 text-sm text-info-400 bg-info-500/10 p-2 rounded-
 
       <!-- Grid de Minutos -->
       <div
-        v-if="selectedHour && selectedDays.length > 0"
+        v-if="selectedHourStart && selectedDays.length > 0"
         class="space-y-4"
       >
         <!-- Indicadores -->
@@ -140,8 +155,14 @@ class="p-4 bg-dark-tertiary rounded-lg border border-dark-border"
             Se programarán <strong class="text-text-primary">{{ spotsCount }}</strong> spot(s) en
             <strong class="text-text-primary">{{ selectedMinutes.length }}</strong> minuto(s) para
             <strong class="text-text-primary">{{ selectedDays.length }}</strong> día(s) seleccionado(s) 
-            (<strong class="text-text-primary">{{ selectedDaysText }}</strong>) 
-            a las <strong class="text-text-primary">{{ selectedHour }}</strong>.
+            (<strong class="text-text-primary">{{ selectedDaysText }}</strong>)
+            <span v-if="!selectedHourEnd">
+              a las <strong class="text-text-primary">{{ selectedHourStart }}</strong>
+            </span>
+            <span v-else>
+              en el rango <strong class="text-text-primary">{{ selectedHourStart }} – {{ selectedHourEnd }}</strong>
+              ({{ selectedHoursArray.length }} horas)
+            </span>.
           </p>
           <p class="text-sm text-text-secondary flex items-center gap-2 mb-3">
             <i class="fa fa-calculator" />
@@ -154,7 +175,7 @@ class="p-4 bg-dark-tertiary rounded-lg border border-dark-border"
               :key="minute"
               class="badge badge-primary"
             >
-              {{ selectedHour.split(':')[0] }}:{{ minute.toString().padStart(2, '0') }}
+              {{ selectedHourStart.split(':')[0] }}:{{ minute.toString().padStart(2, '0') }}
             </span>
             <span
 v-if="selectedMinutes.length > 6"
@@ -192,7 +213,7 @@ class="text-sm"
 v-else
 class="text-sm"
 >
-Selecciona una hora para ver los minutos disponibles
+Selecciona una hora de inicio para ver los minutos disponibles
 </p>
       </div>
     </div>
@@ -252,8 +273,25 @@ export default {
   setup(props, { emit }) {
     // ===== STATE =====
     const expanded = ref(props.initialExpanded)
-    const selectedHour = ref('')
+    const selectedHourStart = ref('')
+    const selectedHourEnd = ref('')
     const selectedMinutes = ref([])
+
+    const selectedHoursArray = computed(() => {
+      if (!selectedHourStart.value) return []
+      if (!selectedHourEnd.value) return [selectedHourStart.value]
+
+      const startH = parseInt(selectedHourStart.value.split(':')[0])
+      const endH = parseInt(selectedHourEnd.value.split(':')[0])
+      const min = Math.min(startH, endH)
+      const max = Math.max(startH, endH)
+
+      const hours = []
+      for (let h = min; h <= max; h++) {
+        hours.push(`${h.toString().padStart(2, '0')}:00`)
+      }
+      return hours
+    })
 
     // ===== COMPUTED =====
     const availableCount = computed(() => {
@@ -261,7 +299,7 @@ export default {
     })
 
     const totalProgramaciones = computed(() => {
-      return selectedMinutes.value.length * props.selectedDays.length
+      return selectedMinutes.value.length * props.selectedDays.length * (selectedHoursArray.value.length || 1)
     })
 
     const canProgram = computed(() => {
@@ -269,28 +307,29 @@ export default {
         props.codigoProgramacion &&
         selectedMinutes.value.length > 0 &&
         props.spotsCount > 0 &&
-        selectedHour.value &&
+        selectedHourStart.value &&
         props.selectedDays.length > 0
       )
     })
 
     // ===== METHODS =====
     const isProgrammed = (minute) => {
-      if (!selectedHour.value || props.selectedDays.length === 0) {
+      if (!selectedHourStart.value || props.selectedDays.length === 0) {
         return false
       }
 
-      const hour = parseInt(selectedHour.value.split(':')[0])
-      const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+      // Un minuto está "programado" (no disponible) solo si en TODAS las horas del rango está lleno
+      return selectedHoursArray.value.every(hourValue => {
+        const hour = parseInt(hourValue.split(':')[0])
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
 
-      // Contar slots ocupados para este horario
-      const slotsOcupados = props.programaciones.filter(prog =>
-        props.selectedDays.includes(prog.clprsp_numeroDia) &&
-        prog.clprsp_horaDesde.slice(0, 5) === timeString
-      ).length
+        const slotsOcupados = props.programaciones.filter(prog =>
+          props.selectedDays.includes(prog.clprsp_numeroDia) &&
+          prog.clprsp_horaDesde.slice(0, 5) === timeString
+        ).length
 
-      // Programado si ya hay 5 slots ocupados
-      return (slotsOcupados / props.selectedDays.length) >= 5
+        return (slotsOcupados / props.selectedDays.length) >= 5
+      })
     }
 
     const isSelected = (minute) => {
@@ -332,17 +371,40 @@ export default {
     }
 
     const selectHour = (hour) => {
-      const newValue = `${hour.toString().padStart(2, '0')}:00`
-      if (selectedHour.value !== newValue) {
-        selectedHour.value = newValue
+      const hourValue = `${hour.toString().padStart(2, '0')}:00`
+
+      if (!selectedHourStart.value) {
+        // Primer click: establecer hora inicio
+        selectedHourStart.value = hourValue
+        selectedHourEnd.value = ''
+        onHourChange()
+      } else if (!selectedHourEnd.value) {
+        if (hourValue === selectedHourStart.value) {
+          // Click en la misma hora inicio: limpiar
+          selectedHourStart.value = ''
+          onHourChange()
+        } else {
+          // Segundo click en hora diferente: establecer hora fin
+          selectedHourEnd.value = hourValue
+        }
+      } else {
+        // Ya hay inicio y fin: resetear con nueva selección
+        selectedHourStart.value = hourValue
+        selectedHourEnd.value = ''
         onHourChange()
       }
     }
 
     const getHourClass = (hour) => {
       const hourValue = `${hour.toString().padStart(2, '0')}:00`
-      if (selectedHour.value === hourValue) {
-        return 'bg-primary-500/20 border-primary-500 text-primary-400'
+      if (hourValue === selectedHourStart.value) {
+        return 'bg-primary-500/30 border-primary-500 text-primary-300 font-semibold'
+      }
+      if (hourValue === selectedHourEnd.value) {
+        return 'bg-success-500/30 border-success-500 text-success-300 font-semibold'
+      }
+      if (selectedHoursArray.value.includes(hourValue)) {
+        return 'bg-primary-500/10 border-primary-500/40 text-primary-400/80'
       }
       return 'bg-dark-secondary border-dark-border text-text-secondary hover:border-primary-500/50'
     }
@@ -351,12 +413,11 @@ export default {
       if (!canProgram.value) return
 
       emit('program', {
-        hour: selectedHour.value,
+        hours: [...selectedHoursArray.value],
         minutes: [...selectedMinutes.value],
         days: [...props.selectedDays]
       })
 
-      // Limpiar selección después de programar
       clearSelection()
     }
 
@@ -368,8 +429,10 @@ export default {
     return {
       // State
       expanded,
-      selectedHour,
+      selectedHourStart,
+      selectedHourEnd,
       selectedMinutes,
+      selectedHoursArray,
 
       // Computed
       availableCount,

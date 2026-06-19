@@ -157,6 +157,7 @@ VozElevenLabsServices.getVocesConVariaciones = async function () {
         if (variaciones && variaciones.length > 0) {
           for (const variacion of variaciones) {
             if (variacion.vva_estado === 'A') {
+              const vozSetingsLabels = JSON.parse(voz.vel_labels || '{}')
               vocesConVariaciones.push({
                 // Identificadores
                 id: `${voz.vel_codigo}_${variacion.vva_codigo}`,
@@ -170,7 +171,7 @@ VozElevenLabsServices.getVocesConVariaciones = async function () {
                 name: `${variacion.vva_nombre}`,
                 voz_nombre: voz.vel_nombre,
                 variacion_nombre: variacion.vva_nombre,
-
+                
                 // Configuraciones de la variacion
                 settings: {
                   stability: variacion.vva_stability,
@@ -185,7 +186,9 @@ VozElevenLabsServices.getVocesConVariaciones = async function () {
                 description: voz.vel_descripcion,
                 labels: {
                   language: voz.vel_idioma,
-                  gender: voz.vel_genero
+                  gender: voz.vel_genero,
+                  age: vozSetingsLabels.age || null,
+                  accent: vozSetingsLabels.accent || null
                 },
 
                 // Preview
