@@ -1,37 +1,34 @@
 <template>
   <div class="base-input-wrapper">
     <label
-      v-if="label"
-      :for="computedInputId"
-      class="input-label"
-      :class="{ 'label-required': required }"
-    >
+v-if="label"
+:for="inputId"
+class="input-label"
+:class="{ 'label-required': required }"
+>
       {{ label }}
       <span
-        v-if="required"
-        class="required-mark"
-        aria-hidden="true"
-      >*</span>
+v-if="required"
+class="required-mark"
+>*</span>
     </label>
 
     <div class="input-container">
       <div
-        v-if="slots.prepend || icon"
-        class="input-prepend"
-      >
+v-if="slots.prepend || icon"
+class="input-prepend"
+>
         <slot name="prepend">
           <i
-            v-if="icon"
-            :class="iconClass"
-            class="input-icon"
-            aria-hidden="true"
-          />
+v-if="icon"
+:class="iconClass"
+class="input-icon"
+/>
         </slot>
       </div>
 
       <input
-        :id="computedInputId"
-        ref="inputRef"
+        :id="inputId"
         :type="type"
         :value="modelValue"
         :placeholder="placeholder"
@@ -43,9 +40,6 @@
         :step="step"
         :autocomplete="autocomplete"
         :class="inputClasses"
-        :aria-invalid="!!error || undefined"
-        :aria-describedby="ariaDescribedBy"
-        :aria-required="required || undefined"
         class="base-input"
         @input="handleInput"
         @blur="handleBlur"
@@ -53,45 +47,32 @@
       >
 
       <div
-        v-if="slots.append"
-        class="input-append"
-      >
+v-if="slots.append"
+class="input-append"
+>
         <slot name="append" />
       </div>
     </div>
 
-    <!-- Error message -->
     <p
-      v-if="error"
-      :id="errorId"
-      class="input-error"
-      role="alert"
-      aria-live="polite"
-    >
-      <i
-        class="fas fa-exclamation-circle"
-        aria-hidden="true"
-      />
+v-if="error"
+class="input-error"
+>
+      <i class="fas fa-exclamation-circle" />
       {{ error }}
     </p>
-    <!-- Hint message -->
     <p
-      v-else-if="hint"
-      :id="hintId"
-      class="input-hint"
-    >
-      <i
-        class="fas fa-info-circle"
-        aria-hidden="true"
-      />
+v-else-if="hint"
+class="input-hint"
+>
+      <i class="fas fa-info-circle" />
       {{ hint }}
     </p>
   </div>
 </template>
 
 <script setup>
-import { computed, useSlots, ref, watch } from 'vue'
-import { useUniqueId } from '@/composables/ui/useA11y'
+import { computed, useSlots } from 'vue'
 
 const slots = useSlots()
 
@@ -153,35 +134,13 @@ const props = defineProps({
     type: String,
     default: 'off'
   },
-  // NUEVO: Permitir pasar ID personalizado (opcional)
   inputId: {
     type: String,
-    default: ''
+    default: () => `input-${Math.random().toString(36).substr(2, 9)}`
   }
 })
 
 const emit = defineEmits(['update:modelValue', 'blur', 'focus'])
-
-// NUEVO: IDs únicos y estables
-const generatedId = useUniqueId('input')
-const errorId = useUniqueId('input-error')
-const hintId = useUniqueId('input-hint')
-
-const inputRef = ref(null)
-
-// Usar ID provisto o generar uno estable
-const computedInputId = computed(() => props.inputId || generatedId.value)
-
-// NUEVO: aria-describedby dinámico
-const ariaDescribedBy = computed(() => {
-  const ids = []
-  if (props.error) {
-    ids.push(errorId.value)
-  } else if (props.hint) {
-    ids.push(hintId.value)
-  }
-  return ids.length > 0 ? ids.join(' ') : undefined
-})
 
 const inputClasses = computed(() => {
   const classes = []
@@ -224,12 +183,6 @@ const handleBlur = (event) => {
 const handleFocus = (event) => {
   emit('focus', event)
 }
-
-// NUEVO: Exponer método focus para uso externo
-defineExpose({
-  focus: () => inputRef.value?.focus(),
-  blur: () => inputRef.value?.blur()
-})
 </script>
 
 <style scoped>
@@ -342,3 +295,4 @@ defineExpose({
   @apply text-info-500;
 }
 </style>
+

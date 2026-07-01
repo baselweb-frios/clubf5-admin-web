@@ -3,68 +3,56 @@
     :type="type"
     :disabled="disabled || loading"
     :class="buttonClasses"
-    :aria-label="ariaLabel || undefined"
-    :aria-busy="loading || undefined"
-    :aria-disabled="disabled || loading || undefined"
     class="base-button group"
     @click="handleClick"
   >
     <!-- Loading Spinner -->
     <span
-      v-if="loading"
-      class="loading-spinner"
-      aria-hidden="true"
-    >
+v-if="loading"
+class="loading-spinner"
+>
       <svg
-        class="animate-spin"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
+class="animate-spin"
+fill="none"
+viewBox="0 0 24 24"
+>
         <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        />
+class="opacity-25"
+cx="12"
+cy="12"
+r="10"
+stroke="currentColor"
+stroke-width="4"
+/>
         <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        />
+class="opacity-75"
+fill="currentColor"
+d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+/>
       </svg>
     </span>
 
     <!-- Icon (prepend) -->
     <i
-      v-if="icon && !loading"
-      :class="icon"
-      class="button-icon"
-      aria-hidden="true"
-    />
+v-if="icon && !loading"
+:class="icon"
+class="button-icon"
+/>
 
     <!-- Content -->
-    <span
-      v-if="$slots.default"
-      class="button-content"
-    >
+    <span class="button-content">
       <slot />
     </span>
 
     <!-- Icon (append) -->
     <i
-      v-if="iconRight && !loading"
-      :class="iconRight"
-      class="button-icon-right"
-      aria-hidden="true"
-    />
+v-if="iconRight && !loading"
+:class="iconRight"
+class="button-icon-right"
+/>
 
     <!-- Shimmer Effect Overlay -->
-    <span
-      class="button-shimmer"
-      aria-hidden="true"
-    />
+    <span class="button-shimmer" />
   </button>
 </template>
 
@@ -108,11 +96,6 @@ const props = defineProps({
     default: ''
   },
   iconRight: {
-    type: String,
-    default: ''
-  },
-  // NUEVO: aria-label para botones sin texto (solo icono)
-  ariaLabel: {
     type: String,
     default: ''
   }
@@ -338,3 +321,4 @@ const handleClick = (event) => {
   }
 }
 </style>
+

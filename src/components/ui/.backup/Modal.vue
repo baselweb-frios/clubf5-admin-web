@@ -2,71 +2,55 @@
   <teleport to="body">
     <transition name="modal">
       <div
-        v-if="modelValue"
-        class="modal-container"
-        role="dialog"
-        aria-modal="true"
-        :aria-labelledby="titleId"
-        :aria-describedby="bodyId"
-      >
+v-if="modelValue"
+class="modal-container"
+>
         <!-- Overlay -->
         <div
-          class="modal-overlay"
-          aria-hidden="true"
-          @click="handleOverlayClick"
-        />
+class="modal-overlay"
+@click="handleOverlayClick"
+/>
 
         <!-- Modal content -->
         <div class="modal-wrapper">
           <div
-            ref="modalRef"
-            class="modal-content"
-            :class="sizeClasses"
-            @click.stop
-          >
+class="modal-content"
+:class="sizeClasses"
+@click.stop
+>
             <!-- Header -->
             <div
-              v-if="$slots.header || title"
-              class="modal-header"
-            >
+v-if="$slots.header || title"
+class="modal-header"
+>
               <div class="modal-header-content">
                 <slot name="header">
-                  <h3
-                    :id="titleId"
-                    class="modal-title"
-                  >
-                    {{ title }}
-                  </h3>
+                  <h3 class="modal-title">
+{{ title }}
+</h3>
                 </slot>
 
                 <button
                   v-if="closable"
                   type="button"
                   class="modal-close"
-                  aria-label="Cerrar modal"
                   @click="close"
                 >
-                  <i
-                    class="fas fa-times"
-                    aria-hidden="true"
-                  />
+                  <i class="fas fa-times" />
                 </button>
               </div>
             </div>
 
             <!-- Body -->
-            <div
-              :id="bodyId"
-              class="modal-body"
-            >
+            <div class="modal-body">
               <slot />
             </div>
 
             <!-- Footer -->
             <div
-              v-if="$slots.footer"
-              class="modal-footer"
-            >
+v-if="$slots.footer"
+class="modal-footer"
+>
               <slot name="footer" />
             </div>
           </div>
@@ -77,8 +61,7 @@
 </template>
 
 <script setup>
-import { computed, watch, onMounted, onUnmounted, ref } from 'vue'
-import { useFocusTrap, useUniqueId } from '@/composables/ui/useA11y'
+import { computed, watch, onMounted, onUnmounted } from 'vue'
 
 // Contador global de modales abiertos para manejar múltiples modales
 let openModalsCount = 0
@@ -88,7 +71,7 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  show: {
+    show: {
     type: Boolean,
     default: false
   },
@@ -115,20 +98,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'close', 'update:show'])
-
-// NUEVO: IDs únicos para ARIA
-const titleId = useUniqueId('modal-title')
-const bodyId = useUniqueId('modal-body')
-
-// NUEVO: Ref para el contenedor del modal
-const modalRef = ref(null)
-
-// NUEVO: Focus trap
-const { activate: activateFocusTrap, deactivate: deactivateFocusTrap } = useFocusTrap(modalRef, {
-  returnFocus: true,
-  allowOutsideClick: false
-})
+const emit = defineEmits(['update:modelValue', 'close','update:show'])
 
 const sizeClasses = computed(() => {
   const sizes = {
@@ -186,8 +156,6 @@ watch(() => props.modelValue, (newValue, oldValue) => {
       lockBodyScroll()
       hasLockedScroll = true
     }
-    // NUEVO: Activar focus trap
-    activateFocusTrap()
   } else if (!newValue && oldValue) {
     // Modal se cierra
     document.removeEventListener('keydown', handleEscape)
@@ -195,8 +163,6 @@ watch(() => props.modelValue, (newValue, oldValue) => {
       unlockBodyScroll()
       hasLockedScroll = false
     }
-    // NUEVO: Desactivar focus trap
-    deactivateFocusTrap()
   }
 }, { immediate: true })
 
@@ -206,7 +172,6 @@ onMounted(() => {
     document.addEventListener('keydown', handleEscape)
     lockBodyScroll()
     hasLockedScroll = true
-    activateFocusTrap()
   }
 })
 
@@ -217,7 +182,6 @@ onUnmounted(() => {
     unlockBodyScroll()
     hasLockedScroll = false
   }
-  deactivateFocusTrap()
 })
 </script>
 
@@ -341,3 +305,4 @@ onUnmounted(() => {
   @apply scale-100 opacity-100;
 }
 </style>
+

@@ -1,34 +1,42 @@
 /**
- * OBS (Object Storage Service) API Services
- * Basado en la API de Huawei Cloud OBS
- * @see https://support.huaweicloud.com/intl/en-us/api-obs/obs_04_0005.html
+ * OBS (Object Storage Service) API Services - Usando SDK de Huawei OBS
+ * @see https://support.huaweicloud.com/intl/en-us/sdk-browserjs-devg-obs/obs_24_0001.html
  *
- * Operaciones soportadas:
- * - Listar objetos (GET /)
- * - Subir objetos (PUT/POST)
- * - Descargar objetos (GET /ObjectName)
- * - Eliminar objetos (DELETE /ObjectName)
- * - Eliminar objetos en batch
- * - Copiar/Mover objetos
- * - Generar URLs firmadas
- * - Consultar metadatos
+ * Este servicio usa el SDK de Huawei OBS directamente desde el navegador,
+ * liberando recursos del backend API.
+ *
+ * Requiere:
+ * - SDK: esdk-obs-browserjs.min.js (cargado globalmente en index.html)
+ * - Endpoint del backend: /ObsCloud/GetTemporaryCredentials para obtener tokens STS
  */
 
 import api from './api'
+
+// El SDK de OBS se carga globalmente desde index.html
+// y está disponible como window.ObsClient
+const ObsClient = window.ObsClient
+
+// Validar que el SDK esté cargado
+if (!ObsClient) {
+  console.error('[OBS SDK] El SDK de Huawei OBS no está cargado. Asegúrate de incluir <script src="/esdk-obs-browserjs.min.js"></script> en index.html')
+}
 
 /**
  * Configuracion del servicio OBS
  */
 const OBS_CONFIG = {
-  // Endpoints base del backend
-  BASE_PATH: '/ObsCloud',
-  // Tamano maximo para upload directo (5GB segun API OBS)
-  MAX_DIRECT_UPLOAD_SIZE: 5 * 1024 * 1024 * 1024,
-  // Tamano recomendado para multipart (100MB)
-  MULTIPART_THRESHOLD: 100 * 1024 * 1024,
-  // Tamano de cada parte en multipart upload (5MB minimo segun OBS)
-  PART_SIZE: 5 * 1024 * 1024,
-  // Tipos de contenido comunes
+  // Endpoint OBS desde .env
+  ENDPOINT:import.meta.env.VITE_PATH_OBS,
+  BUCKET: 'clubf5oficial',
+  // Tiempo de cache de credenciales temporales (en minutos)
+  CREDENTIALS_CACHE_TIME: 50,
+  // Rutas del backend para operaciones que aún requieren backend
+  BACKEND_PATH: '/ObsCloud',
+  // Tamanos y limites
+  MAX_DIRECT_UPLOAD_SIZE: 5 * 1024 * 1024 * 1024, // 5GB
+  MULTIPART_THRESHOLD: 100 * 1024 * 1024, // 100MB
+  PART_SIZE: 5 * 1024 * 1024, // 5MB
+  // Tipos de contenido
   CONTENT_TYPES: {
     audio: ['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a'],
     video: ['mp4', 'avi', 'mkv', 'mov', 'wmv', 'webm'],
@@ -39,9 +47,158 @@ const OBS_CONFIG = {
 }
 
 /**
+ * Cache de credenciales temporales
+ */
+let credentialsCache = {
+  credentials: null,
+  expiresAt: null,
+  obsClient: null
+}
+
+/**
+ * Estado del modo de operación
+ * - 'sdk': Usar SDK directamente (requiere endpoint de credenciales)
+ * - 'backend': Usar API del backend (fallback)
+ */
+let operationMode = 'sdk' // Intentar SDK primero, fallback a backend
+
+// Log de configuración al iniciar
+console.log('[OBS Config] ENDPOINT:', OBS_CONFIG.ENDPOINT)
+console.log('[OBS Config] BUCKET:', OBS_CONFIG.BUCKET)
+console.log('[OBS Config] BACKEND_PATH:', OBS_CONFIG.BACKEND_PATH)
+console.log('[OBS Config] SDK disponible:', !!ObsClient)
+console.log('[OBS Config] Modo de operación inicial:', operationMode)
+
+/**
  * Servicio de OBS API
  */
 const obsServicesApi = {}
+
+// ============================================================================
+// GESTION DE CREDENCIALES Y CLIENTE OBS
+// ============================================================================
+
+/**
+ * Obtener credenciales temporales del backend (STS tokens)
+ *
+ * IMPORTANTE: Necesitas implementar este endpoint en tu backend:
+ *
+ * Endpoint: POST /ObsCloud/GetTemporaryCredentials
+ * Respuesta esperada:
+ * {
+ *   accessKeyId: "AKIAIOSFODNN7EXAMPLE",
+ *   secretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+ *   securityToken: "FwoGZXIvYXdzEBYaDH...",
+ *   expiresIn: 3600  // segundos
+ * }
+ *
+ * Implementación sugerida en .NET:
+ * ```csharp
+ * [HttpPost("GetTemporaryCredentials")]
+ * public async Task<IActionResult> GetTemporaryCredentials()
+ * {
+ *     // Usa el SDK de Huawei para generar credenciales temporales (STS)
+ *     var stsClient = new ObsClient(accessKey, secretKey, endpoint);
+ *     var temporaryCredentials = await stsClient.CreateTemporaryCredentials(3600);
+ *     return Ok(temporaryCredentials);
+ * }
+ * ```
+ */
+async function getTemporaryCredentials() {
+  // Verificar si las credenciales cacheadas aún son válidas
+  if (credentialsCache.credentials && credentialsCache.expiresAt) {
+    const now = new Date().getTime()
+    const timeUntilExpiry = credentialsCache.expiresAt - now
+
+    // Renovar si quedan menos de 5 minutos
+    if (timeUntilExpiry > 5 * 60 * 1000) {
+      console.log('[OBS SDK] Usando credenciales cacheadas')
+      return credentialsCache.credentials
+    }
+  }
+
+  console.log('[OBS SDK] Obteniendo nuevas credenciales temporales...')
+
+  try {
+    const response = await api.post(`${OBS_CONFIG.BACKEND_PATH}/GetTemporaryCredentials`)
+    const credentials = response.data
+
+    // Cachear credenciales
+    credentialsCache.credentials = credentials
+    credentialsCache.expiresAt = new Date().getTime() + (credentials.expiresIn || 3600) * 1000
+    credentialsCache.obsClient = null // Invalidar cliente actual
+
+    console.log('[OBS SDK] Credenciales temporales obtenidas exitosamente')
+    return credentials
+  } catch (error) {
+    console.warn('[OBS SDK] No se pudo obtener credenciales temporales. Cambiando a modo backend...', error.response?.status)
+
+    // Cambiar a modo backend si el endpoint no existe
+    if (error.response?.status === 404 || error.response?.status === 500) {
+      operationMode = 'backend'
+      console.info('[OBS] Usando API del backend (el endpoint de credenciales temporales no está implementado)')
+    }
+
+    throw error
+  }
+}
+
+/**
+ * Obtener o crear instancia del cliente OBS
+ */
+async function getObsClient() {
+  // Si ya existe un cliente válido, reutilizarlo
+  if (credentialsCache.obsClient) {
+    const now = new Date().getTime()
+    const timeUntilExpiry = credentialsCache.expiresAt - now
+
+    if (timeUntilExpiry > 5 * 60 * 1000) {
+      return credentialsCache.obsClient
+    }
+  }
+
+  // Obtener nuevas credenciales
+  const credentials = await getTemporaryCredentials()
+  // Crear nuevo cliente OBS
+  const obsClient = new ObsClient({
+    access_key_id: credentials.accessKeyId,
+    secret_access_key: credentials.secretAccessKey,
+    server: OBS_CONFIG.ENDPOINT,
+    timeout : 60 * 5
+  })
+
+  credentialsCache.obsClient = obsClient
+  console.log('[OBS SDK] Cliente OBS creado exitosamente')
+
+  return obsClient
+}
+
+/**
+ * Ejecutar operación OBS con manejo de errores y reintentos
+ */
+async function executeObsOperation(operation, retries = 1) {
+  try {
+    const client = await getObsClient()
+    const result = await operation(client)
+
+    // Verificar si hubo error en la respuesta
+    if (result.CommonMsg && result.CommonMsg.Status >= 300) {
+      throw new Error(`OBS Error ${result.CommonMsg.Status}: ${result.CommonMsg.Code}`)
+    }
+
+    return result
+  } catch (error) {
+    // Si es error de autenticación y quedan reintentos, invalidar cache y reintentar
+    if (retries > 0 && (error.message?.includes('403') || error.message?.includes('InvalidAccessKeyId'))) {
+      console.warn('[OBS SDK] Error de autenticación, invalidando credenciales y reintentando...')
+      credentialsCache.credentials = null
+      credentialsCache.obsClient = null
+      return executeObsOperation(operation, retries - 1)
+    }
+
+    throw error
+  }
+}
 
 // ============================================================================
 // OPERACIONES DE LISTADO
@@ -49,27 +206,129 @@ const obsServicesApi = {}
 
 /**
  * Listar objetos en un bucket con prefijo opcional
- * @see https://support.huaweicloud.com/intl/en-us/api-obs/obs_04_0005.html
- * @param {string} prefix - Prefijo para filtrar objetos (carpeta)
- * @param {Object} options - Opciones adicionales
- * @param {string} options.marker - Marcador para paginacion
- * @param {number} options.maxKeys - Maximo de objetos a retornar (default: 1000)
- * @param {string} options.delimiter - Delimitador para agrupar (default: '/')
- * @returns {Promise<Array>} Lista de objetos
+ * @see https://support.huaweicloud.com/intl/en-us/sdk-browserjs-devg-obs/obs_24_0201.html
  */
 obsServicesApi.ListarObject = async function (prefix = '', options = {}) {
-  const params = {
-    prefix,
-    ...options
+  console.log('[OBS ListarObject] Iniciando listado - prefix:', prefix, 'options:', options, 'modo:', operationMode)
+
+  // Si el modo es backend o el SDK no está disponible, usar API del backend
+  if (operationMode === 'backend' || !ObsClient) {
+    console.log('[OBS ListarObject] Usando modo backend')
+    try {
+      const params = { prefix, ...options }
+      console.log('[OBS ListarObject] Llamando a backend:', `${OBS_CONFIG.BACKEND_PATH}/Listar`, 'params:', params)
+      
+      const result = await api.get(`${OBS_CONFIG.BACKEND_PATH}/Listar`, { params })
+      const data = result.data
+      
+      console.log('[OBS ListarObject] Respuesta del backend:', data)
+      
+      // Validar formato de respuesta
+      if (Array.isArray(data)) {
+        console.log('[OBS ListarObject] ✓ Backend devolvió array con', data.length, 'elementos')
+        return data
+      }
+      
+      if (data && Array.isArray(data.objects)) {
+        console.log('[OBS ListarObject] ✓ Backend devolvió objeto con', data.objects.length, 'elementos en .objects')
+        return data.objects
+      }
+      
+      // Si el backend devuelve un objeto de error
+      if (data && (data.success === false || data.error)) {
+        const errorMsg = data.message || data.error || 'Error desconocido del backend'
+        console.error('[OBS ListarObject] ✗ Backend devolvió error:', errorMsg)
+        throw new Error(errorMsg)
+      }
+      
+      // Formato no reconocido
+      console.warn('[OBS ListarObject] ⚠ Formato de respuesta no reconocido, retornando array vacío')
+      return []
+      
+    } catch (error) {
+      console.error('[OBS ListarObject] ✗ Error en modo backend:', error)
+      console.error('[OBS ListarObject] Detalles:', error.response?.data || error.message)
+      throw error
+    }
   }
-  return api.get(`${OBS_CONFIG.BASE_PATH}/Listar`, { params }).then(res => res.data)
+
+  // Intentar usar el SDK
+  try {
+    console.log('[OBS ListarObject] Intentando usar SDK...')
+    const result = await executeObsOperation(async (client) => {
+      return client.listObjects({
+        Bucket: OBS_CONFIG.BUCKET,
+        Prefix: prefix,
+        Marker: options.marker || '',
+        MaxKeys: options.maxKeys || 1000,
+        Delimiter: options.delimiter || ''
+      })
+    })
+
+    console.log('[OBS ListarObject] Respuesta del SDK:', result)
+
+    // Transformar respuesta del SDK al formato esperado por la app
+    const objects = []
+
+    // Agregar directorios
+    if (result.InterfaceResult && result.InterfaceResult.CommonPrefixes) {
+      result.InterfaceResult.CommonPrefixes.forEach(dir => {
+        objects.push({
+          objectKey: dir.Prefix,
+          size: 0,
+          lastModified: null,
+          etag: null
+        })
+      })
+    }
+
+    // Agregar archivos
+    if (result.InterfaceResult && result.InterfaceResult.Contents) {
+      result.InterfaceResult.Contents.forEach(obj => {
+        objects.push({
+          objectKey: obj.Key,
+          size: obj.Size,
+          lastModified: obj.LastModified,
+          etag: obj.ETag
+        })
+      })
+    }
+
+    console.log('[OBS ListarObject] ✓ SDK retornó', objects.length, 'objetos')
+    return objects
+  } catch (error) {
+    // Si falla con el SDK, cambiar a modo backend y reintentar
+    console.warn('[OBS ListarObject] Error con SDK, cambiando a modo backend:', error.message)
+    operationMode = 'backend'
+
+    console.log('[OBS ListarObject] Reintentando con API del backend...')
+    try {
+      const params = { prefix, ...options }
+      const result = await api.get(`${OBS_CONFIG.BACKEND_PATH}/Listar`, { params })
+      const data = result.data
+      
+      console.log('[OBS ListarObject] ✓ Operación completada con API del backend')
+      
+      // Validar formato de respuesta
+      if (Array.isArray(data)) {
+        return data
+      }
+      if (data && Array.isArray(data.objects)) {
+        return data.objects
+      }
+      
+      console.warn('[OBS ListarObject] ⚠ Formato de respuesta del backend no reconocido en retry')
+      return []
+      
+    } catch (retryError) {
+      console.error('[OBS ListarObject] ✗ Error en retry con backend:', retryError)
+      throw retryError
+    }
+  }
 }
 
 /**
  * Listar objetos con paginacion completa
- * @param {string} prefix - Prefijo para filtrar
- * @param {number} maxKeys - Maximo de objetos por pagina
- * @returns {AsyncGenerator} Generador asincrono de objetos
  */
 obsServicesApi.ListarObjectPaginado = async function* (prefix = '', maxKeys = 1000) {
   let marker = ''
@@ -77,13 +336,12 @@ obsServicesApi.ListarObjectPaginado = async function* (prefix = '', maxKeys = 10
 
   while (hasMore) {
     const response = await obsServicesApi.ListarObject(prefix, { marker, maxKeys })
-    const objects = Array.isArray(response) ? response : response.objects || []
 
-    for (const obj of objects) {
+    for (const obj of response) {
       yield obj
     }
 
-    // Verificar si hay mas paginas
+    // Verificar si hay más páginas
     if (response.isTruncated && response.nextMarker) {
       marker = response.nextMarker
     } else {
@@ -94,8 +352,6 @@ obsServicesApi.ListarObjectPaginado = async function* (prefix = '', maxKeys = 10
 
 /**
  * Listar solo carpetas (directorios) en una ruta
- * @param {string} prefix - Prefijo/ruta
- * @returns {Promise<Array>} Lista de carpetas
  */
 obsServicesApi.ListarCarpetas = async function (prefix = '') {
   const objetos = await obsServicesApi.ListarObject(prefix)
@@ -104,8 +360,6 @@ obsServicesApi.ListarCarpetas = async function (prefix = '') {
 
 /**
  * Listar solo archivos (no carpetas) en una ruta
- * @param {string} prefix - Prefijo/ruta
- * @returns {Promise<Array>} Lista de archivos
  */
 obsServicesApi.ListarArchivos = async function (prefix = '') {
   const objetos = await obsServicesApi.ListarObject(prefix)
@@ -114,9 +368,6 @@ obsServicesApi.ListarArchivos = async function (prefix = '') {
 
 /**
  * Buscar archivos por extension
- * @param {string} prefix - Prefijo/ruta
- * @param {string|Array<string>} extensiones - Extension(es) a buscar
- * @returns {Promise<Array>} Lista de archivos filtrados
  */
 obsServicesApi.BuscarPorExtension = async function (prefix = '', extensiones) {
   const exts = Array.isArray(extensiones) ? extensiones : [extensiones]
@@ -130,8 +381,6 @@ obsServicesApi.BuscarPorExtension = async function (prefix = '', extensiones) {
 
 /**
  * Buscar archivos de audio
- * @param {string} prefix - Prefijo/ruta
- * @returns {Promise<Array>} Lista de archivos de audio
  */
 obsServicesApi.BuscarAudio = async function (prefix = '') {
   return obsServicesApi.BuscarPorExtension(prefix, OBS_CONFIG.CONTENT_TYPES.audio)
@@ -139,8 +388,6 @@ obsServicesApi.BuscarAudio = async function (prefix = '') {
 
 /**
  * Buscar archivos de video
- * @param {string} prefix - Prefijo/ruta
- * @returns {Promise<Array>} Lista de archivos de video
  */
 obsServicesApi.BuscarVideo = async function (prefix = '') {
   return obsServicesApi.BuscarPorExtension(prefix, OBS_CONFIG.CONTENT_TYPES.video)
@@ -148,8 +395,6 @@ obsServicesApi.BuscarVideo = async function (prefix = '') {
 
 /**
  * Buscar archivos de imagen
- * @param {string} prefix - Prefijo/ruta
- * @returns {Promise<Array>} Lista de archivos de imagen
  */
 obsServicesApi.BuscarImagenes = async function (prefix = '') {
   return obsServicesApi.BuscarPorExtension(prefix, OBS_CONFIG.CONTENT_TYPES.image)
@@ -160,45 +405,63 @@ obsServicesApi.BuscarImagenes = async function (prefix = '') {
 // ============================================================================
 
 /**
- * Subir archivo(s) al OBS
- * @see https://support.huaweicloud.com/intl/en-us/api-obs/obs_04_0005.html (PUT Object)
- * @param {FormData} formdata - FormData con archivo y ruta
- * @param {Object} options - Opciones adicionales
- * @param {Function} options.onProgress - Callback de progreso (0-100)
- * @returns {Promise<*>} Resultado de la operacion
+ * Subir archivo(s) al OBS usando el SDK
+ * @see https://support.huaweicloud.com/intl/en-us/sdk-browserjs-devg-obs/obs_24_0202.html
  */
 obsServicesApi.SubirFiles = async function (formdata, options = {}) {
-  const config = {
-    headers: {
-      'Content-Type': 'multipart/form-data'
+  // Extraer file y filePath del FormData
+  const file = formdata.get('file')
+  const filePath = formdata.get('filePath')
+  const metadata = formdata.get('metadata')
+
+  if (!file || !filePath) {
+    throw new Error('Se requiere file y filePath en el FormData')
+  }
+
+  const uploadParams = {
+    Bucket: OBS_CONFIG.BUCKET,
+    Key: filePath,
+    SourceFile: file,
+    ContentType: obsServicesApi.GetContentType(file.name)
+  }
+
+  // Agregar metadata si existe
+  if (metadata) {
+    try {
+      uploadParams.Metadata = JSON.parse(metadata)
+    } catch (e) {
+      console.warn('[OBS SDK] Error al parsear metadata:', e)
     }
   }
 
-  // Agregar seguimiento de progreso si se proporciona callback
+  // Manejar progreso si se proporcionó callback
   if (options.onProgress) {
-    config.onUploadProgress = (progressEvent) => {
-      const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-      options.onProgress(percentCompleted)
+    uploadParams.ProgressCallback = (transferredAmount, totalAmount) => {
+      const percent = Math.round((transferredAmount / totalAmount) * 100)
+      options.onProgress(percent)
     }
   }
 
-  return api.post(`${OBS_CONFIG.BASE_PATH}/Upload`, formdata, config).then(res => res.data)
+  const result = await executeObsOperation(async (client) => {
+    return client.putObject(uploadParams)
+  })
+
+  return {
+    success: true,
+    objectKey: filePath,
+    etag: result.InterfaceResult?.ETag,
+    versionId: result.InterfaceResult?.VersionId
+  }
 }
 
 /**
  * Subir archivo con metadata personalizada
- * @param {File} file - Archivo a subir
- * @param {string} objectKey - Ruta/nombre del objeto en OBS
- * @param {Object} metadata - Metadata personalizada
- * @param {Object} options - Opciones adicionales
- * @returns {Promise<*>} Resultado de la operacion
  */
 obsServicesApi.SubirConMetadata = async function (file, objectKey, metadata = {}, options = {}) {
   const formdata = new FormData()
   formdata.append('file', file)
   formdata.append('filePath', objectKey)
 
-  // Agregar metadata como JSON
   if (Object.keys(metadata).length > 0) {
     formdata.append('metadata', JSON.stringify(metadata))
   }
@@ -208,19 +471,12 @@ obsServicesApi.SubirConMetadata = async function (file, objectKey, metadata = {}
 
 /**
  * Subir multiples archivos en paralelo
- * @param {Array<{file: File, objectKey: string}>} archivos - Lista de archivos
- * @param {Object} options - Opciones
- * @param {number} options.concurrency - Concurrencia maxima (default: 3)
- * @param {Function} options.onFileProgress - Callback por archivo
- * @param {Function} options.onTotalProgress - Callback de progreso total
- * @returns {Promise<Array>} Resultados de cada upload
  */
 obsServicesApi.SubirMultiples = async function (archivos, options = {}) {
   const { concurrency = 3, onFileProgress, onTotalProgress } = options
   const results = []
   let completados = 0
 
-  // Procesar en lotes segun concurrencia
   for (let i = 0; i < archivos.length; i += concurrency) {
     const batch = archivos.slice(i, i + concurrency)
 
@@ -262,51 +518,103 @@ obsServicesApi.SubirMultiples = async function (archivos, options = {}) {
 
 /**
  * Crear una carpeta (objeto vacio con '/' al final)
- * @param {string} folderPath - Ruta de la carpeta
- * @returns {Promise<*>} Resultado de la operacion
  */
 obsServicesApi.CrearCarpeta = async function (folderPath) {
-  // Asegurar que termina con '/'
   const path = folderPath.endsWith('/') ? folderPath : `${folderPath}/`
 
-  const formdata = new FormData()
-  // Crear un blob vacio para la carpeta
-  const emptyBlob = new Blob([''], { type: 'application/x-directory' })
-  formdata.append('file', emptyBlob, '.folder')
-  formdata.append('filePath', path)
+  const result = await executeObsOperation(async (client) => {
+    return client.putObject({
+      Bucket: OBS_CONFIG.BUCKET,
+      Key: path,
+      Body: ''
+    })
+  })
 
-  return api.post(`${OBS_CONFIG.BASE_PATH}/Upload`, formdata, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }).then(res => res.data)
+  return {
+    success: true,
+    objectKey: path,
+    etag: result.InterfaceResult?.ETag
+  }
 }
 
 // ============================================================================
-// OPERACIONES DE DESCARGA
+// OPERACIONES DE DESCARGA Y URLS
 // ============================================================================
 
 /**
+ * Generar link de acceso temporal (URL firmada)
+ * @see https://support.huaweicloud.com/intl/en-us/sdk-browserjs-devg-obs/obs_24_0203.html
+ */
+obsServicesApi.GetLink = async function (objectKey, expirationMinutes = 60) {
+  // Si el modo es backend o el SDK no está disponible, usar API del backend
+  if (operationMode === 'backend' || !ObsClient) {
+    return api.get(`${OBS_CONFIG.BACKEND_PATH}/GenLink`, {
+      params: { objectKey, expiration: expirationMinutes }
+    }).then(res => res.data)
+  }
+
+  // Intentar usar el SDK
+  try {
+    const result = await executeObsOperation(async (client) => {
+      return client.createSignedUrlSync({
+        Method: 'GET',
+        Bucket: OBS_CONFIG.BUCKET,
+        Key: objectKey,
+        Expires: expirationMinutes * 60 // Convertir minutos a segundos
+      })
+    })
+
+    return result.SignedUrl
+  } catch (error) {
+    // Si falla con el SDK, cambiar a modo backend y reintentar
+    console.warn('[OBS] Error con SDK en GetLink, cambiando a modo backend:', error.message)
+    operationMode = 'backend'
+
+    console.log('[OBS] Reintentando GetLink con API del backend...')
+    const result = await api.get(`${OBS_CONFIG.BACKEND_PATH}/GenLink`, {
+      params: { objectKey, expiration: expirationMinutes }
+    })
+    console.log('[OBS] ✓ GetLink completado con API del backend')
+    return result.data
+  }
+}
+
+/**
+ * Generar links para multiples objetos
+ */
+obsServicesApi.GetLinksMultiples = async function (objectKeys, expirationMinutes = 60) {
+  const promises = objectKeys.map(async key => {
+    try {
+      const url = await obsServicesApi.GetLink(key, expirationMinutes)
+      return { objectKey: key, url, success: true }
+    } catch (error) {
+      return { objectKey: key, url: null, success: false, error }
+    }
+  })
+
+  return Promise.all(promises)
+}
+
+/**
  * Descargar archivo del OBS
- * @see https://support.huaweicloud.com/intl/en-us/api-obs/obs_04_0083.html
- * @param {string} objectName - Nombre/ruta del objeto
- * @param {Object} options - Opciones de descarga
- * @param {string} options.range - Rango de bytes (ej: 'bytes=0-1023')
- * @param {string} options.versionId - ID de version especifica
- * @returns {Promise<Blob>} Blob del archivo
  */
 obsServicesApi.Download = async function (objectName, options = {}) {
-  const params = { objectName, ...options }
+  const result = await executeObsOperation(async (client) => {
+    return client.getObject({
+      Bucket: OBS_CONFIG.BUCKET,
+      Key: objectName,
+      ...options
+    })
+  })
 
-  return api.get(`${OBS_CONFIG.BASE_PATH}/Download`, {
-    params,
-    responseType: 'blob'
-  }).then(res => res.data)
+  // Convertir el resultado a Blob
+  return new Blob([result.InterfaceResult.Content], {
+    type: result.InterfaceResult.ContentType || 'application/octet-stream'
+  })
 }
 
 /**
  * Descargar archivo y guardarlo automaticamente
- * @param {string} objectName - Nombre/ruta del objeto
- * @param {string} fileName - Nombre para guardar (opcional)
- * @returns {Promise<void>}
  */
 obsServicesApi.DownloadYGuardar = async function (objectName, fileName = null) {
   const blob = await obsServicesApi.Download(objectName)
@@ -322,26 +630,17 @@ obsServicesApi.DownloadYGuardar = async function (objectName, fileName = null) {
 
 /**
  * Obtener URL de descarga directa (pre-firmada)
- * @param {string} objectKey - Clave del objeto
- * @param {number} expirationMinutes - Minutos de validez (default: 60)
- * @returns {Promise<string>} URL firmada
  */
 obsServicesApi.GetDownloadUrl = async function (objectKey, expirationMinutes = 60) {
-  return api.get(`${OBS_CONFIG.BASE_PATH}/GenLink`, {
-    params: { objectKey, expiration: expirationMinutes }
-  }).then(res => res.data)
+  return obsServicesApi.GetLink(objectKey, expirationMinutes)
 }
 
 /**
  * Descargar rango de bytes (para streaming o descarga parcial)
- * @param {string} objectName - Nombre del objeto
- * @param {number} start - Byte inicial
- * @param {number} end - Byte final
- * @returns {Promise<Blob>} Blob parcial
  */
 obsServicesApi.DownloadRango = async function (objectName, start, end) {
   return obsServicesApi.Download(objectName, {
-    range: `bytes=${start}-${end}`
+    Range: `bytes=${start}-${end}`
   })
 }
 
@@ -351,46 +650,82 @@ obsServicesApi.DownloadRango = async function (objectName, start, end) {
 
 /**
  * Eliminar un archivo del OBS
- * @see https://support.huaweicloud.com/intl/en-us/api-obs/obs_04_0005.html (DELETE Object)
- * @param {string} objectName - Nombre/ruta del objeto
- * @returns {Promise<*>} Resultado de la operacion
+ * @see https://support.huaweicloud.com/intl/en-us/sdk-browserjs-devg-obs/obs_24_0204.html
  */
 obsServicesApi.EliminarArchivo = async function (objectName) {
-  return api.delete(`${OBS_CONFIG.BASE_PATH}/Delete`, {
-    params: { objectName }
-  }).then(res => res.data)
+  // Si el modo es backend o el SDK no está disponible, usar API del backend
+  if (operationMode === 'backend' || !ObsClient) {
+    return api.delete(`${OBS_CONFIG.BACKEND_PATH}/Delete`, {
+      params: { objectName }
+    }).then(res => res.data)
+  }
+
+  // Intentar usar el SDK
+  try {
+    const result = await executeObsOperation(async (client) => {
+      return client.deleteObject({
+        Bucket: OBS_CONFIG.BUCKET,
+        Key: objectName
+      })
+    })
+
+    return {
+      success: true,
+      objectKey: objectName,
+      deleteMarker: result.InterfaceResult?.DeleteMarker,
+      versionId: result.InterfaceResult?.VersionId
+    }
+  } catch (error) {
+    // Si falla con el SDK, cambiar a modo backend y reintentar
+    console.warn('[OBS] Error con SDK en EliminarArchivo, cambiando a modo backend:', error.message)
+    operationMode = 'backend'
+
+    console.log('[OBS] Reintentando EliminarArchivo con API del backend...')
+    const result = await api.delete(`${OBS_CONFIG.BACKEND_PATH}/Delete`, {
+      params: { objectName }
+    })
+    console.log('[OBS] ✓ EliminarArchivo completado con API del backend')
+    return result.data
+  }
 }
 
 /**
  * Eliminar un objeto (carpeta/directorio) y su contenido
- * @param {string} objectKey - Clave del objeto/carpeta
- * @returns {Promise<*>} Resultado de la operacion
  */
 obsServicesApi.EliminarObjeto = async function (objectKey) {
-  return api.delete(`${OBS_CONFIG.BASE_PATH}/EliminarObjeto`, {
-    params: { objectKey }
-  }).then(res => res.data)
+  return obsServicesApi.EliminarArchivo(objectKey)
 }
 
 /**
  * Eliminar multiples archivos en batch
- * @param {Array<string>} objectKeys - Lista de claves de objetos
- * @returns {Promise<Array>} Resultados de cada eliminacion
  */
 obsServicesApi.EliminarMultiples = async function (objectKeys) {
-  const promises = objectKeys.map(key =>
-    obsServicesApi.EliminarArchivo(key)
-      .then(() => ({ success: true, objectKey: key }))
-      .catch(error => ({ success: false, objectKey: key, error }))
-  )
-  return Promise.all(promises)
+  const result = await executeObsOperation(async (client) => {
+    return client.deleteObjects({
+      Bucket: OBS_CONFIG.BUCKET,
+      Quiet: false,
+      Objects: objectKeys.map(key => ({ Key: key }))
+    })
+  })
+
+  // Transformar respuesta
+  const deleted = result.InterfaceResult?.Deleteds || []
+  const errors = result.InterfaceResult?.Errors || []
+
+  return objectKeys.map(key => {
+    const isDeleted = deleted.some(d => d.Key === key)
+    const error = errors.find(e => e.Key === key)
+
+    return {
+      objectKey: key,
+      success: isDeleted,
+      error: error ? new Error(`${error.Code}: ${error.Message}`) : null
+    }
+  })
 }
 
 /**
  * Eliminar carpeta y todo su contenido recursivamente
- * @param {string} folderPath - Ruta de la carpeta
- * @param {Function} onProgress - Callback de progreso
- * @returns {Promise<{deleted: number, errors: Array}>}
  */
 obsServicesApi.EliminarCarpetaRecursivo = async function (folderPath, onProgress = null) {
   const path = folderPath.endsWith('/') ? folderPath : `${folderPath}/`
@@ -402,7 +737,6 @@ obsServicesApi.EliminarCarpetaRecursivo = async function (folderPath, onProgress
   for (const obj of objetos) {
     try {
       if (obj.objectKey.endsWith('/')) {
-        // Es una subcarpeta, eliminar recursivamente
         await obsServicesApi.EliminarCarpetaRecursivo(obj.objectKey)
       } else {
         await obsServicesApi.EliminarArchivo(obj.objectKey)
@@ -417,7 +751,6 @@ obsServicesApi.EliminarCarpetaRecursivo = async function (folderPath, onProgress
     }
   }
 
-  // Eliminar la carpeta principal
   try {
     await obsServicesApi.EliminarObjeto(path)
     deleted++
@@ -430,18 +763,11 @@ obsServicesApi.EliminarCarpetaRecursivo = async function (folderPath, onProgress
 
 /**
  * Eliminar archivo y notificar a clientes via SignalR
- * @param {string} objectKey - Clave del objeto
- * @param {string} fileName - Nombre del archivo
- * @param {string} radioId - ID de la radio (opcional)
- * @param {Object} signalR - Instancia de useSignalRAuth (opcional)
- * @returns {Promise<*>}
  */
 obsServicesApi.EliminarArchivoYNotificar = async function (objectKey, fileName, radioId = null, signalR = null) {
   try {
     // 1. Eliminar el archivo del OBS
-    const result = await api.delete(`${OBS_CONFIG.BASE_PATH}/Delete`, {
-      params: { objectName: objectKey }
-    }).then(res => res.data)
+    const result = await obsServicesApi.EliminarArchivo(objectKey)
 
     // 2. Enviar notificacion por SignalR
     if (signalR && signalR.connected()) {
@@ -460,17 +786,17 @@ obsServicesApi.EliminarArchivoYNotificar = async function (objectKey, fileName, 
           message: `Archivo de musica eliminado: ${fileName}`
         }))
 
-        console.log('[OBS API] Notificacion de eliminacion enviada via SignalR:', notificationData)
+        console.log('[OBS SDK] Notificacion de eliminacion enviada via SignalR:', notificationData)
       } catch (signalrError) {
-        console.error('[OBS API] Error al enviar notificacion SignalR:', signalrError)
+        console.error('[OBS SDK] Error al enviar notificacion SignalR:', signalrError)
       }
     } else {
-      console.warn('[OBS API] SignalR no disponible para notificacion')
+      console.warn('[OBS SDK] SignalR no disponible para notificacion')
     }
 
     return result
   } catch (error) {
-    console.error('[OBS API] Error al eliminar archivo:', error)
+    console.error('[OBS SDK] Error al eliminar archivo:', error)
     throw error
   }
 }
@@ -480,31 +806,45 @@ obsServicesApi.EliminarArchivoYNotificar = async function (objectKey, fileName, 
 // ============================================================================
 
 /**
- * Mover objeto a nueva ubicacion
- * @param {Object} postData - Datos de movimiento
- * @param {string} postData.origen - Ruta origen
- * @param {string} postData.destino - Ruta destino
- * @returns {Promise<*>} Resultado de la operacion
+ * Copiar objeto (sin eliminar el original)
+ * @see https://support.huaweicloud.com/intl/en-us/sdk-browserjs-devg-obs/obs_24_0205.html
  */
-obsServicesApi.Mover = async function (postData) {
-  return api.post(`${OBS_CONFIG.BASE_PATH}/Mover`, postData).then(res => res.data)
+obsServicesApi.Copiar = async function (origen, destino) {
+  const result = await executeObsOperation(async (client) => {
+    return client.copyObject({
+      Bucket: OBS_CONFIG.BUCKET,
+      Key: destino,
+      CopySource: `${OBS_CONFIG.BUCKET}/${origen}`
+    })
+  })
+
+  return {
+    success: true,
+    origen,
+    destino,
+    etag: result.InterfaceResult?.ETag
+  }
 }
 
 /**
- * Copiar objeto (sin eliminar el original)
- * @param {string} origen - Ruta origen
- * @param {string} destino - Ruta destino
- * @returns {Promise<*>} Resultado de la operacion
+ * Mover objeto a nueva ubicacion
  */
-obsServicesApi.Copiar = async function (origen, destino) {
-  return api.post(`${OBS_CONFIG.BASE_PATH}/Copiar`, { origen, destino }).then(res => res.data)
+obsServicesApi.Mover = async function (postData) {
+  const { origen, destino } = postData
+
+  // Copiar y luego eliminar el original
+  await obsServicesApi.Copiar(origen, destino)
+  await obsServicesApi.EliminarArchivo(origen)
+
+  return {
+    success: true,
+    origen,
+    destino
+  }
 }
 
 /**
  * Renombrar objeto
- * @param {string} objectKey - Clave actual del objeto
- * @param {string} nuevoNombre - Nuevo nombre (solo nombre, no ruta completa)
- * @returns {Promise<*>} Resultado de la operacion
  */
 obsServicesApi.Renombrar = async function (objectKey, nuevoNombre) {
   const partes = objectKey.split('/')
@@ -519,9 +859,6 @@ obsServicesApi.Renombrar = async function (objectKey, nuevoNombre) {
 
 /**
  * Mover multiples archivos a una carpeta destino
- * @param {Array<string>} objectKeys - Lista de claves de objetos
- * @param {string} carpetaDestino - Carpeta destino
- * @returns {Promise<Array>} Resultados de cada movimiento
  */
 obsServicesApi.MoverMultiples = async function (objectKeys, carpetaDestino) {
   const destino = carpetaDestino.endsWith('/') ? carpetaDestino : `${carpetaDestino}/`
@@ -540,52 +877,15 @@ obsServicesApi.MoverMultiples = async function (objectKeys, carpetaDestino) {
 }
 
 // ============================================================================
-// OPERACIONES DE LINKS Y URLS
-// ============================================================================
-
-/**
- * Generar link de acceso temporal (URL firmada)
- * @param {string} objectKey - Clave del objeto
- * @param {number} expirationMinutes - Minutos de validez
- * @returns {Promise<string>} URL firmada
- */
-obsServicesApi.GetLink = async function (objectKey, expirationMinutes = 60) {
-  return api.get(`${OBS_CONFIG.BASE_PATH}/GenLink`, {
-    params: { objectKey, expiration: expirationMinutes }
-  }).then(res => res.data)
-}
-
-/**
- * Generar links para multiples objetos
- * @param {Array<string>} objectKeys - Lista de claves
- * @param {number} expirationMinutes - Minutos de validez
- * @returns {Promise<Array<{objectKey: string, url: string}>>}
- */
-obsServicesApi.GetLinksMultiples = async function (objectKeys, expirationMinutes = 60) {
-  const promises = objectKeys.map(async key => {
-    try {
-      const url = await obsServicesApi.GetLink(key, expirationMinutes)
-      return { objectKey: key, url, success: true }
-    } catch (error) {
-      return { objectKey: key, url: null, success: false, error }
-    }
-  })
-
-  return Promise.all(promises)
-}
-
-// ============================================================================
 // OPERACIONES DE MUSICA (ESPECIFICAS DEL PROYECTO)
+// Estas operaciones aún usan el backend porque requieren lógica de negocio
 // ============================================================================
 
 /**
  * Obtener musica desde API
- * @param {Object} listaRadioDescarga - Lista de radios para descarga
- * @param {string} marker - Marcador de paginacion
- * @returns {Promise<*>} Datos de musica
  */
 obsServicesApi.GetMusicApi = async function (listaRadioDescarga, marker = '') {
-  return api.post(`${OBS_CONFIG.BASE_PATH}/GetMusicApi`, {
+  return api.post(`${OBS_CONFIG.BACKEND_PATH}/GetMusicApi`, {
     listaRadioDescarga,
     marker
   }).then(res => res.data)
@@ -593,16 +893,13 @@ obsServicesApi.GetMusicApi = async function (listaRadioDescarga, marker = '') {
 
 /**
  * Sincronizar radios desde OBS
- * @returns {Promise<*>} Resultado de sincronizacion
  */
 obsServicesApi.SincronizarRadios = async function () {
-  return api.post(`${OBS_CONFIG.BASE_PATH}/SincronizarRadios`).then(res => res.data)
+  return api.post(`${OBS_CONFIG.BACKEND_PATH}/SincronizarRadios`).then(res => res.data)
 }
 
 /**
  * Buscar archivos de musica en una carpeta de genero
- * @param {string} codigoGenero - Codigo del genero musical
- * @returns {Promise<Array>} Lista de archivos de audio
  */
 obsServicesApi.BuscarMusicaPorGenero = async function (codigoGenero) {
   const prefix = `musica/generos/${codigoGenero}/`
@@ -611,9 +908,6 @@ obsServicesApi.BuscarMusicaPorGenero = async function (codigoGenero) {
 
 /**
  * Buscar archivos de musica en una carpeta de subgenero
- * @param {string} codigoGenero - Codigo del genero musical
- * @param {string} codigoSubgenero - Codigo del subgenero
- * @returns {Promise<Array>} Lista de archivos de audio
  */
 obsServicesApi.BuscarMusicaPorSubgenero = async function (codigoGenero, codigoSubgenero) {
   const prefix = `musica/generos/${codigoGenero}/${codigoSubgenero}/`
@@ -626,19 +920,27 @@ obsServicesApi.BuscarMusicaPorSubgenero = async function (codigoGenero, codigoSu
 
 /**
  * Obtener informacion de un objeto (metadatos)
- * @param {string} objectKey - Clave del objeto
- * @returns {Promise<Object>} Metadatos del objeto
  */
 obsServicesApi.GetObjectInfo = async function (objectKey) {
-  return api.get(`${OBS_CONFIG.BASE_PATH}/ObjectInfo`, {
-    params: { objectKey }
-  }).then(res => res.data)
+  const result = await executeObsOperation(async (client) => {
+    return client.getObjectMetadata({
+      Bucket: OBS_CONFIG.BUCKET,
+      Key: objectKey
+    })
+  })
+
+  return {
+    objectKey,
+    contentType: result.InterfaceResult.ContentType,
+    contentLength: result.InterfaceResult.ContentLength,
+    lastModified: result.InterfaceResult.LastModified,
+    etag: result.InterfaceResult.ETag,
+    metadata: result.InterfaceResult.Metadata || {}
+  }
 }
 
 /**
  * Verificar si un objeto existe
- * @param {string} objectKey - Clave del objeto
- * @returns {Promise<boolean>}
  */
 obsServicesApi.ExisteObjeto = async function (objectKey) {
   try {
@@ -651,8 +953,6 @@ obsServicesApi.ExisteObjeto = async function (objectKey) {
 
 /**
  * Obtener el tipo de contenido basado en la extension
- * @param {string} filename - Nombre del archivo
- * @returns {string} Tipo de contenido
  */
 obsServicesApi.GetContentType = function (filename) {
   const ext = filename.split('.').pop().toLowerCase()
@@ -696,9 +996,6 @@ obsServicesApi.GetContentType = function (filename) {
 
 /**
  * Formatear tamano de bytes a formato legible
- * @param {number} bytes - Tamano en bytes
- * @param {number} decimals - Decimales a mostrar
- * @returns {string} Tamano formateado
  */
 obsServicesApi.FormatSize = function (bytes, decimals = 2) {
   if (!bytes || bytes === 0) return '0 B'
@@ -712,8 +1009,6 @@ obsServicesApi.FormatSize = function (bytes, decimals = 2) {
 
 /**
  * Obtener icono segun el tipo de archivo
- * @param {string} filename - Nombre del archivo
- * @returns {string} Clase CSS del icono
  */
 obsServicesApi.GetFileIcon = function (filename) {
   const ext = filename.split('.').pop().toLowerCase()
@@ -733,8 +1028,6 @@ obsServicesApi.GetFileIcon = function (filename) {
 
 /**
  * Obtener nombre de archivo de una ruta completa
- * @param {string} objectKey - Clave del objeto
- * @returns {string} Nombre del archivo
  */
 obsServicesApi.GetNombreArchivo = function (objectKey) {
   const parts = objectKey.split('/').filter(p => p)
@@ -743,8 +1036,6 @@ obsServicesApi.GetNombreArchivo = function (objectKey) {
 
 /**
  * Obtener la carpeta padre de un objeto
- * @param {string} objectKey - Clave del objeto
- * @returns {string} Ruta de la carpeta padre
  */
 obsServicesApi.GetCarpetaPadre = function (objectKey) {
   const parts = objectKey.split('/').filter(p => p)
@@ -754,9 +1045,6 @@ obsServicesApi.GetCarpetaPadre = function (objectKey) {
 
 /**
  * Validar si el archivo es de un tipo permitido
- * @param {string} filename - Nombre del archivo
- * @param {Array<string>} allowedTypes - Tipos permitidos (ej: ['audio', 'video'])
- * @returns {boolean}
  */
 obsServicesApi.ValidarTipoArchivo = function (filename, allowedTypes) {
   const ext = filename.split('.').pop().toLowerCase()
@@ -772,9 +1060,6 @@ obsServicesApi.ValidarTipoArchivo = function (filename, allowedTypes) {
 
 /**
  * Validar tamano de archivo
- * @param {number} size - Tamano en bytes
- * @param {number} maxSizeMB - Tamano maximo en MB
- * @returns {{valid: boolean, message: string}}
  */
 obsServicesApi.ValidarTamanoArchivo = function (size, maxSizeMB = 100) {
   const maxBytes = maxSizeMB * 1024 * 1024
@@ -791,5 +1076,33 @@ obsServicesApi.ValidarTamanoArchivo = function (size, maxSizeMB = 100) {
 
 // Exportar configuracion para uso externo
 obsServicesApi.CONFIG = OBS_CONFIG
+
+// Exportar función para limpiar cache de credenciales (útil para logout)
+obsServicesApi.clearCredentialsCache = function() {
+  credentialsCache = {
+    credentials: null,
+    expiresAt: null,
+    obsClient: null
+  }
+  console.log('[OBS SDK] Cache de credenciales limpiado')
+}
+
+// Obtener modo de operación actual (útil para debugging)
+obsServicesApi.getOperationMode = function() {
+  return operationMode
+}
+
+// Forzar modo de operación (útil para testing)
+obsServicesApi.setOperationMode = function(mode) {
+  if (mode === 'sdk' || mode === 'backend') {
+    operationMode = mode
+    console.log(`[OBS] Modo de operación cambiado a: ${mode}`)
+  }
+}
+
+// Exponer en window para debugging desde la consola
+if (typeof window !== 'undefined') {
+  window.obsServicesApi = obsServicesApi
+}
 
 export default obsServicesApi

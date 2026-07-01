@@ -26,17 +26,19 @@ defineProps({
 /* Notification Template */
 .notification-template {
   @apply flex items-start gap-3;
+  @apply animate-slide-in-right;
 }
 
 /* Icon */
 .notification-icon {
-  @apply flex-shrink-0;
-  @apply text-lg;
+  @apply flex-shrink-0 text-lg;
+  @apply animate-bounce-in;
+  @apply shadow-glow-primary;
 }
 
 /* Content */
 .notification-content {
-  @apply flex-1 min-w-0;
-  @apply text-sm;
+  @apply flex-1 min-w-0 text-sm;
+  @apply animate-fade-in;
 }
 </style>

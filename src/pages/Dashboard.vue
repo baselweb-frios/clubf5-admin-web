@@ -693,4 +693,51 @@ onUnmounted(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Enhanced Dashboard Styles */
+.page-content {
+  @apply gpu-accelerated;
+}
+
+/* Stats Cards Enhancement */
+.card.card-hover {
+  @apply glass-hover hover-lift;
+  @apply transition-all duration-300;
+}
+
+/* Dashboard Cards Enhancement */
+.card.group {
+  @apply glass relative overflow-hidden;
+  @apply transition-all duration-300;
+}
+
+.card.group::before {
+  content: '';
+  @apply absolute top-0 left-0 w-full h-1;
+  @apply bg-gradient-to-r from-transparent via-primary-500 to-transparent;
+  @apply opacity-0 transition-opacity duration-300;
+}
+
+.card.group:hover::before {
+  @apply opacity-100;
+}
+
+/* Animated Badges */
+.badge {
+  @apply animate-fade-in;
+}
+
+/* Alert Enhancements */
+.alert {
+  @apply glass animate-slide-in-up;
+}
+
+/* Button Enhancements */
+.btn {
+  @apply gpu-accelerated;
+}
+
+.btn:hover {
+  @apply shadow-glow-primary;
+}
 </style>

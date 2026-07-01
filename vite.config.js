@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url)
 const { version } = require('./package.json')
 
 export default defineConfig({
+  
   plugins: [
     vue(),
     mkcert(),
@@ -103,7 +104,7 @@ export default defineConfig({
         ]
       },
       devOptions: {
-        enabled: true
+        enabled: false
       }
     })
   ],

@@ -81,14 +81,14 @@ export default [
     name: 'EventLog',
     component: () => import('@/pages/Admin/EventLog/Index.vue'),
     meta: { requiresAuth: true, roles: ['Administrador'], title: 'Logs del Sistema' }
-  }
+  },
   
 
   // ===== CONSOLA OBS API (Solo Administrador) =====
-  // {
-  //   path: 'obs-api-console',
-  //   name: 'ObsApiConsole',
-  //   component: () => import('@/pages/Admin/ObsApiConsole/Index.vue'),
-  //   meta: { requiresAuth: true, roles: ['Administrador'], title: 'OBS API Console' }
-  // }
+   {
+     path: 'obs-api-console',
+     name: 'ObsApiConsole',
+     component: () => import('@/pages/Admin/ObsApiConsole/Index.vue'),
+     meta: { requiresAuth: true, roles: ['Administrador'], title: 'OBS API Console' }
+   }
 ]

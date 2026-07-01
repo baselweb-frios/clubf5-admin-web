@@ -377,6 +377,7 @@ const sidebarLinks = computed(() => {
     links.push({ name: 'Locutores (Voces IA)', icon: 'cog', path: '/voces-elevenlabs' })
     links.push({ name: 'Editor de pagina', icon: 'building', path: '/landing-editor' })
     links.push({ name: 'Logs del Sistema', icon: 'document', path: '/event-log' })
+    links.push({ name: 'Sistema de archivos (OBS)', icon: 'document', path: '/obs-api-console' })
     links.push({ name: 'Banco de Pruebas de Email', icon: 'document', path: '/email-test' })
   }
 

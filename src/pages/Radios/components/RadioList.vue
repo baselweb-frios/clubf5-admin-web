@@ -819,7 +819,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
-import obsServices from '@/services/obsServices'
+import obsServices from '@/services/obsServicesApi'
 
 const props = defineProps({
   radios: {

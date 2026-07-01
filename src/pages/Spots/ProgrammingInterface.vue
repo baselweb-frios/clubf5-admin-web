@@ -16,91 +16,136 @@ Debes seleccionar o crear una programación antes de poder programar spots.
       </div>
     </div>
 
-    <!-- Panel de programación -->
+    <!-- Encabezado con acciones rápidas -->
+    <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-text-primary flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center">
+            <i class="fa fa-calendar-check-o text-primary-400" />
+          </div>
+          Programación de Spots
+        </h2>
+        <p class="text-text-secondary mt-1 ml-13">
+          Gestiona las salidas de tus spots de forma manual o inteligente
+        </p>
+      </div>
+
+      <button
+        class="btn btn-primary btn-lg shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+        :disabled="!codigoProgramacion || form.selectedSpots.value.length === 0"
+        @click="showBatchModal = true"
+      >
+        <i class="fa fa-magic" />
+        <span>Programación Inteligente</span>
+        <span class="badge badge-success ml-2">Nuevo</span>
+      </button>
+    </div>
+
+    <!-- Panel de programación manual -->
     <div class="card">
       <div class="flex-between mb-6">
-        <h3 class="text-xl font-semibold text-text-primary">
-Pautar salidas de spots
-</h3>
+        <h3 class="text-xl font-semibold text-text-primary flex items-center gap-2">
+          <i class="fa fa-hand-pointer-o text-primary-400" />
+          Programación Manual
+        </h3>
       </div>
 
       <!-- Selector de spots -->
       <div class="form-group mb-4">
+        <label class="label text-lg mb-4 flex items-center gap-2">
+          <i class="fa fa-bullhorn text-primary-400" />
+          Selección de Spots
+        </label>
         <div class="space-y-3">
           <!-- Spots seleccionados -->
-          <div class="flex flex-wrap gap-2">
+          <div v-if="form.selectedSpots.value.length > 0" class="flex flex-wrap gap-2">
             <span
               v-for="spot in form.selectedSpots.value"
               :key="spot.spo_codigo"
-              class="badge badge-primary inline-flex items-center gap-2"
+              class="badge badge-lg badge-primary inline-flex items-center gap-2 transition-all hover:scale-105"
             >
+              <i class="fa fa-bullhorn" />
               {{ spot.spo_nombre }}
               <button
-                class="hover:bg-white/20 rounded p-0.5 transition-colors"
+                class="hover:bg-white/20 rounded-full p-1 transition-colors"
                 aria-label="Remover spot"
                 @click="form.removeSpot(spot)"
               >
-                ×
+                <i class="fa fa-times" />
               </button>
             </span>
           </div>
 
           <!-- Indicador de spots seleccionados -->
           <div
-            class="p-3 rounded-lg border transition-colors"
-            :class="form.exceedsSpotLimit.value ? 'bg-danger-500/10 border-danger-500/30' : 'bg-dark-secondary border-dark-border'"
+            class="p-4 rounded-lg border transition-all shadow-sm"
+            :class="form.exceedsSpotLimit.value ? 'bg-danger-500/10 border-danger-500/30' : 'bg-gradient-to-br from-dark-secondary to-dark-secondary/50 border-dark-border'"
           >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2 text-sm text-text-secondary">
-                <i class="fa fa-list" />
-                <span>Spots Seleccionados:</span>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2 text-text-secondary">
+                <div class="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center">
+                  <i class="fa fa-list text-primary-400" />
+                </div>
+                <span class="font-medium">Spots Seleccionados</span>
               </div>
-              <div class="flex items-center gap-1 font-semibold">
-                <span :class="form.exceedsSpotLimit.value ? 'text-danger-400' : 'text-text-primary'">
-                  {{ form.selectedSpots.value.length }}
-                </span>
-                <span class="text-text-tertiary">/</span>
-                <span class="text-text-secondary">{{ form.maxSpotsAllowed }}</span>
+              <div class="flex items-center gap-2">
+                <div class="text-right">
+                  <div class="text-2xl font-bold" :class="form.exceedsSpotLimit.value ? 'text-danger-400' : 'text-primary-400'">
+                    {{ form.selectedSpots.value.length }}
+                  </div>
+                  <div class="text-xs text-text-tertiary">
+                    de {{ form.maxSpotsAllowed }} máximo
+                  </div>
+                </div>
               </div>
             </div>
-            <div
-v-if="!form.exceedsSpotLimit.value"
-class="mt-2"
->
-              <small class="text-success-400 flex items-center gap-1">
+
+            <!-- Barra de progreso -->
+            <div class="w-full bg-dark-hover rounded-full h-2 overflow-hidden">
+              <div
+                class="h-full transition-all duration-300 rounded-full"
+                :class="form.exceedsSpotLimit.value ? 'bg-danger-500' : 'bg-primary-500'"
+                :style="{ width: `${(form.selectedSpots.value.length / form.maxSpotsAllowed) * 100}%` }"
+              />
+            </div>
+
+            <div class="mt-3">
+              <small
+                v-if="!form.exceedsSpotLimit.value"
+                class="text-success-400 flex items-center gap-2"
+              >
                 <i class="fa fa-check-circle" />
-                Puedes agregar {{ form.remainingSpots.value }} spot{{ form.remainingSpots.value !== 1 ? 's' : '' }} más
+                <span>Puedes agregar {{ form.remainingSpots.value }} spot{{ form.remainingSpots.value !== 1 ? 's' : '' }} más</span>
               </small>
-            </div>
-            <div
-v-if="form.exceedsSpotLimit.value"
-class="mt-2"
->
-              <small class="text-danger-400 flex items-center gap-1">
+              <small
+                v-else
+                class="text-danger-400 flex items-center gap-2"
+              >
                 <i class="fa fa-exclamation-triangle" />
-                Límite de spots alcanzado
+                <span>Límite de spots alcanzado</span>
               </small>
             </div>
           </div>
 
           <!-- Botón para abrir modal de selección de spots -->
           <button
-            class="btn btn-secondary w-full flex items-center justify-center gap-2"
+            class="btn btn-secondary btn-lg w-full flex items-center justify-center gap-3 shadow-md hover:shadow-lg transition-all"
             @click="showSpotSelectorModal = true"
           >
-            <i class="fa fa-plus-circle" />
-            <span>Seleccionar Spots</span>
-            <span class="badge badge-info ml-2">{{ spots.length }} disponibles</span>
+            <i class="fa fa-plus-circle text-lg" />
+            <span class="font-semibold">Seleccionar Spots</span>
+            <span class="badge badge-info">{{ spots.length }} disponibles</span>
           </button>
         </div>
 
         <!-- Selector de reproductor -->
-        <div class="form-group mt-4">
-          <label class="label">
+        <div class="form-group mt-6">
+          <label class="label text-lg mb-3 flex items-center gap-2">
+            <i class="fa fa-desktop text-primary-400" />
             Reproductor
             <span
 v-if="form.isReproductor()"
-class="badge badge-info ml-2 text-xs"
+class="badge badge-info ml-2"
 >Bloqueado</span>
           </label>
           <select
@@ -131,37 +176,38 @@ class="text-xs text-text-secondary mt-1 block"
         </div>
 
         <!-- Configuración de días de la semana -->
-        <div class="form-group mt-4">
-          <label class="label">
+        <div class="form-group mt-6">
+          <label class="label text-lg mb-3 flex items-center gap-2">
+            <i class="fa fa-calendar text-primary-400" />
             Días de la Semana
             <span
 v-if="clientConfig.diasHabiles.value.length > 0"
-class="badge badge-info ml-2 text-xs"
+class="badge badge-info ml-2"
 >
-              Días hábiles de tu comercio
+              Días hábiles configurados
             </span>
           </label>
-          <div class="flex flex-wrap gap-2">
-            <div
+          <div class="flex flex-wrap gap-3">
+            <button
               v-for="day in clientConfig.weekDays.value"
               :key="day.value"
-              class="flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer transition-all"
+              type="button"
+              class="flex flex-col items-center gap-2 px-4 py-3 rounded-lg border cursor-pointer transition-all hover:scale-105"
               :class="getDayClass(day)"
               :title="!day.isHabil && clientConfig.diasHabiles.value.length > 0 ? 'Día no hábil según configuración del cliente' : ''"
+              :disabled="!day.isHabil && clientConfig.diasHabiles.value.length > 0"
               @click="filters.toggleDaySelection(day.value)"
             >
-              <input
-                type="checkbox"
-                :checked="filters.isDaySelected(day.value)"
-                :disabled="!day.isHabil && clientConfig.diasHabiles.value.length > 0"
-                class="checkbox"
-              >
-              <span class="text-sm font-medium">{{ day.text }}</span>
+              <span class="text-sm font-semibold">{{ day.text }}</span>
               <i
-v-if="!day.isHabil && clientConfig.diasHabiles.value.length > 0"
-class="fa fa-ban text-xs opacity-70"
-/>
-            </div>
+                v-if="filters.isDaySelected(day.value)"
+                class="fa fa-check-circle text-success-400"
+              />
+              <i
+                v-else-if="!day.isHabil && clientConfig.diasHabiles.value.length > 0"
+                class="fa fa-ban opacity-50"
+              />
+            </button>
           </div>
           <div
 v-if="filters.selectedDays.value.length > 0"
@@ -266,6 +312,16 @@ class="alert alert-warning mt-2"
       @confirm="handleSpotSelectionConfirm"
     />
 
+    <!-- Modal de Programación en Lotes -->
+    <BatchProgrammingModal
+      v-model="showBatchModal"
+      :selected-spots="form.selectedSpots.value"
+      :week-days="clientConfig.weekDays.value"
+      :dias-habiles="clientConfig.diasHabiles.value"
+      :existing-programaciones="programaciones"
+      @confirm="handleBatchConfirm"
+    />
+
     <!-- Overlay de Progreso de Guardado -->
     <SavingProgressOverlay
       :is-saving="pending.isSaving.value"
@@ -287,7 +343,7 @@ import { useProgramacionFilters } from '@/composables/useProgramacionFilters'
 import { useSignalRAuth } from '@/composables/useSignalRAuth'
 
 // Components
-import { SpotSelectorModal, MinuteSelectorPanel, PendingProgramacionesModal, ProgramacionesTable } from '@/components/spots'
+import { SpotSelectorModal, MinuteSelectorPanel, PendingProgramacionesModal, ProgramacionesTable, BatchProgrammingModal } from '@/components/spots'
 import SavingProgressOverlay from '@/components/ui/SavingProgressOverlay.vue'
 
 export default {
@@ -297,6 +353,7 @@ export default {
     MinuteSelectorPanel,
     PendingProgramacionesModal,
     ProgramacionesTable,
+    BatchProgrammingModal,
     SavingProgressOverlay
   },
   props: {
@@ -349,6 +406,7 @@ export default {
     // ===== LOCAL STATE =====
     const showSpotSelectorModal = ref(false)
     const showPendingModal = ref(false)
+    const showBatchModal = ref(false)
 
     // ===== COMPUTED =====
     const filteredProgramaciones = computed(() => {
@@ -385,12 +443,12 @@ export default {
       const isHabil = day.isHabil || clientConfig.diasHabiles.value.length === 0
 
       if (isSelected) {
-        return 'bg-primary-500/20 border-primary-500 text-primary-400'
+        return 'bg-primary-500/20 border-primary-500 text-primary-400 shadow-md'
       }
       if (!isHabil) {
         return 'bg-dark-secondary/50 border-dark-border/50 text-text-tertiary cursor-not-allowed opacity-50'
       }
-      return 'bg-dark-secondary border-dark-border text-text-secondary hover:border-dark-hover'
+      return 'bg-dark-secondary border-dark-border text-text-secondary hover:border-primary-500/50 hover:bg-dark-hover'
     }
 
     const handleProgramMinutes = (data) => {
@@ -541,6 +599,21 @@ export default {
       console.log(`${spots.length} spot(s) seleccionado(s)`)
     }
 
+    const handleBatchConfirm = (groupedProgramaciones) => {
+      // Convertir las programaciones agrupadas por día a una lista plana
+      const allProgramaciones = []
+      Object.values(groupedProgramaciones).forEach(dayProgs => {
+        allProgramaciones.push(...dayProgs)
+      })
+
+      // Agregar todas las programaciones del lote a pendientes
+      pending.addPendingProgramaciones(allProgramaciones)
+
+      // Mostrar el modal de pendientes para confirmar
+      showBatchModal.value = false
+      showPendingModal.value = true
+    }
+
     const handlePageSizeChange = (newSize) => {
       filters.pageSize.value = newSize
       filters.handlePageSizeChange()
@@ -646,6 +719,7 @@ export default {
       // Local state
       showSpotSelectorModal,
       showPendingModal,
+      showBatchModal,
 
       // Computed
       filteredProgramaciones,
@@ -661,6 +735,7 @@ export default {
       handleClearPending,
       handleConfirmProgramaciones,
       handleSpotSelectionConfirm,
+      handleBatchConfirm,
       handlePageSizeChange
     }
   }
