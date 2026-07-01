@@ -91,10 +91,12 @@ export function useSignalRAuth() {
           })
           .withAutomaticReconnect({
             nextRetryDelayInMilliseconds: (retryContext) => {
-              if (retryContext.previousRetryCount === 0) return 0
-              if (retryContext.previousRetryCount === 1) return 2000
-              if (retryContext.previousRetryCount === 2) return 10000
-              return 30000
+              // Jitter aleatorio para evitar tormentas de reconexión sincronizada
+              // (todos los clientes reconectando a la vez tras un corte general).
+              if (retryContext.previousRetryCount === 0) return Math.random() * 1000
+              if (retryContext.previousRetryCount === 1) return 2000 + Math.random() * 3000
+              if (retryContext.previousRetryCount === 2) return 10000 + Math.random() * 5000
+              return 30000 + Math.random() * 15000
             }
           })
           .configureLogging(signalR.LogLevel.Information)
