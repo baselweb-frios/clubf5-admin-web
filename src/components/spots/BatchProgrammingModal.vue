@@ -31,12 +31,18 @@
               Spots a Programar
             </h4>
 
-            <div v-if="selectedSpots.length === 0" class="text-center py-8 text-text-secondary">
+            <div
+v-if="selectedSpots.length === 0"
+class="text-center py-8 text-text-secondary"
+>
               <i class="fa fa-info-circle text-4xl mb-3 opacity-50" />
               <p>Selecciona al menos un spot para comenzar</p>
             </div>
 
-            <div v-else class="space-y-3">
+            <div
+v-else
+class="space-y-3"
+>
               <div class="flex flex-wrap gap-2">
                 <span
                   v-for="spot in selectedSpots"
@@ -126,7 +132,10 @@
             </div>
 
             <!-- Preview de horarios -->
-            <div v-if="totalSlots > 0" class="mt-4 p-3 bg-dark-secondary rounded-lg border border-dark-border">
+            <div
+v-if="totalSlots > 0"
+class="mt-4 p-3 bg-dark-secondary rounded-lg border border-dark-border"
+>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-text-secondary">
                   <i class="fa fa-calendar-check-o mr-2" />
@@ -164,7 +173,10 @@
               </button>
             </div>
 
-            <div v-if="batchConfig.selectedDays.length > 0" class="mt-4 p-3 bg-success-500/10 border border-success-500/30 rounded-lg">
+            <div
+v-if="batchConfig.selectedDays.length > 0"
+class="mt-4 p-3 bg-success-500/10 border border-success-500/30 rounded-lg"
+>
               <div class="flex items-center justify-between text-sm">
                 <span class="text-success-400">
                   <i class="fa fa-check-circle mr-2" />
@@ -175,7 +187,10 @@
           </div>
 
           <!-- Resumen -->
-          <div v-if="canGenerate" class="card mt-6 bg-gradient-to-r from-primary-500/10 to-purple-500/10 border-primary-500/30">
+          <div
+v-if="canGenerate"
+class="card mt-6 bg-gradient-to-r from-primary-500/10 to-purple-500/10 border-primary-500/30"
+>
             <div class="flex items-center gap-4">
               <div class="w-16 h-16 rounded-full bg-primary-500/20 flex items-center justify-center">
                 <i class="fa fa-chart-bar text-2xl text-primary-400" />
@@ -224,7 +239,10 @@
         </div>
 
         <!-- Vista de preview -->
-        <div v-else class="space-y-4">
+        <div
+v-else
+class="space-y-4"
+>
           <div class="flex items-center justify-between">
             <h4 class="text-lg font-semibold text-text-primary">
               Vista Previa de Programaciones
@@ -359,7 +377,7 @@ const {
 
 // Computed
 const canGenerate = computed(() => {
-  return batchConfig.value.selectedSpots.length > 0 &&
+  return props.selectedSpots.length > 0 &&
          batchConfig.value.selectedDays.length > 0 &&
          totalSlots.value > 0
 })
@@ -388,7 +406,7 @@ const getWeekDayName = (dayValue) => {
 }
 
 const handleGenerate = () => {
-  generateBatchProgramaciones(props.existingProgramaciones)
+  generateBatchProgramaciones(props.existingProgramaciones, props.selectedSpots)
 }
 
 const handleConfirm = () => {
@@ -405,7 +423,7 @@ const handleCancel = () => {
 // Watchers
 watch(() => props.selectedSpots, (newSpots) => {
   batchConfig.value.selectedSpots = [...newSpots]
-}, { immediate: true })
+}, { immediate: true, deep: true })
 
 watch(() => props.modelValue, (newValue) => {
   if (!newValue) {

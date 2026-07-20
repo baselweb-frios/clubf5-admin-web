@@ -13,7 +13,7 @@ export function useConnectionMonitor() {
   const reconnectionAttempts = ref(new Map()) // userId -> { attempts: number, lastAttempt: timestamp }
   const branchLogs = ref(new Map()) // userId -> { messages: Array, lastUpdate: timestamp }
   const globalLogs = ref([]) // Logs globales del monitor
-  const heartbeatTimeout = 45000 // 45 segundos (30s heartbeat + 15s margen)
+  const heartbeatTimeout = 90000 // 90 segundos (30s heartbeat + 60s margen)
   const maxReconnectionAttempts = 5 // Intentos máximos antes de marcar como desconectado
   const maxLogsPerBranch = 10 // Máximo de logs por sucursal
 
@@ -510,35 +510,60 @@ export function useConnectionMonitor() {
     }
   }
 
+  // Referencias a callbacks para poder removerlos en cleanup
+  const listenerRefs = {
+    userConnected: null,
+    userDisconnected: null,
+    onlineUsersUpdate: null,
+    playerHeartbeat: null,
+    notification: null
+  }
+
+  // Limpiar listeners registrados (evita duplicados en cada mount/unmount)
+  const cleanupListeners = () => {
+    for (const [event, callback] of Object.entries(listenerRefs)) {
+      if (callback) {
+        signalR.off(event, callback)
+        listenerRefs[event] = null
+      }
+    }
+  }
+
   // Configurar listeners de SignalR
   const setupListeners = () => {
+    // Limpiar listeners previos antes de registrar nuevos (evita duplicados en remount)
+    cleanupListeners()
+
     // Usuario conectado (ignorado - esperamos heartbeat)
-    signalR.on('userConnected', (data) => {
+    listenerRefs.userConnected = (data) => {
       const payload = normalizeData(data)
       const userId = payload.userId || payload.username
       if (userId) {
         addBranchLog(userId, 'Conexión detectada (esperando heartbeat)', 'info')
       }
-    })
+    }
+    signalR.on('userConnected', listenerRefs.userConnected)
 
     // Usuario desconectado
-    signalR.on('userDisconnected', (data) => {
+    listenerRefs.userDisconnected = (data) => {
       const payload = normalizeData(data)
       const userId = payload.userId || payload.username
       if (userId) {
         addBranchLog(userId, 'Evento de desconexión recibido', 'warning')
       }
       registerDisconnection(payload)
-    })
+    }
+    signalR.on('userDisconnected', listenerRefs.userDisconnected)
 
     // Actualizacion de usuarios online
-    signalR.on('onlineUsersUpdate', () => {
+    listenerRefs.onlineUsersUpdate = () => {
       addGlobalLog(`Actualización de usuarios online recibida`, 'info')
       // No forzar sync automático, pero ofrecemos la función syncFromOnlineUsers si se necesita
-    })
+    }
+    signalR.on('onlineUsersUpdate', listenerRefs.onlineUsersUpdate)
 
     // Heartbeat del reproductor
-    signalR.on('playerHeartbeat', (data) => {
+    listenerRefs.playerHeartbeat = (data) => {
       const payload = normalizeData(data)
       const userId = payload.userId || payload.username
       if (userId) {
@@ -556,10 +581,11 @@ export function useConnectionMonitor() {
         }
         updateHeartbeat(userId, payload)
       }
-    })
+    }
+    signalR.on('playerHeartbeat', listenerRefs.playerHeartbeat)
 
     // Notificaciones generales (pueden contener heartbeats)
-    signalR.on('notification', (notification) => {
+    listenerRefs.notification = (notification) => {
       const parsed = parseNotification(notification)
       if (!parsed) return
       // Detectar distintos esquemas de evento para player_heartbeat
@@ -584,7 +610,8 @@ export function useConnectionMonitor() {
           updateHeartbeat(userId, { ...payload, ...payload.status })
         }
       }
-    })
+    }
+    signalR.on('notification', listenerRefs.notification)
   }
 
   // Lifecycle
@@ -622,12 +649,17 @@ export function useConnectionMonitor() {
     }, 10000)
   })
 
-  onUnmounted(async () => {
+  onUnmounted(() => {
     addGlobalLog('Deteniendo monitor de conexiones', 'warning')
     if (heartbeatCheckInterval) {
       clearInterval(heartbeatCheckInterval)
+      heartbeatCheckInterval = null
     }
-    await signalR.disconnect()
+    // NUNCA llamar signalR.disconnect() aqui: useSignalRAuth es un singleton
+    // compartido por toda la app; desconectar mataria SignalR globalmente.
+    // Solo removemos los listeners registrados en setupListeners() para evitar
+    // que se acumulen duplicados en cada remount del componente.
+    cleanupListeners()
   })
 
   return {

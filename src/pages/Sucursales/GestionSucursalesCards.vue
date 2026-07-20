@@ -7,9 +7,18 @@
     <div class="flex-between flex-wrap gap-4 mb-6">
       <div class="flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-primary-500/20 flex-center text-primary-400">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          <svg
+class="w-6 h-6"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+/>
           </svg>
         </div>
         <div>
@@ -21,21 +30,47 @@
           </p>
         </div>
       </div>
-      <button data-tour="sucursal-add" class="btn btn-primary" @click="openCreateModal">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      <button
+data-tour="sucursal-add"
+class="btn btn-primary"
+@click="openCreateModal"
+>
+        <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+          <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M12 4v16m8-8H4"
+/>
         </svg>
         Nueva Sucursal
       </button>
     </div>
 
     <!-- Stats Cards -->
-    <div data-tour="sucursal-stats" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+    <div
+data-tour="sucursal-stats"
+class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6"
+>
       <div class="card flex items-center gap-3 p-4">
         <div class="w-10 h-10 rounded-lg bg-primary-500/20 flex-center text-primary-400">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+/>
           </svg>
         </div>
         <div>
@@ -50,8 +85,16 @@
 
       <div class="card flex items-center gap-3 p-4">
         <div class="w-10 h-10 rounded-lg bg-success-500/20 flex-center text-success-400">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="6" />
+          <svg
+class="w-5 h-5"
+fill="currentColor"
+viewBox="0 0 24 24"
+>
+            <circle
+cx="12"
+cy="12"
+r="6"
+/>
           </svg>
         </div>
         <div>
@@ -66,9 +109,18 @@
 
       <div class="card flex items-center gap-3 p-4">
         <div class="w-10 h-10 rounded-lg bg-info-500/20 flex-center text-info-400">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+          <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+              d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+/>
           </svg>
         </div>
         <div>
@@ -83,9 +135,18 @@
 
       <div class="card flex items-center gap-3 p-4">
         <div class="w-10 h-10 rounded-lg bg-warning-500/20 flex-center text-warning-400">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+          <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+              d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+/>
           </svg>
         </div>
         <div>
@@ -98,11 +159,23 @@
         </div>
       </div>
 
-      <div class="card flex items-center gap-3 p-4 cursor-pointer card-hover" @click="showAuditModal = true">
+      <div
+class="card flex items-center gap-3 p-4 cursor-pointer card-hover"
+@click="showAuditModal = true"
+>
         <div class="w-10 h-10 rounded-lg bg-accent-purple/20 flex-center text-accent-purple">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+/>
           </svg>
         </div>
         <div>
@@ -118,34 +191,79 @@
 
     <!-- Search and View Toggle -->
     <div class="flex-between flex-wrap gap-4 mb-6">
-      <div data-tour="sucursal-search" class="relative flex-1 max-w-md">
+      <div
+data-tour="sucursal-search"
+class="relative flex-1 max-w-md"
+>
         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+/>
           </svg>
         </span>
-        <input v-model="searchTerm" type="text" placeholder="Buscar sucursal..." class="input pl-10">
+        <input
+v-model="searchTerm"
+type="text"
+placeholder="Buscar sucursal..."
+class="input pl-10"
+>
       </div>
       <div class="flex gap-1 p-1 bg-dark-secondary rounded-lg">
-        <button :class="['btn btn-sm btn-icon', viewMode === 'grid' ? 'btn-primary' : 'btn-ghost']"
-          title="Vista en tarjetas" @click="viewMode = 'grid'">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        <button
+:class="['btn btn-sm btn-icon', viewMode === 'grid' ? 'btn-primary' : 'btn-ghost']"
+          title="Vista en tarjetas"
+@click="viewMode = 'grid'"
+>
+          <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+/>
           </svg>
         </button>
-        <button :class="['btn btn-sm btn-icon', viewMode === 'list' ? 'btn-primary' : 'btn-ghost']"
-          title="Vista en lista" @click="viewMode = 'list'">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+        <button
+:class="['btn btn-sm btn-icon', viewMode === 'list' ? 'btn-primary' : 'btn-ghost']"
+          title="Vista en lista"
+@click="viewMode = 'list'"
+>
+          <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M4 6h16M4 10h16M4 14h16M4 18h16"
+/>
           </svg>
         </button>
       </div>
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="min-h-[40vh] flex-center flex-col gap-4">
+    <div
+v-if="isLoading"
+class="min-h-[40vh] flex-center flex-col gap-4"
+>
       <div class="spinner w-8 h-8" />
       <p class="text-text-secondary">
         Cargando sucursales...
@@ -153,17 +271,33 @@
     </div>
 
     <!-- Grid View -->
-    <div v-else-if="viewMode === 'grid'" data-tour="sucursal-list"
-      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-      <div v-for="sucursal in filteredSucursales" :key="sucursal.clisuc_codigo" class="card group"
-        :class="{ 'opacity-60': sucursal.conected !== 1 }">
+    <div
+v-else-if="viewMode === 'grid'"
+data-tour="sucursal-list"
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+>
+      <div
+v-for="sucursal in filteredSucursales"
+:key="sucursal.clisuc_codigo"
+class="card group"
+        :class="{ 'opacity-60': sucursal.conected !== 1 }"
+>
         <!-- Card Header -->
         <div class="flex-between mb-4">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-lg bg-primary-500/20 flex-center text-primary-400">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+/>
               </svg>
             </div>
             <div>
@@ -175,47 +309,79 @@
               </p>
             </div>
           </div>
-          <span class="badge text-xs" :class="getConnectionBadgeClass(sucursal)">
-            <span class="w-2 h-2 rounded-full mr-1.5" :class="getConnectionDotClass(sucursal)" />
+          <span
+class="badge text-xs"
+:class="getConnectionBadgeClass(sucursal)"
+>
+            <span
+class="w-2 h-2 rounded-full mr-1.5"
+:class="getConnectionDotClass(sucursal)"
+/>
             {{ getConnectionLabel(sucursal) }}
           </span>
-          <!-- Botón para ver logs -->
-          <button v-if="sucursal.connectionLogs && sucursal.connectionLogs.length > 0"
+          <!-- Botรณn para ver logs -->
+          <button
+v-if="sucursal.connectionLogs && sucursal.connectionLogs.length > 0"
             class="btn btn-ghost btn-icon btn-xs ml-1"
-            :class="{ 'text-primary-400': expandedLogs.has(sucursal.clisuc_codigo) }" title="Ver logs de conexión"
-            @click.stop="toggleLogs(sucursal.clisuc_codigo)">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            :class="{ 'text-primary-400': expandedLogs.has(sucursal.clisuc_codigo) }"
+title="Ver logs de conexiรณn"
+            @click.stop="toggleLogs(sucursal.clisuc_codigo)"
+>
+            <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+/>
             </svg>
           </button>
         </div>
 
-        <!-- Estado de Conexión (logs) - Solo visible al hacer clic -->
+        <!-- Estado de Conexiรณn (logs) - Solo visible al hacer clic -->
         <div
           v-if="expandedLogs.has(sucursal.clisuc_codigo) && sucursal.connectionLogs && sucursal.connectionLogs.length > 0"
-          class="mb-4 p-2 rounded-lg bg-dark-secondary/50 max-h-32 overflow-y-auto">
+          class="mb-4 p-2 rounded-lg bg-dark-secondary/50 max-h-32 overflow-y-auto"
+>
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs text-text-tertiary font-medium">Logs de conexión</span>
-            <button class="text-xs text-text-quaternary hover:text-text-secondary"
-              @click.stop="toggleLogs(sucursal.clisuc_codigo)">Cerrar</button>
+            <span class="text-xs text-text-tertiary font-medium">Logs de conexiรณn</span>
+            <button
+class="text-xs text-text-quaternary hover:text-text-secondary"
+              @click.stop="toggleLogs(sucursal.clisuc_codigo)"
+>
+Cerrar
+</button>
           </div>
           <div class="space-y-1">
-            <div v-for="(log, idx) in sucursal.connectionLogs.slice(0, 5)" :key="idx"
-              class="flex items-start gap-2 text-xs">
-              <span class="w-1.5 h-1.5 rounded-full mt-1 flex-shrink-0" :class="{
+            <div
+v-for="(log, idx) in sucursal.connectionLogs.slice(0, 5)"
+:key="idx"
+              class="flex items-start gap-2 text-xs"
+>
+              <span
+class="w-1.5 h-1.5 rounded-full mt-1 flex-shrink-0"
+:class="{
                 'bg-success-400': log.type === 'success',
                 'bg-warning-400': log.type === 'warning',
                 'bg-danger-400': log.type === 'error',
                 'bg-primary-400': log.type === 'info'
-              }" />
+              }"
+/>
               <span class="text-text-tertiary">{{ log.time }}</span>
-              <span class="flex-1 truncate" :class="{
+              <span
+class="flex-1 truncate"
+:class="{
                 'text-success-400': log.type === 'success',
                 'text-warning-400': log.type === 'warning',
                 'text-danger-400': log.type === 'error',
                 'text-text-secondary': log.type === 'info'
-              }">{{ log.message }}</span>
+              }"
+>{{ log.message }}</span>
             </div>
           </div>
         </div>
@@ -224,9 +390,18 @@
         <div class="space-y-3 mb-4">
           <div class="flex items-center justify-between text-sm">
             <span class="text-text-tertiary flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+              <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                  d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+/>
               </svg>
               Musica
             </span>
@@ -236,39 +411,74 @@
 
           <div class="flex items-center justify-between text-sm">
             <span class="text-text-tertiary flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+              <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                  d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+/>
               </svg>
               Spots
             </span>
-            <span v-if="sucursal.sucpgr_codigoProgramacionSpot" class="badge badge-warning text-xs">
+            <span
+v-if="sucursal.sucpgr_codigoProgramacionSpot"
+class="badge badge-warning text-xs"
+>
               {{ getProgramacionSpotNombre(sucursal.sucpgr_codigoProgramacionSpot) }}
             </span>
-            <span v-else class="text-text-quaternary text-xs">Sin programacion</span>
+            <span
+v-else
+class="text-text-quaternary text-xs"
+>Sin programacion</span>
           </div>
 
           <div class="flex items-center justify-between text-sm">
             <span class="text-text-tertiary flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+/>
               </svg>
               Spots propios
             </span>
             <span
-              :class="['badge text-xs', sucursal.clisuc_permisoSpotPropio ? 'badge-success' : 'bg-dark-hover text-text-tertiary']">
+              :class="['badge text-xs', sucursal.clisuc_permisoSpotPropio ? 'badge-success' : 'bg-dark-hover text-text-tertiary']"
+>
               {{ sucursal.clisuc_permisoSpotPropio ? 'Permitido' : 'No permitido' }}
             </span>
           </div>
         </div>
 
         <!-- Player Section -->
-        <div v-if="sucursal.conected === 1" class="pt-4 border-t border-dark-border">
-          <div v-if="sucursal.currentSong" class="mb-3">
+        <div
+v-if="sucursal.conected === 1"
+class="pt-4 border-t border-dark-border"
+>
+          <div
+v-if="sucursal.currentSong"
+class="mb-3"
+>
             <div class="flex items-center gap-2 mb-2">
               <div class="w-6 h-6 rounded-full bg-success-500/20 flex-center text-success-400 animate-pulse">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+class="w-3 h-3"
+fill="currentColor"
+viewBox="0 0 24 24"
+>
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
@@ -281,40 +491,76 @@
                 </p>
               </div>
             </div>
-            <div v-if="sucursal.playbackProgress" class="h-1 bg-dark-secondary rounded-full overflow-hidden">
-              <div class="h-full bg-primary-500 rounded-full transition-all"
-                :style="{ width: sucursal.playbackProgress.percentage + '%' }" />
+            <div
+v-if="sucursal.playbackProgress"
+class="h-1 bg-dark-secondary rounded-full overflow-hidden"
+>
+              <div
+class="h-full bg-primary-500 rounded-full transition-all"
+                :style="{ width: sucursal.playbackProgress.percentage + '%' }"
+/>
             </div>
           </div>
 
           <div class="flex items-center gap-2">
-            <button class="btn btn-sm btn-ghost flex-1" :disabled="playerControl.executing.value"
-              @click="playerControl.play(sucursal.connectionId)">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <button
+class="btn btn-sm btn-ghost flex-1"
+:disabled="playerControl.executing.value"
+              @click="playerControl.play(sucursal.connectionId)"
+>
+              <svg
+class="w-4 h-4"
+fill="currentColor"
+viewBox="0 0 24 24"
+>
                 <path d="M8 5v14l11-7z" />
               </svg>
               Play
             </button>
-            <button class="btn btn-sm btn-ghost flex-1" :disabled="playerControl.executing.value"
-              @click="playerControl.pause(sucursal.connectionId)">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <button
+class="btn btn-sm btn-ghost flex-1"
+:disabled="playerControl.executing.value"
+              @click="playerControl.pause(sucursal.connectionId)"
+>
+              <svg
+class="w-4 h-4"
+fill="currentColor"
+viewBox="0 0 24 24"
+>
                 <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
               </svg>
               Pause
             </button>
             <label class="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" :checked="sucursal.playerStatus?.mode === 'radio'"
-                :disabled="playerControl.executing.value" class="checkbox" @change="togglePlayerMode(sucursal)">
+              <input
+type="checkbox"
+:checked="sucursal.playerStatus?.mode === 'radio'"
+                :disabled="playerControl.executing.value"
+class="checkbox"
+@change="togglePlayerMode(sucursal)"
+>
               <span class="text-xs text-text-secondary">Radio</span>
             </label>
           </div>
         </div>
 
-        <div v-else class="pt-4 border-t border-dark-border">
+        <div
+v-else
+class="pt-4 border-t border-dark-border"
+>
           <div class="flex items-center gap-2 text-text-tertiary text-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+/>
             </svg>
             Sucursal desconectada
           </div>
@@ -322,43 +568,114 @@
 
         <!-- Card Footer Actions -->
         <div class="flex items-center gap-2 mt-4 pt-4 border-t border-dark-border">
-          <button class="btn btn-sm btn-ghost btn-icon" title="Editar contrasena"
-            @click="openEditModal(sucursal, true)">
+          <!-- Botรณn Conectar (Login) -->
+          <button
+            class="btn btn-sm btn-success btn-icon"
+            title="Conectar a sucursal"
+            @click.stop="openSucursalLogin(sucursal)"
+          >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
             </svg>
           </button>
-          <button class="btn btn-sm btn-secondary flex-1" @click="openEditModal(sucursal)">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          <button
+class="btn btn-sm btn-ghost btn-icon"
+title="Editar contrasena"
+            @click="openEditModal(sucursal, true)"
+>
+            <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+/>
+            </svg>
+          </button>
+          <button
+class="btn btn-sm btn-secondary flex-1"
+@click="openEditModal(sucursal)"
+>
+            <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+/>
             </svg>
             Editar
           </button>
-          <button class="btn btn-sm btn-danger" @click="confirmDelete(sucursal)">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <button
+class="btn btn-sm btn-danger"
+@click="confirmDelete(sucursal)"
+>
+            <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+/>
             </svg>
           </button>
         </div>
       </div>
 
       <!-- Empty State -->
-      <div v-if="filteredSucursales.length === 0" class="col-span-full flex-center flex-col gap-4 py-16">
+      <div
+v-if="filteredSucursales.length === 0"
+class="col-span-full flex-center flex-col gap-4 py-16"
+>
         <div class="w-16 h-16 rounded-full bg-dark-secondary flex-center text-text-tertiary">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          <svg
+class="w-8 h-8"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+/>
           </svg>
         </div>
         <p class="text-text-secondary">
           No se encontraron sucursales
         </p>
-        <button class="btn btn-primary" @click="openCreateModal">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <button
+class="btn btn-primary"
+@click="openCreateModal"
+>
+          <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M12 4v16m8-8H4"
+/>
           </svg>
           Crear Primera Sucursal
         </button>
@@ -366,101 +683,217 @@
     </div>
 
     <!-- List View -->
-    <div v-else class="space-y-2">
-      <div v-for="sucursal in filteredSucursales" :key="sucursal.clisuc_codigo" class="card p-4"
-        :class="{ 'opacity-60': sucursal.conected !== 1 && sucursal.connectionStatus !== 'verifying' }">
+    <div
+v-else
+class="space-y-2"
+>
+      <div
+v-for="sucursal in filteredSucursales"
+:key="sucursal.clisuc_codigo"
+class="card p-4"
+        :class="{ 'opacity-60': sucursal.conected !== 1 && sucursal.connectionStatus !== 'verifying' }"
+>
         <div class="flex items-center gap-4">
-          <span class="w-3 h-3 rounded-full flex-shrink-0" :class="getConnectionDotClass(sucursal)" />
+          <span
+class="w-3 h-3 rounded-full flex-shrink-0"
+:class="getConnectionDotClass(sucursal)"
+/>
 
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
               <h6 class="font-medium text-text-primary">
                 {{ sucursal.clisuc_nombre }}
               </h6>
-              <span v-if="sucursal.connectionStatus === 'verifying'"
-                class="text-xs text-warning-400">(verificando...)</span>
-              <!-- Botón para ver logs en lista -->
-              <button v-if="sucursal.connectionLogs && sucursal.connectionLogs.length > 0"
+              <span
+v-if="sucursal.connectionStatus === 'verifying'"
+                class="text-xs text-warning-400"
+>(verificando...)</span>
+              <!-- Botรณn para ver logs en lista -->
+              <button
+v-if="sucursal.connectionLogs && sucursal.connectionLogs.length > 0"
                 class="text-text-quaternary hover:text-primary-400"
-                :class="{ 'text-primary-400': expandedLogs.has(sucursal.clisuc_codigo) }" title="Ver logs de conexión"
-                @click.stop="toggleLogs(sucursal.clisuc_codigo)">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                :class="{ 'text-primary-400': expandedLogs.has(sucursal.clisuc_codigo) }"
+title="Ver logs de conexiรณn"
+                @click.stop="toggleLogs(sucursal.clisuc_codigo)"
+>
+                <svg
+class="w-3.5 h-3.5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+/>
                 </svg>
               </button>
             </div>
-            <!-- Log más reciente en lista (solo si expandido) -->
-            <p v-if="expandedLogs.has(sucursal.clisuc_codigo) && sucursal.connectionLogs && sucursal.connectionLogs[0]"
-              class="text-xs mt-1" :class="{
+            <!-- Log mรกs reciente en lista (solo si expandido) -->
+            <p
+v-if="expandedLogs.has(sucursal.clisuc_codigo) && sucursal.connectionLogs && sucursal.connectionLogs[0]"
+              class="text-xs mt-1"
+:class="{
                 'text-success-400': sucursal.connectionLogs[0].type === 'success',
                 'text-warning-400': sucursal.connectionLogs[0].type === 'warning',
                 'text-danger-400': sucursal.connectionLogs[0].type === 'error',
                 'text-text-quaternary': sucursal.connectionLogs[0].type === 'info'
-              }">
+              }"
+>
               {{ sucursal.connectionLogs[0].time }} - {{ sucursal.connectionLogs[0].message }}
             </p>
           </div>
 
           <div class="hidden sm:flex items-center gap-2">
             <span class="badge badge-info text-xs">
-              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+              <svg
+class="w-3 h-3 mr-1"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                  d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+/>
               </svg>
               {{ getProgramacionRadioNombre(sucursal.sucpgr_codigoProgramacionRadio) }}
             </span>
-            <span v-if="sucursal.sucpgr_codigoProgramacionSpot" class="badge badge-warning text-xs">
-              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+            <span
+v-if="sucursal.sucpgr_codigoProgramacionSpot"
+class="badge badge-warning text-xs"
+>
+              <svg
+class="w-3 h-3 mr-1"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                  d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+/>
               </svg>
               {{ getProgramacionSpotNombre(sucursal.sucpgr_codigoProgramacionSpot) }}
             </span>
           </div>
 
           <div class="flex items-center gap-1">
-            <button class="btn btn-sm btn-ghost btn-icon" title="Contrasena" @click="openEditModal(sucursal, true)">
+            <!-- Botรณn Conectar (Login) -->
+            <button
+              class="btn btn-sm btn-success btn-icon"
+              title="Conectar a sucursal"
+              @click.stop="openSucursalLogin(sucursal)"
+            >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
               </svg>
             </button>
-            <button class="btn btn-sm btn-ghost btn-icon" title="Editar" @click="openEditModal(sucursal)">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <button
+class="btn btn-sm btn-ghost btn-icon"
+title="Contrasena"
+@click="openEditModal(sucursal, true)"
+>
+              <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+/>
               </svg>
             </button>
-            <button class="btn btn-sm btn-ghost btn-icon text-danger-400" title="Eliminar"
-              @click="confirmDelete(sucursal)">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            <button
+class="btn btn-sm btn-ghost btn-icon"
+title="Editar"
+@click="openEditModal(sucursal)"
+>
+              <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+/>
+              </svg>
+            </button>
+            <button
+class="btn btn-sm btn-ghost btn-icon text-danger-400"
+title="Eliminar"
+              @click="confirmDelete(sucursal)"
+>
+              <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+/>
               </svg>
             </button>
           </div>
         </div>
 
         <!-- Player Info (if connected and playing) -->
-        <div v-if="sucursal.conected === 1 && sucursal.currentSong"
-          class="mt-3 pt-3 border-t border-dark-border flex items-center gap-4">
+        <div
+v-if="sucursal.conected === 1 && sucursal.currentSong"
+          class="mt-3 pt-3 border-t border-dark-border flex items-center gap-4"
+>
           <div class="flex items-center gap-2 flex-1">
-            <svg class="w-4 h-4 text-success-400" fill="currentColor" viewBox="0 0 24 24">
+            <svg
+class="w-4 h-4 text-success-400"
+fill="currentColor"
+viewBox="0 0 24 24"
+>
               <path d="M8 5v14l11-7z" />
             </svg>
             <span class="text-sm text-text-primary truncate">{{ sucursal.currentSong }}</span>
           </div>
           <div class="flex items-center gap-1">
-            <button class="btn btn-sm btn-ghost btn-icon" :disabled="playerControl.executing.value"
-              @click="playerControl.play(sucursal.connectionId)">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <button
+class="btn btn-sm btn-ghost btn-icon"
+:disabled="playerControl.executing.value"
+              @click="playerControl.play(sucursal.connectionId)"
+>
+              <svg
+class="w-4 h-4"
+fill="currentColor"
+viewBox="0 0 24 24"
+>
                 <path d="M8 5v14l11-7z" />
               </svg>
             </button>
-            <button class="btn btn-sm btn-ghost btn-icon" :disabled="playerControl.executing.value"
-              @click="playerControl.pause(sucursal.connectionId)">
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <button
+class="btn btn-sm btn-ghost btn-icon"
+:disabled="playerControl.executing.value"
+              @click="playerControl.pause(sucursal.connectionId)"
+>
+              <svg
+class="w-4 h-4"
+fill="currentColor"
+viewBox="0 0 24 24"
+>
                 <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
               </svg>
             </button>
@@ -469,11 +902,23 @@
       </div>
 
       <!-- Empty State List -->
-      <div v-if="filteredSucursales.length === 0" class="flex-center flex-col gap-4 py-16">
+      <div
+v-if="filteredSucursales.length === 0"
+class="flex-center flex-col gap-4 py-16"
+>
         <div class="w-16 h-16 rounded-full bg-dark-secondary flex-center text-text-tertiary">
-          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          <svg
+class="w-8 h-8"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+            <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+/>
           </svg>
         </div>
         <p class="text-text-secondary">
@@ -483,81 +928,171 @@
     </div>
 
     <!-- Modal Crear/Editar -->
-    <div v-if="showModal" class="modal-backdrop" @click="closeModal">
-      <div class="modal max-w-xl" @click.stop>
+    <div
+v-if="showModal"
+class="modal-backdrop"
+@click="closeModal"
+>
+      <div
+class="modal max-w-xl"
+@click.stop
+>
         <div class="modal-header">
           <h3 class="text-lg font-semibold text-text-primary flex items-center gap-2">
-            <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                :d="isEditMode ? 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' : 'M12 4v16m8-8H4'" />
+            <svg
+class="w-5 h-5 text-primary-400"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                :d="isEditMode ? 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' : 'M12 4v16m8-8H4'"
+/>
             </svg>
             {{ isEditMode ? 'Editar Sucursal' : 'Nueva Sucursal' }}
           </h3>
-          <button class="btn btn-ghost btn-icon btn-sm" @click="closeModal">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <button
+class="btn btn-ghost btn-icon btn-sm"
+@click="closeModal"
+>
+            <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M6 18L18 6M6 6l12 12"
+/>
             </svg>
           </button>
         </div>
 
         <div class="modal-body space-y-4">
           <!-- Nombre -->
-          <div v-if="!isEditPasswordVisible" class="form-group">
+          <div
+v-if="!isEditPasswordVisible"
+class="form-group"
+>
             <label class="label">Nombre de la Sucursal *</label>
-            <input v-model="formData.nombreSucursal" type="text" class="input" placeholder="Ej: Sucursal Centro"
-              required @input="formData.usuario = formData.nombreSucursal.replace(/\s/g, '').toLowerCase()">
+            <input
+v-model="formData.nombreSucursal"
+type="text"
+class="input"
+placeholder="Ej: Sucursal Centro"
+              required
+@input="formData.usuario = formData.nombreSucursal.replace(/\s/g, '').toLowerCase()"
+>
           </div>
 
           <!-- Usuario -->
-          <div v-if="!isEditPasswordVisible" class="form-group">
+          <div
+v-if="!isEditPasswordVisible"
+class="form-group"
+>
             <label class="label">Usuario (Login) *</label>
-            <input v-model="formData.usuario" type="text" class="input" placeholder="usuario" :disabled="isEditMode"
-              required>
-            <p v-if="isEditMode" class="text-text-quaternary text-xs mt-1">
+            <input
+v-model="formData.usuario"
+type="text"
+class="input"
+placeholder="usuario"
+:disabled="isEditMode"
+              required
+>
+            <p
+v-if="isEditMode"
+class="text-text-quaternary text-xs mt-1"
+>
               El usuario no puede modificarse
             </p>
           </div>
 
           <!-- Contrasena -->
-          <div v-if="!isEditMode || isEditPasswordVisible" class="form-group">
+          <div
+v-if="!isEditMode || isEditPasswordVisible"
+class="form-group"
+>
             <label class="label">Contrasena {{ !isEditMode ? '*' : '' }}</label>
-            <input v-model="formData.contrasenia" type="password" class="input" placeholder="********"
-              :required="!isEditMode">
-            <p v-if="isEditMode" class="text-text-quaternary text-xs mt-1">
+            <input
+v-model="formData.contrasenia"
+type="password"
+class="input"
+placeholder="********"
+              :required="!isEditMode"
+>
+            <p
+v-if="isEditMode"
+class="text-text-quaternary text-xs mt-1"
+>
               Dejar en blanco para mantener la actual
             </p>
           </div>
 
           <!-- Programacion Musica -->
-          <div v-if="!isEditPasswordVisible" class="form-group">
+          <div
+v-if="!isEditPasswordVisible"
+class="form-group"
+>
             <label class="label">Programacion de Musica *</label>
-            <select v-model="formData.progRadioSelected" class="select" required>
+            <select
+v-model="formData.progRadioSelected"
+class="select"
+required
+>
               <option value="">
                 Seleccionar programacion
               </option>
-              <option v-for="prog in programacionesRadio" :key="prog.clipro_codigo" :value="prog.clipro_codigo">
+              <option
+v-for="prog in programacionesRadio"
+:key="prog.clipro_codigo"
+:value="prog.clipro_codigo"
+>
                 {{ prog.clipro_nombre }}
               </option>
             </select>
           </div>
 
           <!-- Permiso Spots -->
-          <div v-if="!isEditPasswordVisible" class="form-group">
+          <div
+v-if="!isEditPasswordVisible"
+class="form-group"
+>
             <label class="flex items-center gap-3 cursor-pointer">
-              <input v-model="formData.permisoSpotPropio" type="checkbox" class="checkbox"
-                @change="onPermisoSpotChange">
+              <input
+v-model="formData.permisoSpotPropio"
+type="checkbox"
+class="checkbox"
+                @change="onPermisoSpotChange"
+>
               <span class="text-text-primary text-sm">Permitir spots propios</span>
             </label>
           </div>
 
           <!-- Programacion Spots -->
-          <div v-if="formData.permisoSpotPropio && !isEditPasswordVisible" class="form-group">
+          <div
+v-if="formData.permisoSpotPropio && !isEditPasswordVisible"
+class="form-group"
+>
             <label class="label">Programacion de Spots *</label>
-            <select v-model="formData.progSpotSelected" class="select" required>
+            <select
+v-model="formData.progSpotSelected"
+class="select"
+required
+>
               <option value="">
                 Seleccionar programacion
               </option>
-              <option v-for="prog in programacionesSpot" :key="prog.clipro_codigo" :value="prog.clipro_codigo">
+              <option
+v-for="prog in programacionesSpot"
+:key="prog.clipro_codigo"
+:value="prog.clipro_codigo"
+>
                 {{ prog.clipro_nombre }}
               </option>
             </select>
@@ -590,11 +1125,21 @@
         </div>
 
         <div class="modal-footer">
-          <button class="btn btn-secondary" @click="closeModal">
+          <button
+class="btn btn-secondary"
+@click="closeModal"
+>
             Cancelar
           </button>
-          <button class="btn btn-primary" :disabled="isSaving" @click="saveSucursal">
-            <span v-if="isSaving" class="spinner w-4 h-4" />
+          <button
+class="btn btn-primary"
+:disabled="isSaving"
+@click="saveSucursal"
+>
+            <span
+v-if="isSaving"
+class="spinner w-4 h-4"
+/>
             {{ isSaving ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Crear') }}
           </button>
         </div>
@@ -602,13 +1147,29 @@
     </div>
 
     <!-- Modal Confirmar Eliminacion -->
-    <div v-if="showDeleteModal" class="modal-backdrop" @click="showDeleteModal = false">
-      <div class="modal max-w-md" @click.stop>
+    <div
+v-if="showDeleteModal"
+class="modal-backdrop"
+@click="showDeleteModal = false"
+>
+      <div
+class="modal max-w-md"
+@click.stop
+>
         <div class="modal-header">
           <h3 class="text-lg font-semibold text-text-primary flex items-center gap-2">
-            <svg class="w-5 h-5 text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+class="w-5 h-5 text-danger-400"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+/>
             </svg>
             Confirmar Eliminacion
           </h3>
@@ -623,10 +1184,16 @@
           </p>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" @click="showDeleteModal = false">
+          <button
+class="btn btn-secondary"
+@click="showDeleteModal = false"
+>
             Cancelar
           </button>
-          <button class="btn btn-danger" @click="deleteSucursal">
+          <button
+class="btn btn-danger"
+@click="deleteSucursal"
+>
             Eliminar
           </button>
         </div>
@@ -634,26 +1201,58 @@
     </div>
 
     <!-- Modal Error Reports -->
-    <div v-if="showErrorReportsModal" class="modal-backdrop" @click="closeErrorReportsModal">
-      <div class="modal max-w-2xl" @click.stop>
+    <div
+v-if="showErrorReportsModal"
+class="modal-backdrop"
+@click="closeErrorReportsModal"
+>
+      <div
+class="modal max-w-2xl"
+@click.stop
+>
         <div class="modal-header">
           <h3 class="text-lg font-semibold text-text-primary flex items-center gap-2">
-            <svg class="w-5 h-5 text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+class="w-5 h-5 text-warning-400"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+/>
             </svg>
             Reportes - {{ selectedSucursalForReports?.clisuc_nombre }}
           </h3>
-          <button class="btn btn-ghost btn-icon btn-sm" @click="closeErrorReportsModal">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          <button
+class="btn btn-ghost btn-icon btn-sm"
+@click="closeErrorReportsModal"
+>
+            <svg
+class="w-5 h-5"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M6 18L18 6M6 6l12 12"
+/>
             </svg>
           </button>
         </div>
 
         <div class="modal-body">
           <!-- Loading -->
-          <div v-if="loadingErrorReports" class="flex-center flex-col gap-4 py-8">
+          <div
+v-if="loadingErrorReports"
+class="flex-center flex-col gap-4 py-8"
+>
             <div class="spinner w-8 h-8" />
             <p class="text-text-secondary">
               Cargando reportes...
@@ -661,16 +1260,32 @@
           </div>
 
           <!-- Error -->
-          <div v-else-if="errorReportsError" class="flex-center flex-col gap-4 py-8">
+          <div
+v-else-if="errorReportsError"
+class="flex-center flex-col gap-4 py-8"
+>
             <div class="w-12 h-12 rounded-full bg-danger-500/20 flex-center text-danger-400">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+class="w-6 h-6"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M6 18L18 6M6 6l12 12"
+/>
               </svg>
             </div>
             <p class="text-danger-400">
               {{ errorReportsError }}
             </p>
-            <button class="btn btn-primary btn-sm" @click="loadErrorReportsForSucursal(selectedSucursalForReports)">
+            <button
+class="btn btn-primary btn-sm"
+@click="loadErrorReportsForSucursal(selectedSucursalForReports)"
+>
               Reintentar
             </button>
           </div>
@@ -713,28 +1328,78 @@
             </div>
 
             <div class="flex flex-wrap gap-2 mb-6">
-              <button class="btn btn-secondary btn-sm" :disabled="loadingExport" @click="exportErrorReports">
-                <span v-if="loadingExport" class="spinner w-4 h-4" />
-                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              <button
+class="btn btn-secondary btn-sm"
+:disabled="loadingExport"
+@click="exportErrorReports"
+>
+                <span
+v-if="loadingExport"
+class="spinner w-4 h-4"
+/>
+                <svg
+v-else
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+/>
                 </svg>
                 Exportar
               </button>
-              <button class="btn btn-secondary btn-sm" @click="toggleErrorReportsViewer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              <button
+class="btn btn-secondary btn-sm"
+@click="toggleErrorReportsViewer"
+>
+                <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+/>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+/>
                 </svg>
                 Ver en Sucursal
               </button>
-              <button class="btn btn-danger btn-sm" :disabled="loadingClear" @click="confirmClearErrorReports">
-                <span v-if="loadingClear" class="spinner w-4 h-4" />
-                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <button
+class="btn btn-danger btn-sm"
+:disabled="loadingClear"
+@click="confirmClearErrorReports"
+>
+                <span
+v-if="loadingClear"
+class="spinner w-4 h-4"
+/>
+                <svg
+v-else
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+/>
                 </svg>
                 Limpiar
               </button>
@@ -746,17 +1411,25 @@
                 Reportes Recientes
               </h4>
               <div class="space-y-2 max-h-64 overflow-y-auto">
-                <div v-for="(report, index) in errorReportsSummary.recentReports" :key="index" class="card p-3" :class="{
+                <div
+v-for="(report, index) in errorReportsSummary.recentReports"
+:key="index"
+class="card p-3"
+:class="{
                   'border-l-2 border-l-danger-500': report.severity === 'error',
                   'border-l-2 border-l-warning-500': report.severity === 'warning',
                   'border-l-2 border-l-info-500': report.severity === 'info'
-                }">
+                }"
+>
                   <div class="flex-between text-xs mb-1">
-                    <span class="badge" :class="{
+                    <span
+class="badge"
+:class="{
                       'badge-danger': report.severity === 'error',
                       'badge-warning': report.severity === 'warning',
                       'badge-info': report.severity === 'info'
-                    }">{{ report.category || 'general' }}</span>
+                    }"
+>{{ report.category || 'general' }}</span>
                     <span class="text-text-quaternary">{{ formatReportTime(report.timestamp) }}</span>
                   </div>
                   <p class="text-sm text-text-primary">
@@ -767,10 +1440,23 @@
             </div>
 
             <!-- Empty -->
-            <div v-else class="flex-center flex-col gap-4 py-8">
+            <div
+v-else
+class="flex-center flex-col gap-4 py-8"
+>
               <div class="w-12 h-12 rounded-full bg-success-500/20 flex-center text-success-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+class="w-6 h-6"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                  <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M5 13l4 4L19 7"
+/>
                 </svg>
               </div>
               <p class="text-text-secondary">
@@ -781,13 +1467,28 @@
         </div>
 
         <div class="modal-footer">
-          <button class="btn btn-secondary" @click="closeErrorReportsModal">
+          <button
+class="btn btn-secondary"
+@click="closeErrorReportsModal"
+>
             Cerrar
           </button>
-          <button class="btn btn-primary" @click="loadErrorReportsForSucursal(selectedSucursalForReports)">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <button
+class="btn btn-primary"
+@click="loadErrorReportsForSucursal(selectedSucursalForReports)"
+>
+            <svg
+class="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+/>
             </svg>
             Actualizar
           </button>
@@ -796,13 +1497,29 @@
     </div>
 
     <!-- Modal Confirmar Limpiar Reportes -->
-    <div v-if="showClearReportsModal" class="modal-backdrop" @click="showClearReportsModal = false">
-      <div class="modal max-w-md" @click.stop>
+    <div
+v-if="showClearReportsModal"
+class="modal-backdrop"
+@click="showClearReportsModal = false"
+>
+      <div
+class="modal max-w-md"
+@click.stop
+>
         <div class="modal-header">
           <h3 class="text-lg font-semibold text-text-primary flex items-center gap-2">
-            <svg class="w-5 h-5 text-danger-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+class="w-5 h-5 text-danger-400"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+              <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+/>
             </svg>
             Confirmar Limpieza
           </h3>
@@ -817,18 +1534,40 @@
           </p>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" @click="showClearReportsModal = false">
+          <button
+class="btn btn-secondary"
+@click="showClearReportsModal = false"
+>
             Cancelar
           </button>
-          <button class="btn btn-danger" @click="clearErrorReports">
+          <button
+class="btn btn-danger"
+@click="clearErrorReports"
+>
             Limpiar
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Modal Login Sucursal -->
+    <SucursalLoginModal
+      :show="showSucursalLoginModal"
+      :username="selectedSucursalForLogin?.username || ''"
+      :sucursal-name="selectedSucursalForLogin?.clisuc_nombre || 'Sucursal'"
+      :show-tokens="true"
+      @close="showSucursalLoginModal = false"
+      @login-success="handleSucursalLoginSuccess"
+      @login-error="handleSucursalLoginError"
+    />
+
     <!-- Tour Button -->
-    <TourButton v-if="hasTour() && !isTourViewed()" variant="floating" size="md" :pulse="true" />
+    <TourButton
+v-if="hasTour() && !isTourViewed()"
+variant="floating"
+size="md"
+:pulse="true"
+/>
   </div>
 </template>
 
@@ -841,6 +1580,7 @@ import UserServices from '@/services/UserServices'
 import { usePlayerControl } from '@/composables/usePlayerControl'
 import { useSucursal } from '@/composables/useSucursal'
 import SignalRStatus from '@/components/SignalRStatus.vue'
+import { SucursalLoginModal } from '@/components'
 import { useDriverTour } from '@/composables/useDriverTour'
 
 const router = useRouter()
@@ -894,6 +1634,11 @@ const errorReportsError = ref(null)
 const errorReportsSummary = ref(null)
 const selectedSucursalForReports = ref(null)
 
+// Login Modal para sucursales
+const showSucursalLoginModal = ref(false)
+const selectedSucursalForLogin = ref(null)
+const sucursalLoginTokens = ref(null)
+
 const formData = ref({
   clisuc_codigo: 0,
   nombreSucursal: '',
@@ -944,7 +1689,7 @@ const {
   enableConnectionMonitor: true
 })
 
-// Helpers para el estado de conexión
+// Helpers para el estado de conexiรณn
 const getConnectionBadgeClass = (sucursal) => {
   if (sucursal.connectionStatus === 'verifying') {
     return 'badge-warning'
@@ -1273,6 +2018,43 @@ const formatReportTime = (timestamp) => {
   })
 }
 
+// Funciones para el Login Modal de sucursales
+const openSucursalLogin = (sucursal) => {
+  selectedSucursalForLogin.value = sucursal
+  showSucursalLoginModal.value = true
+}
+
+const handleSucursalLoginSuccess = (tokens) => {
+  console.log('=== LOGIN SUCCESS ===')
+  console.log('Login exitoso para sucursal:', selectedSucursalForLogin.value?.clisuc_nombre)
+  console.log('Tokens recibidos:', tokens)
+  console.log('Token:', tokens.token)
+  console.log('Refresh Token:', tokens.refreshToken)
+  console.log('User:', tokens.user)
+  console.log('===================')
+  
+  sucursalLoginTokens.value = tokens
+  
+  // Aquí puedes usar los tokens como necesites
+  // Por ejemplo, guardarlos en localStorage para usarlos con esta sucursal
+  if (selectedSucursalForLogin.value) {
+    const storageKey = `sucursal_token_${selectedSucursalForLogin.value.clisuc_codigo}`
+    localStorage.setItem(storageKey, JSON.stringify(tokens))
+    console.log('Tokens guardados en localStorage con key:', storageKey)
+  }
+  
+  if (proxy && proxy.$toast) {
+    proxy.$toast(`Conexión exitosa con ${selectedSucursalForLogin.value?.clisuc_nombre}`, 'success')
+  }
+}
+
+const handleSucursalLoginError = (errorData) => {
+  console.error('Error en login de sucursal:', errorData)
+  if (proxy && proxy.$toast) {
+    proxy.$toast(`Error: ${errorData.error}`, 'error')
+  }
+}
+
 onMounted(async () => {
   loadClienteData()
   await Promise.all([
@@ -1280,7 +2062,7 @@ onMounted(async () => {
     loadProgramaciones()
   ])
 
-  // Forzar solicitud de estado de conexiones al cargar la página
+  // Forzar solicitud de estado de conexiones al cargar la pรกgina
   if (connectionMonitor?.requestOnlineUsersUpdate) {
     await connectionMonitor.requestOnlineUsersUpdate()
   }

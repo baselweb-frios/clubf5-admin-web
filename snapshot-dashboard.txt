@@ -1,0 +1,26 @@
+uid=4_0 RootWebArea "ClubF5 - Sistema de Gestión" url="https://localhost:3000/dashboard"
+  uid=4_1 complementary
+    uid=4_2 link "C5 Club F5" url="https://localhost:3000/"
+      uid=4_3 StaticText "C5"
+      uid=4_4 StaticText "Club F5"
+    uid=4_5 navigation
+      uid=4_6 link "Inicio" url="https://localhost:3000/dashboard"
+        uid=4_7 StaticText "Inicio"
+      uid=4_8 link "Sucursales" url="https://localhost:3000/sucursales"
+        uid=4_9 StaticText "Sucursales"
+      uid=4_10 link "Mi Musica" url="https://localhost:3000/programaMusica"
+        uid=4_11 StaticText "Mi Musica"
+      uid=4_12 link "Mis Recibos" url="https://localhost:3000/facturas"
+        uid=4_13 StaticText "Mis Recibos"
+      uid=4_14 link "Mis Spots" url="https://localhost:3000/bibliotecaSpot"
+        uid=4_15 StaticText "Mis Spots"
+    uid=4_16 button "Cerrar sesion"
+  uid=4_17 banner
+    uid=4_18 button
+    uid=4_19 button "MA Miguel Audicio"
+  uid=4_20 main
+    uid=4_21 StaticText "Cargando panel de control..."
+  uid=4_22 contentinfo
+    uid=4_23 StaticText "2024 Club F5. Todos los derechos reservados."
+    uid=4_24 StaticText "v1.3.0"
+  uid=4_25 button " Tour" description="Tour Editor (Ctrl+Shift+T)"

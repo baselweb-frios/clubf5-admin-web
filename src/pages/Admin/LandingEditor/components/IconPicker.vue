@@ -1,5 +1,5 @@
 <template>
-  <div class="icon-picker">
+  <div class="icon-picker" ref="pickerRef">
     <div
 class="icon-picker-trigger"
 @click="togglePicker"
@@ -18,6 +18,7 @@ class="fas fa-chevron-down trigger-arrow"
       <div
 v-if="isOpen"
 class="icon-picker-dropdown"
+:style="dropdownStyle"
 >
         <div class="dropdown-header">
           <base-input
@@ -70,7 +71,7 @@ class="backdrop"
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
 
 const props = defineProps({
@@ -85,6 +86,8 @@ const emit = defineEmits(['update:modelValue'])
 const isOpen = ref(false)
 const searchQuery = ref('')
 const activeCategory = ref('general')
+const pickerRef = ref(null)
+const dropdownStyle = ref({})
 
 const categories = [
   { id: 'general', name: 'General', icon: 'fas fa-icons' },
@@ -154,6 +157,19 @@ const filteredIcons = computed(() => {
 
 const togglePicker = () => {
   isOpen.value = !isOpen.value
+  if (isOpen.value) {
+    nextTick(() => {
+      const rect = pickerRef.value?.getBoundingClientRect()
+      if (rect) {
+        dropdownStyle.value = {
+          position: 'fixed',
+          top: `${rect.bottom + 8}px`,
+          left: `${rect.left}px`,
+          zIndex: 9999
+        }
+      }
+    })
+  }
 }
 
 const closePicker = () => {
@@ -213,7 +229,7 @@ onUnmounted(() => {
 }
 
 .icon-picker-dropdown {
-  @apply absolute top-full left-0 mt-2 w-80 z-50;
+  @apply w-80;
   @apply bg-dark-tertiary border border-dark-border rounded-xl;
   @apply shadow-2xl overflow-hidden;
 }

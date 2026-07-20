@@ -1,300 +1,131 @@
 <template>
   <div class="page-wrapper">
-    <div class="page-content space-y-6">
-      <!-- Header -->
-      <header class="page-header">
-        <h1 class="page-title flex items-center gap-3">
-          <i class="fas fa-cloud text-primary-400" />
-          Gestor de Archivos OBS
-        </h1>
-        <p class="text-text-secondary light:text-text-light-secondary mt-2">
-          Navegue por las carpetas y suba archivos arrastrando o seleccionándolos
-        </p>
-      </header>
-
-      <!-- Breadcrumb navigation -->
-      <div class="card">
-        <div class="flex items-center gap-2 text-sm">
-          <button
-            class="btn btn-ghost btn-sm"
-            @click="navigateToRoot"
-          >
-            <i class="fas fa-home" />
-          </button>
-          <template v-if="currentPath">
-            <i class="fas fa-chevron-right text-text-tertiary" />
-            <template
-              v-for="(segment, index) in pathSegments"
-              :key="index"
-            >
-              <button
-                class="btn btn-ghost btn-sm"
-                @click="navigateToSegment(index)"
-              >
-                {{ segment }}
-              </button>
-              <i
-                v-if="index < pathSegments.length - 1"
-                class="fas fa-chevron-right text-text-tertiary"
-              />
-            </template>
-          </template>
-        </div>
+    <div class="page-content flex flex-col h-[calc(100vh-64px)] gap-0">
+      <!-- Toolbar fila 1 -->
+      <div class="flex items-center gap-1 px-2 py-1 bg-dark-primary border border-dark-border border-b-0 rounded-t-md shrink-0">
+        <button class="btn-icon text-text-tertiary hover:text-text-primary" title="Refrescar" @click="refreshObs">
+          <i class="fas fa-sync-alt text-xs" />
+        </button>
+        <button class="btn-icon text-text-tertiary hover:text-text-primary" title="Nueva carpeta OBS" @click="newFolder">
+          <i class="fas fa-folder-plus text-xs" />
+        </button>
+        <div class="flex-1" />
+        <input ref="uploadInput" type="file" multiple class="hidden" @change="handleUploadSelect" />
+        <input ref="uploadFolderInput" type="file" webkitdirectory multiple class="hidden" @change="handleFolderUploadSelect" />
+        <button class="btn-icon text-text-tertiary hover:text-primary-400" title="Subir archivos a OBS" @click="uploadInput.click()">
+          <i class="fas fa-cloud-upload-alt text-xs" />
+        </button>
+        <button class="btn-icon text-text-tertiary hover:text-primary-400" title="Subir carpeta completa a OBS" @click="uploadFolderInput.click()">
+          <i class="fas fa-folder-open text-xs" />
+        </button>
+        <span v-if="uploading" class="text-[10px] text-primary-400 ml-1">{{ uploadProgress }}%</span>
+        <div class="w-px h-5 bg-dark-border mx-1" />
+        <span class="text-[10px] text-text-quaternary mr-1">F2 Renombrar · F5 Descargar · F6 Mover · F7 Nueva · F8 Elim</span>
       </div>
 
-      <!-- Drop zone & Upload area -->
+      <!-- Toolbar fila 2: busqueda por tipo (server-side) y acciones sobre la seleccion -->
+      <div class="flex items-center gap-1 px-2 py-1 bg-dark-primary border-x border-dark-border shrink-0">
+        <span class="text-[10px] text-text-quaternary mr-1">Buscar en esta carpeta:</span>
+        <button class="btn-icon text-text-tertiary hover:text-primary-400" title="Buscar audio en esta carpeta" @click="searchByType('audio')">
+          <i class="fas fa-file-audio text-xs" />
+        </button>
+        <button class="btn-icon text-text-tertiary hover:text-primary-400" title="Buscar video en esta carpeta" @click="searchByType('video')">
+          <i class="fas fa-file-video text-xs" />
+        </button>
+        <button class="btn-icon text-text-tertiary hover:text-primary-400" title="Buscar imagenes en esta carpeta" @click="searchByType('image')">
+          <i class="fas fa-file-image text-xs" />
+        </button>
+        <button v-if="searchActive" class="btn-icon text-warning-400" title="Limpiar busqueda" @click="clearSearch">
+          <i class="fas fa-times text-xs" />
+        </button>
+        <span v-if="searchActive" class="text-[10px] text-primary-400 mr-1">{{ searchResults.length }} resultado(s)</span>
+
+        <div class="w-px h-5 bg-dark-border mx-1" />
+        <span class="text-[10px] text-text-quaternary mr-1">Selección:</span>
+        <button class="btn-icon text-text-tertiary hover:text-primary-400" title="Renombrar (F2, solo archivos)" @click="renameSelected">
+          <i class="fas fa-pen text-xs" />
+        </button>
+        <button class="btn-icon text-text-tertiary hover:text-primary-400" title="Generar link temporal (copia al portapapeles)" @click="generateLinkSelected">
+          <i class="fas fa-link text-xs" />
+        </button>
+        <button class="btn-icon text-text-tertiary hover:text-primary-400" title="Mover seleccion a otra carpeta OBS" @click="moveSelectedToFolder">
+          <i class="fas fa-folder-tree text-xs" />
+        </button>
+        <button class="btn-icon text-text-tertiary hover:text-primary-400" title="Ver informacion del archivo" @click="showInfoSelected">
+          <i class="fas fa-circle-info text-xs" />
+        </button>
+      </div>
+
+      <!-- Panel unico: OBS -->
       <div
-        class="card relative"
-        :class="{ 'ring-2 ring-primary-500 bg-primary-500/5': isDragging }"
-        @dragover.prevent="handleDragOver"
-        @dragleave.prevent="handleDragLeave"
-        @drop.prevent="handleDrop"
+        class="flex-1 border-x border-dark-border min-h-0 overflow-hidden relative"
+        @dragover.prevent="isDraggingOverObs = true"
+        @dragenter.prevent="isDraggingOverObs = true"
+        @dragleave.prevent="onObsDragLeave"
+        @drop="handleObsDrop"
       >
-        <div class="flex flex-col items-center justify-center py-8 space-y-4">
-          <div class="text-center">
-            <i
-              class="fas fa-cloud-upload-alt text-6xl mb-4"
-              :class="isDragging ? 'text-primary-500' : 'text-text-tertiary'"
-            />
-            <p class="text-lg font-semibold text-text-primary light:text-text-light-primary">
-              {{ isDragging ? '¡Suelta los archivos aquí!' : 'Arrastra archivos aquí' }}
-            </p>
-            <p class="text-sm text-text-secondary light:text-text-light-secondary mt-1">
-              o haz clic en el botón para seleccionar
-            </p>
-          </div>
-
-          <input
-            ref="fileInput"
-            type="file"
-            multiple
-            class="hidden"
-            @change="handleFileSelect"
-          >
-
-          <button
-            class="btn btn-primary"
-            :disabled="loading"
-            @click="openFileDialog"
-          >
-            <i class="fas fa-folder-open" />
-            Seleccionar archivos
-          </button>
-
-          <!-- Selected files preview -->
-          <div
-            v-if="selectedFiles.length > 0"
-            class="w-full max-w-2xl mt-4"
-          >
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm font-semibold text-text-primary">
-                {{ selectedFiles.length }} archivo(s) seleccionado(s)
-              </span>
-              <button
-                class="btn btn-ghost btn-sm"
-                @click="clearSelectedFiles"
-              >
-                <i class="fas fa-times" />
-              </button>
-            </div>
-            <div class="max-h-40 overflow-y-auto space-y-1">
-              <div
-                v-for="(file, index) in selectedFiles"
-                :key="index"
-                class="flex items-center justify-between gap-2 p-2 rounded bg-dark-secondary light:bg-light-secondary text-sm"
-              >
-                <span class="truncate">{{ file.name }}</span>
-                <span class="text-xs text-text-tertiary whitespace-nowrap">
-                  {{ formatFileSize(file.size) }}
-                </span>
-              </div>
-            </div>
-            <button
-              class="btn btn-success w-full mt-3"
-              :disabled="loading"
-              @click="uploadFiles"
-            >
-              <i class="fas fa-upload" />
-              Subir {{ selectedFiles.length }} archivo(s)
-            </button>
-          </div>
-
-          <!-- Upload progress -->
-          <div
-            v-if="uploadProgress > 0 && uploadProgress < 100"
-            class="w-full max-w-2xl"
-          >
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-sm font-semibold">Subiendo archivos...</span>
-              <span class="text-sm font-semibold">{{ uploadProgress }}%</span>
-            </div>
-            <div class="h-2 rounded bg-dark-secondary overflow-hidden light:bg-light-secondary">
-              <div
-                class="h-full bg-primary-500 transition-all duration-200"
-                :style="{ width: uploadProgress + '%' }"
-              />
-            </div>
-          </div>
+        <div
+          v-if="isDraggingOverObs"
+          class="absolute inset-0 z-10 flex items-center justify-center bg-primary-500/10 border-2 border-dashed border-primary-400 pointer-events-none"
+        >
+          <span class="text-primary-300 text-sm font-medium px-3 py-1 bg-dark-primary/80 rounded">
+            Soltar para subir a {{ obsPath }}
+          </span>
         </div>
+        <FilePanel
+          ref="panelRef"
+          :path="obsPath"
+          :files="displayedFiles"
+          :folders="searchActive ? [] : folders"
+          :loading="loading"
+          :active="true"
+          @navigate="(p) => navigateObs(p)"
+          @download="(k) => downloadObsFile(k)"
+          @delete="(k) => deleteObsFile(k)"
+          @openFile="(k) => downloadObsFile(k)"
+          @rename="(k) => renameKey(k)"
+          @link="(k) => generateLinkForKey(k)"
+          @move-to-folder="(k) => moveKeyToFolder(k)"
+          @info="(k) => showInfoForKey(k)"
+        />
       </div>
 
-      <!-- Folders list -->
-      <div class="card">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-text-primary light:text-text-light-primary">
-            <i class="fas fa-folder-open mr-2" />
-            Carpetas
-          </h2>
-          <div class="flex items-center gap-2">
-            <span class="badge badge-info">{{ folders.length }} carpetas</span>
-            <button
-              class="btn btn-secondary btn-sm"
-              :disabled="loading"
-              @click="loadFolders"
-            >
-              <i class="fas fa-sync-alt" />
-              Actualizar
-            </button>
-          </div>
-        </div>
+      <!-- Commander bar -->
+      <CommanderBar
+        :right-selected="getSelected()"
+        :right-count="allItemsCount()"
+        single-pane
+        @view="viewSelected"
+        @edit="editSelected"
+        @copy="downloadSelection"
+        @move="moveSelectedToFolder"
+        @new-folder="newFolder"
+        @delete="deleteSelection"
+        @refresh="refreshObs"
+      />
+    </div>
 
-        <!-- Loading state -->
-        <div
-          v-if="loading"
-          class="flex items-center justify-center py-12"
-        >
-          <div class="text-center">
-            <i class="fas fa-spinner fa-spin text-4xl text-primary-500 mb-3" />
-            <p class="text-text-secondary">Cargando...</p>
-          </div>
-        </div>
-
-        <!-- Folders grid -->
-        <div
-          v-else-if="folders.length > 0"
-          class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-        >
-          <button
-            v-for="folder in folders"
-            :key="folder.objectKey"
-            class="card hover:border-primary-500 transition-colors text-left p-4"
-            @click="navigateToFolder(folder.objectKey)"
-          >
-            <div class="flex items-center gap-3">
-              <i class="fas fa-folder text-3xl text-warning-500" />
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-text-primary light:text-text-light-primary truncate">
-                  {{ getFolderName(folder.objectKey) }}
-                </p>
-                <p class="text-xs text-text-tertiary mt-1">
-                  {{ formatDate(folder.lastModified) }}
-                </p>
-              </div>
-            </div>
-          </button>
-        </div>
-
-        <!-- Empty state -->
-        <div
-          v-else
-          class="text-center py-12"
-        >
-          <i class="fas fa-folder-open text-6xl text-text-tertiary mb-4" />
-          <p class="text-text-secondary">
-            No hay carpetas en esta ubicación
-          </p>
-        </div>
+    <!-- Cola de subida -->
+    <div v-if="uploadQueue.length" class="fixed bottom-4 right-4 w-72 bg-dark-primary border border-dark-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto text-[11px]">
+      <div class="px-2 py-1 border-b border-dark-border flex items-center justify-between sticky top-0 bg-dark-primary">
+        <span class="text-text-secondary font-medium">Subiendo {{ uploadQueue.length }} archivo(s)</span>
+        <button class="text-text-quaternary hover:text-text-primary" @click="uploadQueue = []">
+          <i class="fas fa-times" />
+        </button>
       </div>
-
-      <!-- Files list -->
-      <div class="card">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-text-primary light:text-text-light-primary">
-            <i class="fas fa-file mr-2" />
-            Archivos
-          </h2>
-          <span class="badge badge-success">{{ files.length }} archivos</span>
+      <div v-for="item in uploadQueue" :key="item.id" class="px-2 py-1 border-b border-dark-border/50">
+        <div class="flex items-center justify-between gap-2">
+          <span class="truncate text-text-tertiary" :title="item.name">{{ item.name }}</span>
+          <i v-if="item.status === 'success'" class="fas fa-check text-success-400 shrink-0" />
+          <i v-else-if="item.status === 'error'" class="fas fa-exclamation-circle text-red-400 shrink-0" />
+          <span v-else class="text-text-quaternary shrink-0">{{ item.progress }}%</span>
         </div>
-
-        <!-- Files table -->
-        <div
-          v-if="files.length > 0"
-          class="overflow-x-auto"
-        >
-          <table class="w-full">
-            <thead class="border-b border-border-light dark:border-border-dark">
-              <tr class="text-left text-sm">
-                <th class="pb-3 px-4 font-semibold text-text-primary light:text-text-light-primary">
-                  Nombre
-                </th>
-                <th class="pb-3 px-4 font-semibold text-text-primary light:text-text-light-primary">
-                  Tamaño
-                </th>
-                <th class="pb-3 px-4 font-semibold text-text-primary light:text-text-light-primary">
-                  Fecha
-                </th>
-                <th class="pb-3 px-4 font-semibold text-text-primary light:text-text-light-primary">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="file in files"
-                :key="file.objectKey"
-                class="border-b border-border-light dark:border-border-dark hover:bg-dark-secondary/50 dark:hover:bg-dark-secondary/50 light:hover:bg-light-secondary/50 transition-colors"
-              >
-                <td class="py-3 px-4">
-                  <div class="flex items-center gap-3">
-                    <i
-                      :class="getFileIcon(file.objectKey)"
-                      class="text-xl text-primary-500"
-                    />
-                    <span class="text-sm text-text-primary light:text-text-light-primary truncate">
-                      {{ getFileName(file.objectKey) }}
-                    </span>
-                  </div>
-                </td>
-                <td class="py-3 px-4 text-sm text-text-secondary light:text-text-light-secondary">
-                  {{ formatFileSize(file.size) }}
-                </td>
-                <td class="py-3 px-4 text-sm text-text-secondary light:text-text-light-secondary">
-                  {{ formatDate(file.lastModified) }}
-                </td>
-                <td class="py-3 px-4">
-                  <div class="flex items-center gap-2">
-                    <button
-                      class="btn btn-ghost btn-sm"
-                      title="Descargar"
-                      :disabled="loading"
-                      @click="downloadFile(file.objectKey)"
-                    >
-                      <i class="fas fa-download" />
-                    </button>
-                    <button
-                      class="btn btn-ghost btn-sm text-error-500"
-                      title="Eliminar"
-                      :disabled="loading"
-                      @click="deleteFile(file.objectKey)"
-                    >
-                      <i class="fas fa-trash" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Empty state -->
-        <div
-          v-else
-          class="text-center py-12"
-        >
-          <i class="fas fa-file text-6xl text-text-tertiary mb-4" />
-          <p class="text-text-secondary">
-            No hay archivos en esta ubicación
-          </p>
+        <div class="h-1 bg-dark-secondary rounded mt-0.5 overflow-hidden">
+          <div
+            class="h-full transition-all"
+            :class="item.status === 'error' ? 'bg-red-400' : 'bg-primary-400'"
+            :style="{ width: (item.status === 'success' ? 100 : item.progress) + '%' }"
+          />
         </div>
       </div>
     </div>
@@ -303,199 +134,398 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import obsServices from '@/services/obsServicesApi'
+import obsServices from '@/services/obsServices'
 import { useToast } from '@/composables/useToast'
+import FilePanel from '@/components/obs/FilePanel.vue'
+import CommanderBar from '@/components/obs/CommanderBar.vue'
 
 const toast = useToast()
+const OBS_ROOT = import.meta.env.VITE_PATH_MUSIC || 'Music/online/'
 
-// State
-const loading = ref(false)
-const isDragging = ref(false)
-const currentPath = ref(import.meta.env.VITE_PATH_MUSIC || 'Music/online/')
-const folders = ref([])
+// Estado del panel OBS (unico panel)
+const obsPath = ref(OBS_ROOT)
 const files = ref([])
-const selectedFiles = ref([])
+const folders = ref([])
+const loading = ref(false)
+
+// Upload
+const uploading = ref(false)
 const uploadProgress = ref(0)
-const fileInput = ref(null)
+const uploadQueue = ref([])
+const uploadInput = ref(null)
+const uploadFolderInput = ref(null)
 
-// Computed
-const pathSegments = computed(() => {
-  return currentPath.value ? currentPath.value.split('/').filter(Boolean) : []
-})
+// Referencia al FilePanel (para leer la seleccion)
+const panelRef = ref(null)
 
-// Methods
-const loadFolders = async () => {
+// Busqueda por tipo (server-side, dentro de la carpeta actual)
+const searchActive = ref(false)
+const searchResults = ref([])
+
+// Drag & drop
+const isDraggingOverObs = ref(false)
+
+const getSelected = () => panelRef.value ? Array.from(panelRef.value.selected || []) : []
+const allItemsCount = () => files.value.length + folders.value.length
+
+// Cuando hay busqueda por tipo activa, se muestran esos resultados en vez del listado normal.
+// El filtro por nombre dentro de cada carpeta ya lo resuelve el propio FilePanel (su buscador rapido).
+const displayedFiles = computed(() => searchActive.value ? searchResults.value : files.value)
+
+// ===== PANEL OBS =====
+const loadObsFolder = async () => {
+  loading.value = true
+  searchActive.value = false
+  searchResults.value = []
   try {
-    loading.value = true
-    console.log('[ObsConsole] Cargando carpetas desde:', currentPath.value)
-    
-    const result = await obsServices.ListarObject(currentPath.value)
-    console.log('[ObsConsole] Resultado de ListarObject:', result)
-    console.log('[ObsConsole] Tipo de resultado:', typeof result, Array.isArray(result) ? 'es array' : 'NO es array')
-    
+    const result = await obsServices.ListarObject(obsPath.value)
     const objects = Array.isArray(result) ? result : (result?.objects || [])
-    console.log('[ObsConsole] Objetos procesados:', objects.length, 'elementos')
-    console.log('[ObsConsole] Detalle de objetos:', objects)
+    const prefix = obsPath.value
 
-    // Separar carpetas y archivos
-    folders.value = objects.filter(obj => obj.objectKey && obj.objectKey.endsWith('/'))
-    files.value = objects.filter(obj => obj.objectKey && !obj.objectKey.endsWith('/'))
-    
-    console.log('[ObsConsole] Carpetas encontradas:', folders.value.length)
-    console.log('[ObsConsole] Archivos encontrados:', files.value.length)
-    console.log('[ObsConsole] Modo de operación OBS:', obsServices.getOperationMode?.())
-  } catch (error) {
-    console.error('[ObsConsole] Error loading folders:', error)
-    console.error('[ObsConsole] Error completo:', error.response?.data || error.message)
-    toast('Error al cargar las carpetas: ' + (error.message || 'Error desconocido'), 'error')
-  } finally {
-    loading.value = false
-  }
-}
+    // Las subcarpetas se derivan de la propia lista de objetos (como hace cualquier
+    // explorador tipo S3), no de que exista un marcador vacío "carpeta/" explícito.
+    // Antes dependía de ese marcador (o.size==0 && termina en '/'), así que una carpeta
+    // que solo tenía archivos adentro (ej. subida por drag&drop, que no crea marcador)
+    // nunca aparecía como carpeta navegable. Ademas, antes solo se comparaba la CANTIDAD
+    // de segmentos del path, sin verificar que el objeto realmente estuviera dentro de la
+    // carpeta actual (podía "matchear" algo de otra carpeta a la misma profundidad).
+    const folderMap = new Map()
+    const fileList = []
 
-const navigateToFolder = (folderKey) => {
-  currentPath.value = folderKey
-  loadFolders()
-}
+    for (const o of objects) {
+      const key = o.objectKey
+      if (!key || key === prefix || !key.startsWith(prefix)) continue
 
-const navigateToRoot = () => {
-  currentPath.value = ''
-  loadFolders()
-}
+      const rest = key.slice(prefix.length)
+      const slashIdx = rest.indexOf('/')
 
-const navigateToSegment = (index) => {
-  const segments = pathSegments.value.slice(0, index + 1)
-  currentPath.value = segments.join('/') + '/'
-  loadFolders()
-}
-
-const getFolderName = (folderKey) => {
-  const parts = folderKey.replace(/\/$/, '').split('/')
-  return parts[parts.length - 1] || folderKey
-}
-
-const formatDate = (date) => {
-  if (!date) return '-'
-  return new Date(date).toLocaleDateString('es-AR')
-}
-
-const formatFileSize = (bytes) => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i]
-}
-
-const getFileName = (objectKey) => {
-  const parts = objectKey.split('/').filter(p => p)
-  return parts[parts.length - 1] || objectKey
-}
-
-const getFileIcon = (filename) => {
-  return obsServices.GetFileIcon(filename)
-}
-
-const downloadFile = async (objectKey) => {
-  try {
-    loading.value = true
-    await obsServices.DownloadYGuardar(objectKey)
-    toast('Archivo descargado exitosamente', 'success')
-  } catch (error) {
-    console.error('Error downloading file:', error)
-    toast('Error al descargar el archivo', 'error')
-  } finally {
-    loading.value = false
-  }
-}
-
-const deleteFile = async (objectKey) => {
-  if (!confirm('¿Estás seguro de eliminar este archivo?')) return
-
-  try {
-    loading.value = true
-    await obsServices.EliminarArchivo(objectKey)
-    toast('Archivo eliminado exitosamente', 'success')
-    await loadFolders()
-  } catch (error) {
-    console.error('Error deleting file:', error)
-    toast('Error al eliminar el archivo', 'error')
-  } finally {
-    loading.value = false
-  }
-}
-
-// File handling
-const handleDragOver = () => {
-  isDragging.value = true
-}
-
-const handleDragLeave = () => {
-  isDragging.value = false
-}
-
-const handleDrop = (e) => {
-  isDragging.value = false
-  const files = Array.from(e.dataTransfer?.files || [])
-  if (files.length > 0) {
-    selectedFiles.value = files
-    toast(`${files.length} archivo(s) seleccionado(s)`, 'success')
-  }
-}
-
-const openFileDialog = () => {
-  fileInput.value?.click()
-}
-
-const handleFileSelect = (e) => {
-  const target = e.target
-  const files = Array.from(target.files || [])
-  if (files.length > 0) {
-    selectedFiles.value = files
-    toast(`${files.length} archivo(s) seleccionado(s)`, 'success')
-  }
-}
-
-const clearSelectedFiles = () => {
-  selectedFiles.value = []
-  if (fileInput.value) {
-    fileInput.value.value = ''
-  }
-}
-
-const uploadFiles = async () => {
-  if (selectedFiles.value.length === 0) return
-
-  try {
-    loading.value = true
-    uploadProgress.value = 0
-
-    const archivos = selectedFiles.value.map(file => ({
-      file,
-      objectKey: `${currentPath.value}${file.name}`
-    }))
-
-    await obsServices.SubirMultiples(archivos, {
-      concurrency: 3,
-      onTotalProgress: (progress) => {
-        uploadProgress.value = progress
+      if (slashIdx === -1) {
+        // Sin más '/': es un archivo directo de esta carpeta
+        if (o.size > 0) fileList.push(o)
+      } else {
+        // Tiene otro '/' más adelante: pertenece a una subcarpeta directa (con o sin marcador)
+        const folderKey = prefix + rest.slice(0, slashIdx + 1)
+        if (!folderMap.has(folderKey)) {
+          folderMap.set(folderKey, { objectKey: folderKey, size: 0, lastModified: null })
+        }
       }
+    }
+
+    folders.value = Array.from(folderMap.values())
+    files.value = fileList
+  } catch (err) {
+    console.error('[ObsConsole] Error:', err)
+    toast('Error al cargar OBS: ' + (err.message || 'Desconocido'), 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
+const navigateObs = (path) => { obsPath.value = path; loadObsFolder() }
+
+const downloadObsFile = async (key) => {
+  try {
+    await obsServices.DownloadYGuardar(key)
+    toast('Archivo descargado', 'success')
+  }
+  catch (err) { toast('Error al descargar', 'error') }
+}
+
+// Elimina un archivo o carpeta OBS sin pedir confirmacion (uso interno).
+// Para carpetas usa EliminarObjeto (recursion del lado del servidor, una sola llamada)
+// en vez de EliminarCarpetaRecursivo (recorria y borraba de a uno desde el navegador,
+// y si algun item fallaba lo guardaba en un array de errores sin lanzar excepcion,
+// asi que la carpeta quedaba parcialmente borrada pero igual se mostraba como exito).
+const performDeleteObsKey = async (key) => {
+  if (key.endsWith('/')) {
+    await obsServices.EliminarObjeto(key)
+  } else {
+    await obsServices.EliminarArchivo(key)
+  }
+}
+
+const deleteObsFile = async (key) => {
+  const isFolder = key.endsWith('/')
+  const label = isFolder ? key.split('/').filter(Boolean).pop() : key.split('/').pop()
+  const confirmMsg = isFolder
+    ? `¿Eliminar la carpeta "${label}" y TODO su contenido?`
+    : `¿Eliminar ${label}?`
+  if (!confirm(confirmMsg)) return
+  try {
+    await performDeleteObsKey(key)
+    toast(isFolder ? 'Carpeta eliminada' : 'Archivo eliminado', 'success')
+    loadObsFolder()
+  } catch (err) { toast('Error al eliminar', 'error') }
+}
+
+// ===== BUSQUEDA POR TIPO (usa el service) =====
+const searchByType = async (type) => {
+  loading.value = true
+  try {
+    let results = []
+    if (type === 'audio') results = await obsServices.BuscarAudio(obsPath.value)
+    else if (type === 'video') results = await obsServices.BuscarVideo(obsPath.value)
+    else if (type === 'image') results = await obsServices.BuscarImagenes(obsPath.value)
+    searchResults.value = results
+    searchActive.value = true
+    toast(`${results.length} archivo(s) encontrados en esta carpeta`, 'success')
+  } catch (err) {
+    toast('Error al buscar: ' + (err.message || ''), 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
+const clearSearch = () => {
+  searchActive.value = false
+  searchResults.value = []
+}
+
+// ===== RENOMBRAR / LINK / MOVER / INFO (funciones del service) =====
+const renameKey = async (key) => {
+  if (key.endsWith('/')) return toast('No se puede renombrar carpetas (el service no soporta rename recursivo)', 'warning')
+  const currentName = key.split('/').pop()
+  const nuevoNombre = prompt('Nuevo nombre:', currentName)
+  if (!nuevoNombre || nuevoNombre === currentName) return
+  try {
+    await obsServices.Renombrar(key, nuevoNombre)
+    toast('Renombrado correctamente', 'success')
+    loadObsFolder()
+  } catch (err) { toast('Error al renombrar: ' + (err.message || ''), 'error') }
+}
+const renameSelected = () => {
+  const keys = getSelected()
+  if (keys.length !== 1) return toast('Selecciona un solo archivo para renombrar', 'warning')
+  renameKey(keys[0])
+}
+
+const generateLinkForKeys = async (keys) => {
+  const valid = keys.filter(k => !k.endsWith('/'))
+  if (valid.length === 0) return toast('Selecciona al menos un archivo', 'warning')
+  try {
+    if (valid.length === 1) {
+      const url = await obsServices.GetLink(valid[0])
+      await navigator.clipboard.writeText(url)
+      toast('Link copiado al portapapeles', 'success')
+    } else {
+      const results = await obsServices.GetLinksMultiples(valid)
+      const ok = results.filter(r => r.success)
+      await navigator.clipboard.writeText(ok.map(r => r.url).join('\n'))
+      toast(`${ok.length}/${valid.length} link(s) copiados al portapapeles`, 'success')
+    }
+  } catch (err) { toast('Error al generar link: ' + (err.message || ''), 'error') }
+}
+const generateLinkForKey = (key) => generateLinkForKeys([key])
+const generateLinkSelected = () => generateLinkForKeys(getSelected())
+
+const moveKeysToFolder = async (keys) => {
+  const valid = keys.filter(k => !k.endsWith('/'))
+  if (valid.length === 0) return toast('Selecciona archivos (no carpetas)', 'warning')
+  const destino = prompt('Carpeta destino (ruta completa):', obsPath.value)
+  if (!destino) return
+  try {
+    const results = await obsServices.MoverMultiples(valid, destino)
+    const ok = results.filter(r => r.success).length
+    toast(`${ok}/${valid.length} movido(s)`, ok === valid.length ? 'success' : 'warning')
+    loadObsFolder()
+  } catch (err) { toast('Error al mover: ' + (err.message || ''), 'error') }
+}
+const moveKeyToFolder = (key) => moveKeysToFolder([key])
+const moveSelectedToFolder = () => moveKeysToFolder(getSelected())
+
+const showInfoForKey = async (key) => {
+  try {
+    const info = await obsServices.GetObjectInfo(key)
+    alert(
+      `Archivo: ${info.objectKey}\n` +
+      `Tipo: ${info.contentType}\n` +
+      `Tamaño: ${obsServices.FormatSize(info.contentLength)}\n` +
+      `Modificado: ${info.lastModified}\n` +
+      `ETag: ${info.etag}`
+    )
+  } catch (err) { toast('Error al obtener informacion', 'error') }
+}
+const showInfoSelected = () => {
+  const keys = getSelected()
+  if (keys.length !== 1) return toast('Selecciona un solo archivo', 'warning')
+  showInfoForKey(keys[0])
+}
+
+const newFolder = () => {
+  const name = prompt('Nombre de la nueva carpeta:')
+  if (!name) return
+  obsServices.CrearCarpeta(obsPath.value + name + '/')
+    .then(() => { toast('Carpeta creada', 'success'); loadObsFolder() })
+    .catch(err => toast('Error: ' + (err.message || ''), 'error'))
+}
+
+const refreshObs = () => loadObsFolder()
+
+// ===== BULK OPERATIONS (barra F3-F8) =====
+const viewSelected = () => {
+  const keys = getSelected()
+  if (keys.length === 0) return
+  downloadObsFile(keys[0])
+}
+const editSelected = () => { toast('Edicion no disponible', 'warning') }
+
+// F5: ya no hay "otro panel" al cual copiar, asi que copiar = descargar a tu PC.
+const downloadSelection = () => {
+  const keys = getSelected().filter(k => !k.endsWith('/'))
+  if (keys.length === 0) return toast('Selecciona archivos (no carpetas)', 'warning')
+  keys.forEach(k => downloadObsFile(k))
+}
+
+const deleteSelection = async () => {
+  const keys = getSelected()
+  if (keys.length === 0) return toast('Selecciona archivos primero', 'warning')
+  if (!confirm(`¿Eliminar ${keys.length} elemento(s)? Las carpetas se eliminan con todo su contenido.`)) return
+
+  let ok = 0
+  for (const k of keys) {
+    try { await performDeleteObsKey(k); ok++ } catch { /* seguir con el resto */ }
+  }
+  loadObsFolder()
+  toast(`${ok}/${keys.length} eliminado(s)`, ok === keys.length ? 'success' : 'warning')
+}
+
+// ===== UPLOAD (archivos sueltos, input multiple) =====
+const handleUploadSelect = (e) => {
+  const selectedFiles = Array.from(e.target.files || [])
+  if (selectedFiles.length > 0) uploadToObs(selectedFiles)
+  if (uploadInput.value) uploadInput.value.value = ''
+}
+
+// ===== UPLOAD (carpeta completa via input webkitdirectory) =====
+const handleFolderUploadSelect = (e) => {
+  const selectedFiles = Array.from(e.target.files || [])
+  if (selectedFiles.length === 0) return
+  const items = selectedFiles.map(f => ({ file: f, relativePath: f.webkitRelativePath || f.name }))
+  uploadToObs(items)
+  if (uploadFolderInput.value) uploadFolderInput.value.value = ''
+}
+
+// ===== UPLOAD (drag & drop desde el explorador, con soporte de carpetas) =====
+const onObsDragLeave = (e) => {
+  // dragleave se dispara tambien al pasar sobre hijos; solo apagamos si salimos del contenedor real
+  if (e.currentTarget.contains(e.relatedTarget)) return
+  isDraggingOverObs.value = false
+}
+
+// Recorre recursivamente un DataTransferItem (archivo o carpeta) preservando la ruta relativa
+const readEntryContents = (entry) => {
+  return new Promise((resolve) => {
+    const contents = []
+    let pending = 0
+    let entryQueueDone = false
+
+    const finishIfDone = () => {
+      if (entryQueueDone && pending === 0) resolve(contents)
+    }
+
+    const walk = (node, path) => {
+      if (node.isFile) {
+        pending++
+        node.file(
+          (file) => { contents.push({ file, relativePath: path + node.name }); pending--; finishIfDone() },
+          () => { pending--; finishIfDone() }
+        )
+      } else if (node.isDirectory) {
+        pending++
+        const reader = node.createReader()
+        const readBatch = () => {
+          reader.readEntries((entries) => {
+            if (entries.length === 0) { pending--; finishIfDone(); return }
+            entries.forEach(child => walk(child, path + node.name + '/'))
+            readBatch()
+          }, () => { pending--; finishIfDone() })
+        }
+        readBatch()
+      }
+    }
+
+    walk(entry, '')
+    entryQueueDone = true
+    finishIfDone()
+  })
+}
+
+const handleObsDrop = async (e) => {
+  e.preventDefault()
+  isDraggingOverObs.value = false
+
+  const items = e.dataTransfer?.items
+  const entries = items ? Array.from(items).map(it => it.webkitGetAsEntry?.()).filter(Boolean) : []
+
+  if (entries.length > 0) {
+    const groups = await Promise.all(entries.map(readEntryContents))
+    const allFiles = groups.flat()
+    if (allFiles.length === 0) return
+    uploadToObs(allFiles)
+    return
+  }
+
+  // Fallback (navegadores sin soporte de entries): archivos sueltos, sin carpetas
+  const droppedFiles = Array.from(e.dataTransfer?.files || [])
+  if (droppedFiles.length > 0) uploadToObs(droppedFiles)
+}
+
+// ===== UPLOAD (nucleo compartido) =====
+// items puede ser: File[] o { file, relativePath }[]
+const uploadToObs = async (items) => {
+  const normalized = items.map(it => (it instanceof File ? { file: it, relativePath: it.name } : it))
+
+  uploading.value = true
+  uploadProgress.value = 0
+  uploadQueue.value = normalized.map((it, idx) => ({
+    id: `${idx}_${it.file.name}`,
+    name: it.relativePath,
+    status: 'pending',
+    progress: 0
+  }))
+
+  try {
+    const archivos = normalized.map(it => ({ file: it.file, objectKey: obsPath.value + it.relativePath }))
+    const results = await obsServices.SubirMultiples(archivos, {
+      concurrency: 3,
+      onFileProgress: (index, progress) => {
+        const q = uploadQueue.value[index]
+        if (q) { q.status = 'uploading'; q.progress = progress }
+      },
+      onTotalProgress: (p) => { uploadProgress.value = p }
     })
 
-    toast(`${selectedFiles.value.length} archivo(s) subido(s) exitosamente`, 'success')
-    clearSelectedFiles()
-    uploadProgress.value = 0
-    await loadFolders()
-  } catch (error) {
-    console.error('Error uploading files:', error)
-    toast('Error al subir los archivos', 'error')
+    results.forEach((r, idx) => {
+      const q = uploadQueue.value[idx]
+      if (q) q.status = r.success ? 'success' : 'error'
+    })
+
+    const okCount = results.filter(r => r.success).length
+    const failCount = results.length - okCount
+    if (failCount === 0) toast(`${okCount} archivo(s) subido(s)`, 'success')
+    else toast(`${okCount} subido(s), ${failCount} con error`, 'warning')
+
+    loadObsFolder()
+  } catch (err) {
+    toast('Error al subir: ' + (err.message || ''), 'error')
   } finally {
-    loading.value = false
+    uploading.value = false
+    uploadProgress.value = 0
+    setTimeout(() => { uploadQueue.value = [] }, 4000)
   }
 }
 
-// Lifecycle
 onMounted(() => {
-  loadFolders()
+  loadObsFolder()
 })
 </script>
+
+<style scoped>
+.btn-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 24px; border-radius: 3px; border: none;
+  background: transparent; cursor: pointer; transition: all 0.12s;
+}
+.btn-icon:hover { background: rgba(255,255,255,0.06); }
+.page-content { padding: 0.5rem; }
+</style>

@@ -58,7 +58,10 @@ Debes seleccionar o crear una programación antes de poder programar spots.
         </label>
         <div class="space-y-3">
           <!-- Spots seleccionados -->
-          <div v-if="form.selectedSpots.value.length > 0" class="flex flex-wrap gap-2">
+          <div
+v-if="form.selectedSpots.value.length > 0"
+class="flex flex-wrap gap-2"
+>
             <span
               v-for="spot in form.selectedSpots.value"
               :key="spot.spo_codigo"
@@ -90,7 +93,10 @@ Debes seleccionar o crear una programación antes de poder programar spots.
               </div>
               <div class="flex items-center gap-2">
                 <div class="text-right">
-                  <div class="text-2xl font-bold" :class="form.exceedsSpotLimit.value ? 'text-danger-400' : 'text-primary-400'">
+                  <div
+class="text-2xl font-bold"
+:class="form.exceedsSpotLimit.value ? 'text-danger-400' : 'text-primary-400'"
+>
                     {{ form.selectedSpots.value.length }}
                   </div>
                   <div class="text-xs text-text-tertiary">

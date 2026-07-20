@@ -1,24 +1,43 @@
 <template>
   <div class="page-wrapper page-content">
     <!-- Alert Notifications -->
-    <div v-if="alertMsg" :class="['alert', alertTypeClass]">
+    <div
+v-if="alertMsg"
+:class="['alert', alertTypeClass]"
+>
       <i :class="getAlertIcon(alertType)" />
       <div class="ml-3 flex-1">
         {{ alertMsg }}
       </div>
-      <button class="btn btn-ghost btn-sm" aria-label="Cerrar notificación" @click="alertMsg = ''">
+      <button
+class="btn btn-ghost btn-sm"
+aria-label="Cerrar notificación"
+@click="alertMsg = ''"
+>
         <i class="fas fa-times" />
       </button>
     </div>
 
     <!-- Main Content Card -->
-    <BaseCard title="Gestión de Recibos" subtitle="Comprobantes internos de pago" :hover="false" shadow="2xl">
+    <BaseCard
+title="Gestión de Recibos"
+subtitle="Comprobantes internos de pago"
+:hover="false"
+shadow="2xl"
+>
       <template #actions>
-        <button class="btn btn-secondary" title="Recargar recibos" @click="loadFacturas">
+        <button
+class="btn btn-secondary"
+title="Recargar recibos"
+@click="loadFacturas"
+>
           <i class="fas fa-sync-alt" />
           <span>Refrescar</span>
         </button>
-        <button class="btn btn-primary" @click="openCreateModal">
+        <button
+class="btn btn-primary"
+@click="openCreateModal"
+>
           <i class="fas fa-plus" />
           <span>Nuevo Recibo</span>
         </button>
@@ -35,7 +54,10 @@
       </div>
 
       <!-- Estadísticas -->
-      <div v-if="estadisticas" class="stats-grid">
+      <div
+v-if="estadisticas"
+class="stats-grid"
+>
         <div class="stat-card">
           <div class="stat-icon stat-icon-info">
             <i class="fas fa-receipt" />
@@ -100,11 +122,23 @@
       </div>
 
       <!-- Loading State -->
-      <loading-spinner v-if="loading" :loading="true" text="Cargando recibos..." />
+      <loading-spinner
+v-if="loading"
+:loading="true"
+text="Cargando recibos..."
+/>
 
       <!-- Tabla de Recibos -->
-      <div v-else class="mt-2">
-        <DataTable :columns="columns" :rows="facturas" :loading="loading" :config="tableConfig">
+      <div
+v-else
+class="mt-2"
+>
+        <DataTable
+:columns="columns"
+:rows="facturas"
+:loading="loading"
+:config="tableConfig"
+>
           <template #cliente_nombre="{ row }">
             <div class="client-info">
               <div class="client-avatar">
@@ -133,42 +167,77 @@
 
           <template #fac_estado="{ row }">
             <span :class="['badge', getStatusClass(row.fac_estado)]">
-              <i class="fas" :class="getStatusIcon(row.fac_estado)" />
+              <i
+class="fas"
+:class="getStatusIcon(row.fac_estado)"
+/>
               {{ getStatusLabel(row.fac_estado) }}
             </span>
           </template>
 
           <template #fac_pdf_factura="{ row }">
-            <span v-if="row.fac_pdf_factura" class="pdf-attached" title="Ver factura adjunta"
-              @click="verPdfFactura(row)">
+            <span
+v-if="row.fac_pdf_factura"
+class="pdf-attached"
+title="Ver factura adjunta"
+              @click="verPdfFactura(row)"
+>
               <i class="fas fa-file-pdf" />
               Adjunta
             </span>
-            <span v-else-if="row.fac_estado === 'G'" class="pdf-missing">Pendiente</span>
+            <span
+v-else-if="row.fac_estado === 'G'"
+class="pdf-missing"
+>Pendiente</span>
             <span v-else>-</span>
           </template>
 
           <template #actions="{ row }">
             <div class="action-buttons">
-              <button class="btn-icon" title="Ver detalle" @click="verDetalleFactura(row)">
+              <button
+class="btn-icon"
+title="Ver detalle"
+@click="verDetalleFactura(row)"
+>
                 <i class="fas fa-eye" />
               </button>
-              <button v-if="row.fac_estado === 'P'" class="btn-icon" title="Editar recibo" @click="editarFactura(row)">
+              <button
+v-if="row.fac_estado === 'P'"
+class="btn-icon"
+title="Editar recibo"
+@click="editarFactura(row)"
+>
                 <i class="fas fa-edit" />
               </button>
-              <button v-if="row.fac_estado === 'P'" class="btn-icon btn-success" title="Registrar pago"
-                @click="openPagarModal(row)">
+              <button
+v-if="row.fac_estado === 'P'"
+class="btn-icon btn-success"
+title="Registrar pago"
+                @click="openPagarModal(row)"
+>
                 <i class="fas fa-check" />
               </button>
-              <button v-if="row.fac_estado === 'G' && !row.fac_pdf_factura" class="btn-icon btn-info"
-                title="Adjuntar factura PDF" @click="openSubirPdfModal(row)">
+              <button
+v-if="row.fac_estado === 'G' && !row.fac_pdf_factura"
+class="btn-icon btn-info"
+                title="Adjuntar factura PDF"
+@click="openSubirPdfModal(row)"
+>
                 <i class="fas fa-upload" />
               </button>
-              <button v-if="row.fac_estado !== 'A'" class="btn-icon btn-warning" title="Anular recibo"
-                @click="confirmarAnular(row)">
+              <button
+v-if="row.fac_estado !== 'A'"
+class="btn-icon btn-warning"
+title="Anular recibo"
+                @click="confirmarAnular(row)"
+>
                 <i class="fas fa-ban" />
               </button>
-              <button class="btn-icon btn-danger" title="Eliminar recibo" @click="confirmarEliminar(row)">
+              <button
+class="btn-icon btn-danger"
+title="Eliminar recibo"
+@click="confirmarEliminar(row)"
+>
                 <i class="fas fa-trash" />
               </button>
             </div>
@@ -178,7 +247,11 @@
     </BaseCard>
 
     <!-- Modal Crear/Editar Recibo -->
-    <Modal v-model="showModal" size="xl" :title="editMode ? 'Editar Recibo' : 'Nuevo Recibo'">
+    <Modal
+v-model="showModal"
+size="xl"
+:title="editMode ? 'Editar Recibo' : 'Nuevo Recibo'"
+>
       <form @submit.prevent="guardarFactura">
         <!-- Datos Principales -->
         <div class="form-section">
@@ -192,7 +265,13 @@
                 <i class="fas fa-hashtag" />
                 Número de Recibo
               </label>
-              <input v-model="formData.fac_numero" type="text" class="input" :disabled="editMode" readonly>
+              <input
+v-model="formData.fac_numero"
+type="text"
+class="input"
+:disabled="editMode"
+readonly
+>
             </div>
 
             <div class="form-group">
@@ -200,11 +279,20 @@
                 <i class="fas fa-user" />
                 Cliente
               </label>
-              <select v-model="formData.cli_codigo" class="select" :disabled="editMode" required>
+              <select
+v-model="formData.cli_codigo"
+class="select"
+:disabled="editMode"
+required
+>
                 <option value="">
                   Seleccione un cliente
                 </option>
-                <option v-for="cliente in clientes" :key="cliente.cli_codigo" :value="cliente.cli_codigo">
+                <option
+v-for="cliente in clientes"
+:key="cliente.cli_codigo"
+:value="cliente.cli_codigo"
+>
                   {{ cliente.nombre }} ({{ cliente.username }})
                 </option>
               </select>
@@ -215,7 +303,12 @@
                 <i class="fas fa-calendar" />
                 Fecha de Emisión
               </label>
-              <input v-model="formData.fac_fecha" type="date" class="input" required>
+              <input
+v-model="formData.fac_fecha"
+type="date"
+class="input"
+required
+>
             </div>
 
             <div class="form-group">
@@ -223,7 +316,11 @@
                 <i class="fas fa-calendar-check" />
                 Fecha de Vencimiento
               </label>
-              <input v-model="formData.fac_vencimiento" type="date" class="input">
+              <input
+v-model="formData.fac_vencimiento"
+type="date"
+class="input"
+>
             </div>
 
             <div class="form-group form-group-full">
@@ -231,8 +328,12 @@
                 <i class="fas fa-comment" />
                 Observaciones
               </label>
-              <textarea v-model="formData.fac_observaciones" class="input" rows="2"
-                placeholder="Observaciones adicionales" />
+              <textarea
+v-model="formData.fac_observaciones"
+class="input"
+rows="2"
+                placeholder="Observaciones adicionales"
+/>
             </div>
           </div>
         </div>
@@ -244,33 +345,73 @@
               <i class="fas fa-list" />
               Detalles del Recibo
             </h3>
-            <button type="button" class="btn btn-secondary btn-sm" @click="agregarDetalle">
+            <button
+type="button"
+class="btn btn-secondary btn-sm"
+@click="agregarDetalle"
+>
               <i class="fas fa-plus" />
               Agregar Línea
             </button>
           </div>
 
           <div class="detalles-container">
-            <div v-for="(detalle, index) in formData.detalles" :key="index" class="detalle-row">
+            <div
+v-for="(detalle, index) in formData.detalles"
+:key="index"
+class="detalle-row"
+>
               <div class="detalle-order">
                 {{ index + 1 }}
               </div>
               <div class="detalle-fields">
-                <input v-model="detalle.det_concepto" type="text" class="input" placeholder="Concepto o descripción"
-                  required>
-                <input v-model.number="detalle.det_cantidad" type="number" step="0.01" class="input input-small"
-                  placeholder="Cant." required @input="calcularSubtotalDetalle(detalle)">
-                <input v-model.number="detalle.det_precio_unitario" type="number" step="0.01" class="input input-medium"
-                  placeholder="Precio Unit." required @input="calcularSubtotalDetalle(detalle)">
-                <input :value="formatCurrency(detalle.det_subtotal)" type="text" class="input input-medium"
-                  placeholder="Subtotal" readonly>
+                <input
+v-model="detalle.det_concepto"
+type="text"
+class="input"
+placeholder="Concepto o descripción"
+                  required
+>
+                <input
+v-model.number="detalle.det_cantidad"
+type="number"
+step="0.01"
+class="input input-small"
+                  placeholder="Cant."
+required
+@input="calcularSubtotalDetalle(detalle)"
+>
+                <input
+v-model.number="detalle.det_precio_unitario"
+type="number"
+step="0.01"
+class="input input-medium"
+                  placeholder="Precio Unit."
+required
+@input="calcularSubtotalDetalle(detalle)"
+>
+                <input
+:value="formatCurrency(detalle.det_subtotal)"
+type="text"
+class="input input-medium"
+                  placeholder="Subtotal"
+readonly
+>
               </div>
-              <button type="button" class="btn-icon btn-danger" title="Eliminar línea" @click="eliminarDetalle(index)">
+              <button
+type="button"
+class="btn-icon btn-danger"
+title="Eliminar línea"
+@click="eliminarDetalle(index)"
+>
                 <i class="fas fa-trash" />
               </button>
             </div>
 
-            <div v-if="formData.detalles.length === 0" class="empty-detalles">
+            <div
+v-if="formData.detalles.length === 0"
+class="empty-detalles"
+>
               <i class="fas fa-inbox" />
               <p>No hay líneas agregadas. Haga clic en "Agregar Línea" para comenzar.</p>
             </div>
@@ -285,8 +426,13 @@
             <div class="total-row">
               <span class="total-label">
                 IVA (
-                <input v-model.number="tasaImpuesto" type="number" step="1" class="input-inline"
-                  @input="calcularTotales">%):
+                <input
+v-model.number="tasaImpuesto"
+type="number"
+step="1"
+class="input-inline"
+                  @input="calcularTotales"
+>%):
               </span>
               <span class="total-value">{{ formatCurrency(formData.fac_impuesto) }}</span>
             </div>
@@ -299,19 +445,34 @@
       </form>
 
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="closeModal">
+        <button
+type="button"
+class="btn btn-secondary"
+@click="closeModal"
+>
           <i class="fas fa-times" />
           Cancelar
         </button>
-        <button class="btn btn-primary" :disabled="saving || formData.detalles.length === 0" @click="guardarFactura">
-          <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-save'" />
+        <button
+class="btn btn-primary"
+:disabled="saving || formData.detalles.length === 0"
+@click="guardarFactura"
+>
+          <i
+class="fas"
+:class="saving ? 'fa-spinner fa-spin' : 'fa-save'"
+/>
           {{ saving ? 'Guardando...' : 'Guardar Recibo' }}
         </button>
       </template>
     </Modal>
 
     <!-- Modal Ver Detalle -->
-    <Modal v-model="showDetalleModal" size="lg" title="Detalle de Recibo">
+    <Modal
+v-model="showDetalleModal"
+size="lg"
+title="Detalle de Recibo"
+>
       <div v-if="facturaDetalle">
         <!-- Disclaimer en detalle -->
         <div class="alert alert-warning">
@@ -338,7 +499,10 @@
               <span class="detalle-label">Teléfono:</span>
               <span class="detalle-value">{{ facturaDetalle.cliente_telefono }}</span>
             </div>
-            <div v-if="facturaDetalle.cliente_domicilio" class="detalle-item">
+            <div
+v-if="facturaDetalle.cliente_domicilio"
+class="detalle-item"
+>
               <span class="detalle-label">Domicilio:</span>
               <span class="detalle-value">{{ facturaDetalle.cliente_domicilio }}, {{ facturaDetalle.cliente_localidad
                 }}</span>
@@ -368,26 +532,44 @@
             <div class="detalle-item">
               <span class="detalle-label">Estado:</span>
               <span :class="['badge', getStatusClass(facturaDetalle.fac_estado)]">
-                <i class="fas" :class="getStatusIcon(facturaDetalle.fac_estado)" />
+                <i
+class="fas"
+:class="getStatusIcon(facturaDetalle.fac_estado)"
+/>
                 {{ getStatusLabel(facturaDetalle.fac_estado) }}
               </span>
             </div>
-            <div v-if="facturaDetalle.fac_fecha_pago" class="detalle-item">
+            <div
+v-if="facturaDetalle.fac_fecha_pago"
+class="detalle-item"
+>
               <span class="detalle-label">Fecha de Pago:</span>
               <span class="detalle-value">{{ formatDate(facturaDetalle.fac_fecha_pago) }}</span>
             </div>
-            <div v-if="facturaDetalle.fac_metodo_pago" class="detalle-item">
+            <div
+v-if="facturaDetalle.fac_metodo_pago"
+class="detalle-item"
+>
               <span class="detalle-label">Método de Pago:</span>
               <span class="detalle-value">{{ facturaDetalle.fac_metodo_pago }}</span>
             </div>
-            <div v-if="facturaDetalle.fac_pdf_factura" class="detalle-item">
+            <div
+v-if="facturaDetalle.fac_pdf_factura"
+class="detalle-item"
+>
               <span class="detalle-label">Factura Fiscal:</span>
-              <button class="btn btn-sm btn-info" @click="verPdfFactura(facturaDetalle)">
+              <button
+class="btn btn-sm btn-info"
+@click="verPdfFactura(facturaDetalle)"
+>
                 <i class="fas fa-file-pdf" />
                 Ver Factura
               </button>
             </div>
-            <div v-if="facturaDetalle.fac_observaciones" class="detalle-item detalle-item-full">
+            <div
+v-if="facturaDetalle.fac_observaciones"
+class="detalle-item detalle-item-full"
+>
               <span class="detalle-label">Observaciones:</span>
               <span class="detalle-value">{{ facturaDetalle.fac_observaciones }}</span>
             </div>
@@ -416,7 +598,10 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="detalle in facturaDetalle.detalles" :key="detalle.det_codigo">
+              <tr
+v-for="detalle in facturaDetalle.detalles"
+:key="detalle.det_codigo"
+>
                 <td>{{ detalle.det_concepto }}</td>
                 <td class="text-right">
                   {{ detalle.det_cantidad }}
@@ -431,7 +616,10 @@
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="3" class="text-right">
+                <td
+colspan="3"
+class="text-right"
+>
                   <strong>Subtotal:</strong>
                 </td>
                 <td class="text-right">
@@ -439,7 +627,10 @@
                 </td>
               </tr>
               <tr>
-                <td colspan="3" class="text-right">
+                <td
+colspan="3"
+class="text-right"
+>
                   <strong>IVA:</strong>
                 </td>
                 <td class="text-right">
@@ -447,7 +638,10 @@
                 </td>
               </tr>
               <tr class="total-final-row">
-                <td colspan="3" class="text-right">
+                <td
+colspan="3"
+class="text-right"
+>
                   <strong>Total:</strong>
                 </td>
                 <td class="text-right">
@@ -460,7 +654,10 @@
       </div>
 
       <template #footer>
-        <button class="btn btn-secondary" @click="showDetalleModal = false">
+        <button
+class="btn btn-secondary"
+@click="showDetalleModal = false"
+>
           <i class="fas fa-times" />
           Cerrar
         </button>
@@ -468,14 +665,23 @@
     </Modal>
 
     <!-- Modal Registrar Pago -->
-    <Modal v-model="showPagarModal" size="md" title="Registrar Pago">
+    <Modal
+v-model="showPagarModal"
+size="md"
+title="Registrar Pago"
+>
       <form @submit.prevent="marcarPagada">
         <div class="form-group">
           <label class="label">
             <i class="fas fa-calendar" />
             Fecha de Pago
           </label>
-          <input v-model="pagoData.fac_fecha_pago" type="date" class="input" required>
+          <input
+v-model="pagoData.fac_fecha_pago"
+type="date"
+class="input"
+required
+>
         </div>
 
         <div class="form-group">
@@ -483,7 +689,11 @@
             <i class="fas fa-credit-card" />
             Método de Pago
           </label>
-          <select v-model="pagoData.fac_metodo_pago" class="select" required>
+          <select
+v-model="pagoData.fac_metodo_pago"
+class="select"
+required
+>
             <option value="">
               Seleccione un método
             </option>
@@ -514,20 +724,41 @@
             Adjuntar Factura Fiscal (PDF)
             <span class="form-label-optional">(Opcional)</span>
           </label>
-          <div class="file-upload-area" @click="triggerFileInput" @dragover.prevent @drop.prevent="handleFileDrop">
-            <input ref="fileInput" type="file" accept="application/pdf" hidden @change="handleFileSelect">
-            <div v-if="!pagoData.archivoFactura" class="file-upload-placeholder">
+          <div
+class="file-upload-area"
+@click="triggerFileInput"
+@dragover.prevent
+@drop.prevent="handleFileDrop"
+>
+            <input
+ref="fileInput"
+type="file"
+accept="application/pdf"
+hidden
+@change="handleFileSelect"
+>
+            <div
+v-if="!pagoData.archivoFactura"
+class="file-upload-placeholder"
+>
               <i class="fas fa-cloud-upload-alt" />
               <p>Haga clic o arrastre un archivo PDF aquí</p>
               <span class="file-upload-hint">Factura fiscal oficial (máx. 5MB)</span>
             </div>
-            <div v-else class="file-upload-selected">
+            <div
+v-else
+class="file-upload-selected"
+>
               <i class="fas fa-file-pdf" />
               <div class="file-info">
                 <span class="file-name">{{ pagoData.archivoFactura.name }}</span>
                 <span class="file-size">{{ formatFileSize(pagoData.archivoFactura.size) }}</span>
               </div>
-              <button type="button" class="file-remove-btn" @click.stop="removeFile">
+              <button
+type="button"
+class="file-remove-btn"
+@click.stop="removeFile"
+>
                 <i class="fas fa-times" />
               </button>
             </div>
@@ -540,40 +771,75 @@
       </form>
 
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="showPagarModal = false">
+        <button
+type="button"
+class="btn btn-secondary"
+@click="showPagarModal = false"
+>
           <i class="fas fa-times" />
           Cancelar
         </button>
-        <button class="btn btn-success" :disabled="saving" @click="marcarPagada">
-          <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-check'" />
+        <button
+class="btn btn-success"
+:disabled="saving"
+@click="marcarPagada"
+>
+          <i
+class="fas"
+:class="saving ? 'fa-spinner fa-spin' : 'fa-check'"
+/>
           {{ saving ? 'Procesando...' : 'Confirmar Pago' }}
         </button>
       </template>
     </Modal>
 
     <!-- Modal Subir PDF de Factura -->
-    <Modal v-model="showSubirPdfModal" size="md" title="Adjuntar Factura Fiscal">
+    <Modal
+v-model="showSubirPdfModal"
+size="md"
+title="Adjuntar Factura Fiscal"
+>
       <form @submit.prevent="subirPdfFactura">
         <div class="form-group">
           <label class="label">
             <i class="fas fa-file-pdf" />
             Archivo de Factura Fiscal (PDF)
           </label>
-          <div class="file-upload-area" @click="triggerSubirFileInput" @dragover.prevent
-            @drop.prevent="handleSubirFileDrop">
-            <input ref="subirFileInput" type="file" accept="application/pdf" hidden @change="handleSubirFileSelect">
-            <div v-if="!archivoSubir" class="file-upload-placeholder">
+          <div
+class="file-upload-area"
+@click="triggerSubirFileInput"
+@dragover.prevent
+            @drop.prevent="handleSubirFileDrop"
+>
+            <input
+ref="subirFileInput"
+type="file"
+accept="application/pdf"
+hidden
+@change="handleSubirFileSelect"
+>
+            <div
+v-if="!archivoSubir"
+class="file-upload-placeholder"
+>
               <i class="fas fa-cloud-upload-alt" />
               <p>Haga clic o arrastre un archivo PDF aquí</p>
               <span class="file-upload-hint">Factura fiscal oficial (máx. 5MB)</span>
             </div>
-            <div v-else class="file-upload-selected">
+            <div
+v-else
+class="file-upload-selected"
+>
               <i class="fas fa-file-pdf" />
               <div class="file-info">
                 <span class="file-name">{{ archivoSubir.name }}</span>
                 <span class="file-size">{{ formatFileSize(archivoSubir.size) }}</span>
               </div>
-              <button type="button" class="file-remove-btn" @click.stop="archivoSubir = null">
+              <button
+type="button"
+class="file-remove-btn"
+@click.stop="archivoSubir = null"
+>
                 <i class="fas fa-times" />
               </button>
             </div>
@@ -582,19 +848,34 @@
       </form>
 
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="showSubirPdfModal = false">
+        <button
+type="button"
+class="btn btn-secondary"
+@click="showSubirPdfModal = false"
+>
           <i class="fas fa-times" />
           Cancelar
         </button>
-        <button class="btn btn-primary" :disabled="saving || !archivoSubir" @click="subirPdfFactura">
-          <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-upload'" />
+        <button
+class="btn btn-primary"
+:disabled="saving || !archivoSubir"
+@click="subirPdfFactura"
+>
+          <i
+class="fas"
+:class="saving ? 'fa-spinner fa-spin' : 'fa-upload'"
+/>
           {{ saving ? 'Subiendo...' : 'Subir Factura' }}
         </button>
       </template>
     </Modal>
 
     <!-- Modal Confirmación Anular -->
-    <Modal v-model="showAnularModal" size="sm" title="Anular Recibo">
+    <Modal
+v-model="showAnularModal"
+size="sm"
+title="Anular Recibo"
+>
       <p class="confirm-message">
         ¿Está seguro de que desea anular el recibo <strong>{{ facturaAnular?.fac_numero }}</strong>?
       </p>
@@ -604,19 +885,33 @@
       </div>
 
       <template #footer>
-        <button class="btn btn-secondary" @click="showAnularModal = false">
+        <button
+class="btn btn-secondary"
+@click="showAnularModal = false"
+>
           <i class="fas fa-times" />
           Cancelar
         </button>
-        <button class="btn btn-warning" :disabled="saving" @click="anularFactura">
-          <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-ban'" />
+        <button
+class="btn btn-warning"
+:disabled="saving"
+@click="anularFactura"
+>
+          <i
+class="fas"
+:class="saving ? 'fa-spinner fa-spin' : 'fa-ban'"
+/>
           {{ saving ? 'Anulando...' : 'Anular Recibo' }}
         </button>
       </template>
     </Modal>
 
     <!-- Modal Confirmación Eliminar -->
-    <Modal v-model="showDeleteModal" size="sm" title="Eliminar Recibo">
+    <Modal
+v-model="showDeleteModal"
+size="sm"
+title="Eliminar Recibo"
+>
       <p class="confirm-message">
         ¿Está seguro de que desea eliminar el recibo <strong>{{ facturaEliminar?.fac_numero }}</strong>?
       </p>
@@ -626,12 +921,22 @@
       </div>
 
       <template #footer>
-        <button class="btn btn-secondary" @click="showDeleteModal = false">
+        <button
+class="btn btn-secondary"
+@click="showDeleteModal = false"
+>
           <i class="fas fa-times" />
           Cancelar
         </button>
-        <button class="btn btn-danger" :disabled="saving" @click="eliminarFactura">
-          <i class="fas" :class="saving ? 'fa-spinner fa-spin' : 'fa-trash'" />
+        <button
+class="btn btn-danger"
+:disabled="saving"
+@click="eliminarFactura"
+>
+          <i
+class="fas"
+:class="saving ? 'fa-spinner fa-spin' : 'fa-trash'"
+/>
           {{ saving ? 'Eliminando...' : 'Eliminar Recibo' }}
         </button>
       </template>

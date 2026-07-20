@@ -3,7 +3,10 @@
     v-if="localShow"
     class="modal-backdrop"
   >
-    <div class="modal max-w-2xl max-h-[90vh] flex flex-col" @click.stop>
+    <div
+class="modal max-w-2xl max-h-[90vh] flex flex-col"
+@click.stop
+>
       <div class="modal-header flex-shrink-0">
         <h3 class="text-lg font-semibold text-text-primary">
 {{ isEditing ? 'Editar Radio' : 'Nueva Radio' }}
@@ -110,7 +113,10 @@ class="text-danger-400 text-xs mt-1"
             @drop.prevent="(e) => handleDrop(e, 'rad_imagen')"
           >
             <!-- Preview de imagen existente -->
-            <div v-if="formData.rad_imagen && !imagePreview.rad_imagen" class="image-preview-container">
+            <div
+v-if="formData.rad_imagen && !imagePreview.rad_imagen"
+class="image-preview-container"
+>
               <img
                 :src="formData.rad_imagen"
                 alt="Preview"
@@ -138,7 +144,10 @@ class="text-danger-400 text-xs mt-1"
             </div>
 
             <!-- Preview de imagen local (antes de subir) -->
-            <div v-else-if="imagePreview.rad_imagen" class="image-preview-container pending">
+            <div
+v-else-if="imagePreview.rad_imagen"
+class="image-preview-container pending"
+>
               <img
                 :src="imagePreview.rad_imagen.preview"
                 alt="Preview"
@@ -148,16 +157,28 @@ class="text-danger-400 text-xs mt-1"
                 <span class="image-name">{{ truncateFileName(imagePreview.rad_imagen.file.name, 20) }}</span>
                 <span class="image-size">
                   {{ formatSize(imagePreview.rad_imagen.file.size) }}
-                  <span v-if="imagePreview.rad_imagen.compressedSize" class="compressed">
+                  <span
+v-if="imagePreview.rad_imagen.compressedSize"
+class="compressed"
+>
                     → {{ formatSize(imagePreview.rad_imagen.compressedSize) }}
                   </span>
                 </span>
               </div>
               <!-- Barra de progreso -->
-              <div v-if="uploading.rad_imagen" class="upload-progress-bar">
-                <div class="progress-fill" :style="{ width: uploadProgress.rad_imagen + '%' }" />
+              <div
+v-if="uploading.rad_imagen"
+class="upload-progress-bar"
+>
+                <div
+class="progress-fill"
+:style="{ width: uploadProgress.rad_imagen + '%' }"
+/>
               </div>
-              <div v-if="!uploading.rad_imagen" class="image-overlay">
+              <div
+v-if="!uploading.rad_imagen"
+class="image-overlay"
+>
                 <button
                   type="button"
                   class="btn btn-success btn-sm"
@@ -176,10 +197,17 @@ class="text-danger-400 text-xs mt-1"
             </div>
 
             <!-- Dropzone vacío -->
-            <div v-else class="dropzone-empty">
+            <div
+v-else
+class="dropzone-empty"
+>
               <i class="fas fa-cloud-upload-alt dropzone-icon" />
-              <p class="dropzone-text">Arrastra una imagen aquí</p>
-              <p class="dropzone-hint">o haz clic para seleccionar</p>
+              <p class="dropzone-text">
+Arrastra una imagen aquí
+</p>
+              <p class="dropzone-hint">
+o haz clic para seleccionar
+</p>
               <input
                 ref="fileInputRadImagen"
                 type="file"
@@ -200,7 +228,10 @@ class="text-danger-400 text-xs mt-1"
               :disabled="uploading.rad_imagen"
             >
           </div>
-          <span v-if="errors.rad_imagen" class="text-danger-400 text-xs mt-1">{{ errors.rad_imagen }}</span>
+          <span
+v-if="errors.rad_imagen"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_imagen }}</span>
         </div>
 
         <!-- Enlace -->
@@ -236,7 +267,10 @@ class="text-danger-400 text-xs mt-1"
             @drop.prevent="(e) => handleDrop(e, 'rad_imgal1')"
           >
             <!-- Preview de imagen existente -->
-            <div v-if="formData.rad_imgal1 && !imagePreview.rad_imgal1" class="image-preview-container">
+            <div
+v-if="formData.rad_imgal1 && !imagePreview.rad_imgal1"
+class="image-preview-container"
+>
               <img
                 :src="formData.rad_imgal1"
                 alt="Preview Alt 1"
@@ -244,35 +278,72 @@ class="text-danger-400 text-xs mt-1"
                 @error="handleImageError"
               >
               <div class="image-overlay">
-                <button type="button" class="btn btn-ghost btn-icon btn-sm" @click="triggerFileInput('rad_imgal1')">
+                <button
+type="button"
+class="btn btn-ghost btn-icon btn-sm"
+@click="triggerFileInput('rad_imgal1')"
+>
                   <i class="fas fa-camera" />
                 </button>
-                <button type="button" class="btn btn-ghost btn-icon btn-sm text-danger-400" @click="clearImage('rad_imgal1')">
+                <button
+type="button"
+class="btn btn-ghost btn-icon btn-sm text-danger-400"
+@click="clearImage('rad_imgal1')"
+>
                   <i class="fas fa-trash" />
                 </button>
               </div>
             </div>
 
             <!-- Preview de imagen local -->
-            <div v-else-if="imagePreview.rad_imgal1" class="image-preview-container pending">
-              <img :src="imagePreview.rad_imgal1.preview" alt="Preview" class="image-preview">
-              <div v-if="uploading.rad_imgal1" class="upload-progress-bar">
-                <div class="progress-fill" :style="{ width: uploadProgress.rad_imgal1 + '%' }" />
+            <div
+v-else-if="imagePreview.rad_imgal1"
+class="image-preview-container pending"
+>
+              <img
+:src="imagePreview.rad_imgal1.preview"
+alt="Preview"
+class="image-preview"
+>
+              <div
+v-if="uploading.rad_imgal1"
+class="upload-progress-bar"
+>
+                <div
+class="progress-fill"
+:style="{ width: uploadProgress.rad_imgal1 + '%' }"
+/>
               </div>
-              <div v-if="!uploading.rad_imgal1" class="image-overlay">
-                <button type="button" class="btn btn-success btn-sm" @click="confirmUpload('rad_imgal1')">
+              <div
+v-if="!uploading.rad_imgal1"
+class="image-overlay"
+>
+                <button
+type="button"
+class="btn btn-success btn-sm"
+@click="confirmUpload('rad_imgal1')"
+>
                   <i class="fas fa-check" />
                 </button>
-                <button type="button" class="btn btn-danger btn-sm" @click="cancelPreview('rad_imgal1')">
+                <button
+type="button"
+class="btn btn-danger btn-sm"
+@click="cancelPreview('rad_imgal1')"
+>
                   <i class="fas fa-times" />
                 </button>
               </div>
             </div>
 
             <!-- Dropzone vacío -->
-            <div v-else class="dropzone-empty">
+            <div
+v-else
+class="dropzone-empty"
+>
               <i class="fas fa-image dropzone-icon" />
-              <p class="dropzone-hint">Arrastra o selecciona</p>
+              <p class="dropzone-hint">
+Arrastra o selecciona
+</p>
               <input
                 ref="fileInputRadImgal1"
                 type="file"
@@ -282,7 +353,10 @@ class="text-danger-400 text-xs mt-1"
               >
             </div>
           </div>
-          <span v-if="errors.rad_imgal1" class="text-danger-400 text-xs mt-1">{{ errors.rad_imgal1 }}</span>
+          <span
+v-if="errors.rad_imgal1"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_imgal1 }}</span>
         </div>
 
         <!-- Imagen Alternativa 2 -->
@@ -303,7 +377,10 @@ class="text-danger-400 text-xs mt-1"
             @drop.prevent="(e) => handleDrop(e, 'rad_imgal2')"
           >
             <!-- Preview de imagen existente -->
-            <div v-if="formData.rad_imgal2 && !imagePreview.rad_imgal2" class="image-preview-container">
+            <div
+v-if="formData.rad_imgal2 && !imagePreview.rad_imgal2"
+class="image-preview-container"
+>
               <img
                 :src="formData.rad_imgal2"
                 alt="Preview Alt 2"
@@ -311,35 +388,72 @@ class="text-danger-400 text-xs mt-1"
                 @error="handleImageError"
               >
               <div class="image-overlay">
-                <button type="button" class="btn btn-ghost btn-icon btn-sm" @click="triggerFileInput('rad_imgal2')">
+                <button
+type="button"
+class="btn btn-ghost btn-icon btn-sm"
+@click="triggerFileInput('rad_imgal2')"
+>
                   <i class="fas fa-camera" />
                 </button>
-                <button type="button" class="btn btn-ghost btn-icon btn-sm text-danger-400" @click="clearImage('rad_imgal2')">
+                <button
+type="button"
+class="btn btn-ghost btn-icon btn-sm text-danger-400"
+@click="clearImage('rad_imgal2')"
+>
                   <i class="fas fa-trash" />
                 </button>
               </div>
             </div>
 
             <!-- Preview de imagen local -->
-            <div v-else-if="imagePreview.rad_imgal2" class="image-preview-container pending">
-              <img :src="imagePreview.rad_imgal2.preview" alt="Preview" class="image-preview">
-              <div v-if="uploading.rad_imgal2" class="upload-progress-bar">
-                <div class="progress-fill" :style="{ width: uploadProgress.rad_imgal2 + '%' }" />
+            <div
+v-else-if="imagePreview.rad_imgal2"
+class="image-preview-container pending"
+>
+              <img
+:src="imagePreview.rad_imgal2.preview"
+alt="Preview"
+class="image-preview"
+>
+              <div
+v-if="uploading.rad_imgal2"
+class="upload-progress-bar"
+>
+                <div
+class="progress-fill"
+:style="{ width: uploadProgress.rad_imgal2 + '%' }"
+/>
               </div>
-              <div v-if="!uploading.rad_imgal2" class="image-overlay">
-                <button type="button" class="btn btn-success btn-sm" @click="confirmUpload('rad_imgal2')">
+              <div
+v-if="!uploading.rad_imgal2"
+class="image-overlay"
+>
+                <button
+type="button"
+class="btn btn-success btn-sm"
+@click="confirmUpload('rad_imgal2')"
+>
                   <i class="fas fa-check" />
                 </button>
-                <button type="button" class="btn btn-danger btn-sm" @click="cancelPreview('rad_imgal2')">
+                <button
+type="button"
+class="btn btn-danger btn-sm"
+@click="cancelPreview('rad_imgal2')"
+>
                   <i class="fas fa-times" />
                 </button>
               </div>
             </div>
 
             <!-- Dropzone vacío -->
-            <div v-else class="dropzone-empty">
+            <div
+v-else
+class="dropzone-empty"
+>
               <i class="fas fa-image dropzone-icon" />
-              <p class="dropzone-hint">Arrastra o selecciona</p>
+              <p class="dropzone-hint">
+Arrastra o selecciona
+</p>
               <input
                 ref="fileInputRadImgal2"
                 type="file"
@@ -349,7 +463,10 @@ class="text-danger-400 text-xs mt-1"
               >
             </div>
           </div>
-          <span v-if="errors.rad_imgal2" class="text-danger-400 text-xs mt-1">{{ errors.rad_imgal2 }}</span>
+          <span
+v-if="errors.rad_imgal2"
+class="text-danger-400 text-xs mt-1"
+>{{ errors.rad_imgal2 }}</span>
         </div>
       </div>
       </form>

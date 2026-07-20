@@ -684,10 +684,10 @@ const checkConfigurationComplete = () => {
     completionNotified.value = true
     showAlert('Configuración completada. Todos los datos han sido configurados.', 'notification-success')
     // after showing success navigate to home and reload
-    router.push('/').catch(()=>{})
-    setTimeout(() => {
-      window.location.reload()
-    }, 500) // give time for navigation
+    // router.push('/').catch(()=>{})
+    // setTimeout(() => {
+    //   window.location.reload()
+    // }, 500) // give time for navigation
   }
 }
 

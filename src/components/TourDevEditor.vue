@@ -157,7 +157,9 @@
                 class="tour-dev-step__header"
                 @click="toggleStep(index)"
               >
-                <div class="tour-dev-step__num">{{ index + 1 }}</div>
+                <div class="tour-dev-step__num">
+{{ index + 1 }}
+</div>
                 <div class="tour-dev-step__summary">
                   <span class="tour-dev-step__title">{{ step.popover?.title || '(sin título)' }}</span>
                   <span
@@ -175,7 +177,10 @@
                     title="Capturar elemento con picker"
                     @click.stop="activatePickerForStep(index)"
                   >
-                    <i class="fa fa-crosshairs" :class="{ 'text-yellow-400': pickerMode && pickerTargetStep === index }" />
+                    <i
+class="fa fa-crosshairs"
+:class="{ 'text-yellow-400': pickerMode && pickerTargetStep === index }"
+/>
                   </button>
                   <button
                     class="tour-dev-icon-btn"
@@ -285,12 +290,24 @@
                       v-model="step.popover.side"
                       class="tour-dev-select"
                     >
-                      <option value="">auto</option>
-                      <option value="top">top</option>
-                      <option value="bottom">bottom</option>
-                      <option value="left">left</option>
-                      <option value="right">right</option>
-                      <option value="over">over (overlay)</option>
+                      <option value="">
+auto
+</option>
+                      <option value="top">
+top
+</option>
+                      <option value="bottom">
+bottom
+</option>
+                      <option value="left">
+left
+</option>
+                      <option value="right">
+right
+</option>
+                      <option value="over">
+over (overlay)
+</option>
                     </select>
                   </div>
                   <div class="tour-dev-field__half">
@@ -301,9 +318,15 @@
                       v-model="step.popover.align"
                       class="tour-dev-select"
                     >
-                      <option value="start">start</option>
-                      <option value="center">center</option>
-                      <option value="end">end</option>
+                      <option value="start">
+start
+</option>
+                      <option value="center">
+center
+</option>
+                      <option value="end">
+end
+</option>
                     </select>
                   </div>
                 </div>

@@ -256,7 +256,10 @@ class="archivo-icon"
         @dragover.prevent
         @drop.prevent="onDrop"
       >
-        <div v-if="archivosParaSubir.length === 0" class="dropzone-content">
+        <div
+v-if="archivosParaSubir.length === 0"
+class="dropzone-content"
+>
           <i class="fas fa-cloud-upload-alt dropzone-icon" />
           <p class="dropzone-text">
             Arrastra y suelta tus archivos aquí
@@ -275,7 +278,10 @@ class="archivo-icon"
         </div>
 
         <!-- Lista de archivos seleccionados -->
-        <div v-else class="files-preview">
+        <div
+v-else
+class="files-preview"
+>
           <div class="files-header">
             <span class="files-count">
               <i class="fas fa-files" />
@@ -306,30 +312,49 @@ class="archivo-icon"
                   :alt="archivo.file.name"
                   class="preview-image"
                 >
-                <div v-else class="preview-icon" :class="getFileIconClass(archivo.file.name)">
+                <div
+v-else
+class="preview-icon"
+:class="getFileIconClass(archivo.file.name)"
+>
                   <i :class="getFileIcon(archivo.file.name)" />
                 </div>
               </div>
 
               <!-- Info del archivo -->
               <div class="file-info">
-                <p class="file-name" :title="archivo.file.name">
+                <p
+class="file-name"
+:title="archivo.file.name"
+>
                   {{ truncateFileName(archivo.file.name, 30) }}
                 </p>
                 <p class="file-size">
                   {{ formatSize(archivo.file.size) }}
-                  <span v-if="archivo.compressedSize" class="compressed-badge">
+                  <span
+v-if="archivo.compressedSize"
+class="compressed-badge"
+>
                     → {{ formatSize(archivo.compressedSize) }} ({{ calcularAhorro(archivo.file.size, archivo.compressedSize) }}% menos)
                   </span>
                 </p>
                 <!-- Barra de progreso individual -->
-                <div v-if="archivo.uploading" class="file-progress">
+                <div
+v-if="archivo.uploading"
+class="file-progress"
+>
                   <div class="progress-bar-mini">
-                    <div class="progress-fill-mini" :style="{ width: archivo.progress + '%' }" />
+                    <div
+class="progress-fill-mini"
+:style="{ width: archivo.progress + '%' }"
+/>
                   </div>
                   <span class="progress-text-mini">{{ archivo.progress }}%</span>
                 </div>
-                <p v-if="archivo.error" class="file-error-text">
+                <p
+v-if="archivo.error"
+class="file-error-text"
+>
                   <i class="fas fa-exclamation-circle" /> {{ archivo.error }}
                 </p>
               </div>
@@ -345,8 +370,14 @@ class="archivo-icon"
                 >
                   <i class="fas fa-times" />
                 </button>
-                <i v-if="archivo.uploaded" class="fas fa-check-circle file-success-icon" />
-                <i v-if="archivo.uploading" class="fas fa-spinner fa-spin file-loading-icon" />
+                <i
+v-if="archivo.uploaded"
+class="fas fa-check-circle file-success-icon"
+/>
+                <i
+v-if="archivo.uploading"
+class="fas fa-spinner fa-spin file-loading-icon"
+/>
               </div>
             </div>
           </div>
@@ -365,7 +396,10 @@ class="archivo-icon"
       </div>
 
       <!-- Opciones de compresión -->
-      <div v-if="tieneImagenes" class="compression-options">
+      <div
+v-if="tieneImagenes"
+class="compression-options"
+>
         <label class="checkbox-label">
           <input
             v-model="comprimirImagenes"
@@ -377,7 +411,10 @@ class="archivo-icon"
             Comprimir imágenes automáticamente
           </span>
         </label>
-        <div v-if="comprimirImagenes" class="compression-settings">
+        <div
+v-if="comprimirImagenes"
+class="compression-settings"
+>
           <label class="form-label-small">Calidad de compresión</label>
           <input
             v-model.number="calidadCompresion"
@@ -403,7 +440,10 @@ class="archivo-icon"
       </div>
 
       <!-- Progreso total -->
-      <div v-if="uploadingFile" class="upload-total-progress">
+      <div
+v-if="uploadingFile"
+class="upload-total-progress"
+>
         <div class="progress-header">
           <span class="progress-label">Progreso total</span>
           <span class="progress-stats">
@@ -411,7 +451,10 @@ class="archivo-icon"
           </span>
         </div>
         <div class="progress-bar">
-          <div class="progress-fill" :style="{ width: progresoTotal + '%' }" />
+          <div
+class="progress-fill"
+:style="{ width: progresoTotal + '%' }"
+/>
         </div>
         <span class="progress-text">{{ progresoTotal }}%</span>
       </div>
@@ -429,8 +472,14 @@ class="archivo-icon"
           :disabled="archivosParaSubir.length === 0 || uploadingFile"
           @click="subirArchivos"
         >
-          <i v-if="uploadingFile" class="fas fa-spinner fa-spin" />
-          <i v-else class="fas fa-cloud-upload-alt" />
+          <i
+v-if="uploadingFile"
+class="fas fa-spinner fa-spin"
+/>
+          <i
+v-else
+class="fas fa-cloud-upload-alt"
+/>
           {{ uploadingFile ? `Subiendo... (${archivosSubidos}/${archivosParaSubir.length})` : `Subir ${archivosParaSubir.length} archivo(s)` }}
         </button>
       </template>

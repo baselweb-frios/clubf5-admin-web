@@ -219,8 +219,14 @@ const handleSubmit = async () => {
   loading.value = true
 
   try {
-    await authStore.login(form.username, form.password)
-    emit('login-success')
+    const response = await authStore.login(form.username, form.password)
+    
+    // Emitir los tokens al componente padre
+    emit('login-success', {
+      token: authStore.token,
+      refreshToken: authStore.refreshToken,
+      user: authStore.user
+    })
   } catch (err) {
     error.value = err || 'Error al iniciar sesion. Verifica tus credenciales.'
     console.error('Login error:', err)

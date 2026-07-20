@@ -111,7 +111,10 @@
     </div>
 
     <!-- Vista Semanal -->
-    <div v-if="view === 'week'" class="calendar-week">
+    <div
+v-if="view === 'week'"
+class="calendar-week"
+>
       <div class="grid grid-cols-8 gap-2">
         <!-- Columna de horas -->
         <div class="time-column">
@@ -133,7 +136,10 @@
           :key="day.value"
           class="day-column"
         >
-          <div class="day-header" :class="isToday(day.value) ? 'bg-primary-500/20' : ''">
+          <div
+class="day-header"
+:class="isToday(day.value) ? 'bg-primary-500/20' : ''"
+>
             <div class="font-semibold">
               {{ day.text }}
             </div>
@@ -181,7 +187,10 @@
     </div>
 
     <!-- Vista de Día -->
-    <div v-else class="calendar-day">
+    <div
+v-else
+class="calendar-day"
+>
       <div class="day-selector mb-4">
         <button
           v-for="day in weekDays"

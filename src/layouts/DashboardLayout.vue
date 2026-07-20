@@ -6,6 +6,7 @@
         'fixed left-0 top-0 h-screen z-fixed',
         'bg-dark-secondary border-r border-dark-border',
         'flex flex-col transition-all duration-300 ease-apple',
+        'shadow-lg shadow-black/20',
         sidebarOpen ? 'w-64' : 'w-20',
         isMobile && !sidebarOpen ? '-translate-x-full' : 'translate-x-0'
       ]"
@@ -13,16 +14,16 @@
       <!-- Sidebar Header -->
       <div class="h-16 flex items-center px-4 border-b border-dark-border">
         <router-link
-to="/"
-class="flex items-center gap-3"
->
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-purple flex-center flex-shrink-0">
+          to="/"
+          class="flex items-center gap-3 group"
+        >
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-purple flex-center flex-shrink-0 shadow-lg shadow-primary-500/30 group-hover:shadow-primary-500/50 transition-shadow duration-300">
             <span class="text-lg font-bold text-white">C5</span>
           </div>
           <span
             :class="[
-              'font-semibold text-text-primary whitespace-nowrap transition-opacity duration-200',
-              sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'
+              'font-semibold text-text-primary whitespace-nowrap transition-all duration-200',
+              sidebarOpen ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0 overflow-hidden'
             ]"
           >
             Club F5
@@ -31,33 +32,35 @@ class="flex items-center gap-3"
       </div>
 
       <!-- Sidebar Nav -->
-      <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+      <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-thin scrollbar-thumb-dark-hover scrollbar-track-transparent">
         <router-link
           v-for="link in sidebarLinks"
           :key="link.name"
           :to="link.path"
           :class="[
-            'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
+            'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
             'text-sm font-medium',
             isActiveRoute(link.path)
-              ? 'bg-primary-500/10 text-primary-400'
-              : 'text-text-secondary hover:bg-dark-hover hover:text-text-primary'
+              ? 'bg-primary-500/10 text-primary-400 shadow-inner shadow-primary-500/5'
+              : 'text-text-secondary hover:bg-dark-hover hover:text-text-primary hover:shadow-sm hover:shadow-black/10'
           ]"
         >
           <span class="w-5 h-5 flex-center flex-shrink-0">
-            <component
-:is="getIcon(link.icon)"
-class="w-5 h-5"
-/>
+            <i :class="[getIconClass(link.icon), 'text-base']"></i>
           </span>
           <span
             :class="[
-              'whitespace-nowrap transition-opacity duration-200',
-              sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'
+              'whitespace-nowrap transition-all duration-200',
+              sidebarOpen ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0 overflow-hidden'
             ]"
           >
             {{ link.name }}
           </span>
+          <!-- Active indicator -->
+          <span
+            v-if="isActiveRoute(link.path)"
+            class="ml-auto w-1 h-5 rounded-full bg-primary-400"
+          ></span>
         </router-link>
       </nav>
 
@@ -67,27 +70,16 @@ class="w-5 h-5"
           :class="[
             'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg',
             'text-sm font-medium text-text-secondary',
-            'hover:bg-danger-500/10 hover:text-danger-400 transition-all duration-200'
+            'hover:bg-danger-500/10 hover:text-danger-400 transition-all duration-200',
+            'group'
           ]"
           @click="logout"
         >
-          <svg
-class="w-5 h-5 flex-shrink-0"
-fill="none"
-stroke="currentColor"
-viewBox="0 0 24 24"
->
-            <path
-stroke-linecap="round"
-stroke-linejoin="round"
-stroke-width="2"
-d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-/>
-          </svg>
+          <i class="fa-solid fa-right-from-bracket w-5 h-5 flex-center flex-shrink-0 text-base"></i>
           <span
             :class="[
-              'whitespace-nowrap transition-opacity duration-200',
-              sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'
+              'whitespace-nowrap transition-all duration-200',
+              sidebarOpen ? 'opacity-100 max-w-[150px]' : 'opacity-0 max-w-0 overflow-hidden'
             ]"
           >
             Cerrar sesion
@@ -105,86 +97,55 @@ d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3
       ]"
     >
       <!-- Topbar -->
-      <header class="sticky top-0 z-sticky h-16 bg-dark-secondary/80 backdrop-blur-xl border-b border-dark-border">
+      <header class="sticky top-0 z-sticky h-16 bg-dark-secondary/80 backdrop-blur-xl border-b border-dark-border shadow-sm shadow-black/10">
         <div class="h-full px-4 flex-between">
           <!-- Left: Menu Toggle -->
           <button
-            class="btn btn-ghost btn-icon"
+            class="btn btn-ghost btn-icon hover:bg-dark-hover rounded-lg transition-all duration-200"
             @click="toggleSidebar"
           >
-            <svg
-class="w-6 h-6"
-fill="none"
-stroke="currentColor"
-viewBox="0 0 24 24"
->
-              <path
-stroke-linecap="round"
-stroke-linejoin="round"
-stroke-width="2"
-d="M4 6h16M4 12h16M4 18h16"
-/>
-            </svg>
+            <i class="fa-solid fa-bars text-xl text-text-secondary"></i>
           </button>
 
           <!-- Right: User Menu -->
           <div class="relative">
             <button
-              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-dark-hover transition-colors"
+              class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-dark-hover transition-all duration-200 group"
               @click.stop="toggleUserMenu"
             >
-              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-purple flex-center">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-purple flex-center shadow-md shadow-primary-500/20 group-hover:shadow-primary-500/40 transition-shadow duration-300">
                 <span class="text-sm font-medium text-white">{{ userInitials }}</span>
               </div>
               <span class="hidden sm:block text-sm font-medium text-text-primary">
                 {{ currentUser?.Nombre || 'Usuario' }}
               </span>
-              <svg
-                :class="['w-4 h-4 text-text-tertiary transition-transform duration-200', showUserMenu ? 'rotate-180' : '']"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-stroke-linecap="round"
-stroke-linejoin="round"
-stroke-width="2"
-d="M19 9l-7 7-7-7"
-/>
-              </svg>
+              <i
+                :class="[
+                  'fa-solid fa-chevron-down text-xs text-text-tertiary transition-transform duration-200',
+                  showUserMenu ? 'rotate-180' : ''
+                ]"
+              ></i>
             </button>
 
             <!-- Dropdown -->
             <transition
               enter-active-class="transition duration-200 ease-out"
-              enter-from-class="opacity-0 scale-95"
-              enter-to-class="opacity-100 scale-100"
+              enter-from-class="opacity-0 scale-95 translate-y-[-4px]"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
               leave-active-class="transition duration-150 ease-in"
-              leave-from-class="opacity-100 scale-100"
-              leave-to-class="opacity-0 scale-95"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 translate-y-[-4px]"
             >
               <div
                 v-if="showUserMenu"
                 v-click-outside="closeUserMenu"
-                class="absolute right-0 mt-2 w-48 bg-dark-elevated rounded-xl border border-dark-border shadow-xl overflow-hidden"
+                class="absolute right-0 mt-2 w-52 bg-dark-elevated rounded-xl border border-dark-border shadow-xl shadow-black/30 overflow-hidden"
               >
                 <button
                   class="w-full flex items-center gap-3 px-4 py-3 text-sm text-text-secondary hover:bg-dark-hover hover:text-text-primary transition-colors"
                   @click="openProfileModal"
                 >
-                  <svg
-class="w-4 h-4"
-fill="none"
-stroke="currentColor"
-viewBox="0 0 24 24"
->
-                    <path
-stroke-linecap="round"
-stroke-linejoin="round"
-stroke-width="2"
-d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-/>
-                  </svg>
+                  <i class="fa-solid fa-user w-4 h-4 flex-center"></i>
                   Perfil
                 </button>
                 <router-link
@@ -193,25 +154,7 @@ d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   class="w-full flex items-center gap-3 px-4 py-3 text-sm text-text-secondary hover:bg-dark-hover hover:text-text-primary transition-colors"
                   @click="closeUserMenu"
                 >
-                  <svg
-class="w-4 h-4"
-fill="none"
-stroke="currentColor"
-viewBox="0 0 24 24"
->
-                    <path
-stroke-linecap="round"
-stroke-linejoin="round"
-stroke-width="2"
-d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-/>
-                    <path
-stroke-linecap="round"
-stroke-linejoin="round"
-stroke-width="2"
-d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-/>
-                  </svg>
+                  <i class="fa-solid fa-gear w-4 h-4 flex-center"></i>
                   Configuracion
                 </router-link>
                 <div class="border-t border-dark-border" />
@@ -219,19 +162,7 @@ d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                   class="w-full flex items-center gap-3 px-4 py-3 text-sm text-danger-400 hover:bg-danger-500/10 transition-colors"
                   @click="logout"
                 >
-                  <svg
-class="w-4 h-4"
-fill="none"
-stroke="currentColor"
-viewBox="0 0 24 24"
->
-                    <path
-stroke-linecap="round"
-stroke-linejoin="round"
-stroke-width="2"
-d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-/>
-                  </svg>
+                  <i class="fa-solid fa-right-from-bracket w-4 h-4 flex-center"></i>
                   Cerrar sesion
                 </button>
               </div>
@@ -246,10 +177,16 @@ d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3
       </main>
 
       <!-- Footer -->
-      <footer class="py-4 px-6 border-t border-dark-border">
+      <footer class="py-4 px-6 border-t border-dark-border bg-dark-secondary/50">
         <div class="flex-between flex-wrap gap-4 text-sm text-text-tertiary">
-          <p>2024 Club F5. Todos los derechos reservados.</p>
-          <p>v{{ appVersion }}</p>
+          <p class="flex items-center gap-2">
+            <i class="fa-regular fa-copyright text-xs"></i>
+            2024 Club F5. Todos los derechos reservados.
+          </p>
+          <p class="flex items-center gap-2">
+            <i class="fa-solid fa-code-branch text-xs"></i>
+            v{{ appVersion }}
+          </p>
         </div>
       </footer>
     </div>
@@ -265,7 +202,7 @@ d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3
     >
       <div
         v-if="sidebarOpen && isMobile"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
         @click="closeSidebar"
       />
     </transition>
@@ -280,7 +217,7 @@ d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch, h } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import ProfileModal from '@/components/ProfileModal.vue'
@@ -313,44 +250,25 @@ watch(
   }
 )
 
-// Icon components
-const icons = {
-  'chart-pie-36': () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z' }),
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z' })
-  ]),
-  'building': () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4' })
-  ]),
-  'music': () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3' })
-  ]),
-  'bullhorn': () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z' })
-  ]),
-  'file-invoice': () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' })
-  ]),
-  'users': () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' })
-  ]),
-  'cog': () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' }),
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M15 12a3 3 0 11-6 0 3 3 0 016 0z' })
-  ]),
-  'document': () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z' })
-  ]),
-  'list-alt': () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
-    h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' })
-  ])
-  // ,
-  // 'cloud': () => h('svg', { fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
-  //   h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2', d: 'M3 15a4 4 0 004 4h9a5 5 0 10-.1-10A7 7 0 105 14.9' })
-  // ])
+// Font Awesome icon mapping
+const iconMap = {
+  'chart-pie-36': 'fa-solid fa-chart-pie',
+  'building': 'fa-solid fa-building',
+  'music': 'fa-solid fa-music',
+  'bullhorn': 'fa-solid fa-bullhorn',
+  'file-invoice': 'fa-solid fa-file-invoice',
+  'users': 'fa-solid fa-users',
+  'cog': 'fa-solid fa-gear',
+  'document': 'fa-solid fa-file-lines',
+  'list-alt': 'fa-solid fa-list',
+  'web-editor': 'fa-solid fa-pen-ruler',
+  'folder-tree': 'fa-solid fa-folder-tree',
+  'lab-email': 'fa fa-flask',
+  'log-bug': 'fa-solid fa-bug',
+  'gear': 'fa-solid fa-gear'
 }
 
-const getIcon = (iconName) => icons[iconName] || icons['document']
+const getIconClass = (iconName) => iconMap[iconName] || 'fa-solid fa-file'
 
 const sidebarLinks = computed(() => {
   const userRole = currentUser.value?.role
@@ -375,10 +293,10 @@ const sidebarLinks = computed(() => {
     links.push({ name: 'Recibos', icon: 'document', path: '/facturasAdmin' })
     links.push({ name: 'Paquetes y Precios', icon: 'list-alt', path: '/paquetes' })
     links.push({ name: 'Locutores (Voces IA)', icon: 'cog', path: '/voces-elevenlabs' })
-    links.push({ name: 'Editor de pagina', icon: 'building', path: '/landing-editor' })
-    links.push({ name: 'Logs del Sistema', icon: 'document', path: '/event-log' })
-    links.push({ name: 'Sistema de archivos (OBS)', icon: 'document', path: '/obs-api-console' })
-    links.push({ name: 'Banco de Pruebas de Email', icon: 'document', path: '/email-test' })
+    links.push({ name: 'Editor de pagina', icon: 'web-editor', path: '/landing-editor' })
+    links.push({ name: 'Sistema de archivos (OBS)', icon: 'folder-tree', path: '/obs-api-console' })
+    links.push({ name: 'Laboratorio Email', icon: 'lab-email', path: '/email-test' })
+    links.push({ name: 'Logs', icon: 'log-bug', path: '/event-log' })
   }
 
   return links
@@ -489,5 +407,25 @@ const vClickOutside = {
 </script>
 
 <style scoped>
-/* No custom styles needed */
+/* Custom scrollbar styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
 </style>

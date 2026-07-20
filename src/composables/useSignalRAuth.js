@@ -85,7 +85,11 @@ export function useSignalRAuth() {
 
         sharedConnection = new signalR.HubConnectionBuilder()
           .withUrl(hubUrl, {
-            accessTokenFactory: () => token
+            // Releer el token en cada invocacion: SignalR llama accessTokenFactory
+            // en cada reconexion automatica. Si usaramos la variable local `token`
+            // (fijada por closure), un JWT expirado provocaria 401 en los reintentos
+            // y SignalR lo trataria como error terminal (deja de reconectar).
+            accessTokenFactory: () => localStorage.getItem('token') || localStorage.getItem('access_token')
             // Nota: No usar skipNegotiation para permitir que el servidor negocie el transporte
             // El servidor puede usar WebSockets, SSE o Long Polling según disponibilidad
           })
@@ -423,7 +427,9 @@ export function useSignalRAuth() {
         })
 
         sharedConnection.onclose((error) => {
-          console.error('[SignalR] Conexion cerrada:', error)
+          // Log explicito del error para diagnosticar cierres por error terminal
+          // (ej: 401 por token expirado, fallo de negociacion, etc.)
+          console.error('[SignalR] Conexion cerrada. Error:', error?.message || error, '| Stack:', error?.stack || 'N/A')
           sharedIsConnected.value = false
           sharedConnectionState.value = 'Disconnected'
         })

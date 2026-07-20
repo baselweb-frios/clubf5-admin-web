@@ -14,6 +14,10 @@ export { default as TagSpot } from './ui/TagSpot.vue'
 export { default as SidebarLink } from './layout/SidebarLink.vue'
 export { default as ContentFooter } from './layout/ContentFooter.vue'
 
+// Export modal components
+export { default as LoginModal } from './LoginModal.vue'
+export { default as SucursalLoginModal } from './SucursalLoginModal.vue'
+
 // Temporary placeholder for BaseTable (if needed, replace with actual component)
 //export const BaseTable = DataTable
 

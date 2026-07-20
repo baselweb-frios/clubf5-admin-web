@@ -131,7 +131,10 @@
           </div>
         </template>
 
-        <div v-if="availableProgramaciones.length === 0" class="flex flex-col items-center justify-center gap-4 py-8">
+        <div
+v-if="availableProgramaciones.length === 0"
+class="flex flex-col items-center justify-center gap-4 py-8"
+>
           <i class="fa fa-inbox text-3xl text-text-secondary" />
           <p class="text-text-secondary">
             No hay programaciones disponibles
@@ -146,7 +149,10 @@
           </button>
         </div>
 
-        <div v-else class="space-y-2">
+        <div
+v-else
+class="space-y-2"
+>
           <div
             v-for="prog in availableProgramaciones"
             :key="prog.clipro_codigo"
@@ -173,8 +179,14 @@
           </div>
         </div>
 
-        <template v-if="canCreateProgramacion && availableProgramaciones.length > 0" #footer>
-          <button class="btn btn-secondary w-full" @click="openCreateProgramacionModal">
+        <template
+v-if="canCreateProgramacion && availableProgramaciones.length > 0"
+#footer
+>
+          <button
+class="btn btn-secondary w-full"
+@click="openCreateProgramacionModal"
+>
             <i class="fa fa-plus" />
             Crear Nueva Programación
           </button>
@@ -216,7 +228,10 @@
         </div>
 
         <template #footer>
-          <button class="btn btn-secondary" @click="closeCreateProgramacionModal">
+          <button
+class="btn btn-secondary"
+@click="closeCreateProgramacionModal"
+>
             <i class="fa fa-times" />
             Cancelar
           </button>

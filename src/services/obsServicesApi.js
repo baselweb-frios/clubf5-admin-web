@@ -208,6 +208,19 @@ async function executeObsOperation(operation, retries = 1) {
  * Listar objetos en un bucket con prefijo opcional
  * @see https://support.huaweicloud.com/intl/en-us/sdk-browserjs-devg-obs/obs_24_0201.html
  */
+/**
+ * Normaliza propiedades de objetos OBS a formato consistente { objectKey, size, lastModified, etag }
+ * Soporta camelCase, PascalCase y nombres alternativos que puede devolver el backend .NET
+ */
+const normalizeObjectKeys = (obj) => {
+  if (!obj) return obj
+  const objectKey = obj.objectKey || obj.Key || obj.ObjectKey || obj.key || obj.object_key || ''
+  const size = obj.size ?? obj.Size ?? obj.length ?? obj.ContentLength ?? 0
+  const lastModified = obj.lastModified || obj.LastModified || obj.last_modified || obj.lastModifiedDate || null
+  const etag = obj.etag || obj.ETag || obj.ETAG || obj.eTag || null
+  return { objectKey, size, lastModified, etag, ...obj }
+}
+
 obsServicesApi.ListarObject = async function (prefix = '', options = {}) {
   console.log('[OBS ListarObject] Iniciando listado - prefix:', prefix, 'options:', options, 'modo:', operationMode)
 
@@ -221,32 +234,33 @@ obsServicesApi.ListarObject = async function (prefix = '', options = {}) {
       const result = await api.get(`${OBS_CONFIG.BACKEND_PATH}/Listar`, { params })
       const data = result.data
       
-      console.log('[OBS ListarObject] Respuesta del backend:', data)
+      console.log('[OBS ListarObject] Respuesta del backend (sin normalizar):', data)
       
-      // Validar formato de respuesta
+      // Extraer y normalizar la lista de objetos
+      let rawObjects = []
       if (Array.isArray(data)) {
-        console.log('[OBS ListarObject] ✓ Backend devolvió array con', data.length, 'elementos')
-        return data
-      }
-      
-      if (data && Array.isArray(data.objects)) {
-        console.log('[OBS ListarObject] ✓ Backend devolvió objeto con', data.objects.length, 'elementos en .objects')
-        return data.objects
-      }
-      
-      // Si el backend devuelve un objeto de error
-      if (data && (data.success === false || data.error)) {
+        rawObjects = data
+      } else if (data && Array.isArray(data.objects)) {
+        rawObjects = data.objects
+      } else if (data && (data.success === false || data.error)) {
         const errorMsg = data.message || data.error || 'Error desconocido del backend'
-        console.error('[OBS ListarObject] ✗ Backend devolvió error:', errorMsg)
+        console.error('[OBS ListarObject] TenBackend devolvio error:', errorMsg)
         throw new Error(errorMsg)
       }
-      
-      // Formato no reconocido
-      console.warn('[OBS ListarObject] ⚠ Formato de respuesta no reconocido, retornando array vacío')
-      return []
+
+      // Normalizar TODOS los objetos a formato consistente con objectKey
+      const objects = rawObjects.map(normalizeObjectKeys)
+
+      // Si el backend incluye folder markers (objectKey que termina en /) dentro de la lista plana,
+      // los dejamos tal cual. El consumidor filtra con endsWith('/').
+      const folders = objects.filter(o => o.objectKey.endsWith('/'))
+      const files = objects.filter(o => !o.objectKey.endsWith('/') && o.objectKey)
+      console.log('[OBS ListarObject] ✓ Backend - normalizados:', objects.length, 'objetos (', folders.length, 'carpetas,', files.length, 'archivos)')
+
+      return objects
       
     } catch (error) {
-      console.error('[OBS ListarObject] ✗ Error en modo backend:', error)
+      console.error('[OBS ListarObject] TenError en modo backend:', error)
       console.error('[OBS ListarObject] Detalles:', error.response?.data || error.message)
       throw error
     }
@@ -261,7 +275,7 @@ obsServicesApi.ListarObject = async function (prefix = '', options = {}) {
         Prefix: prefix,
         Marker: options.marker || '',
         MaxKeys: options.maxKeys || 1000,
-        Delimiter: options.delimiter || ''
+        Delimiter: options.delimiter !== undefined ? options.delimiter : '/'
       })
     })
 
@@ -270,7 +284,7 @@ obsServicesApi.ListarObject = async function (prefix = '', options = {}) {
     // Transformar respuesta del SDK al formato esperado por la app
     const objects = []
 
-    // Agregar directorios
+    // Agregar directorios (CommonPrefixes siempre terminan en /)
     if (result.InterfaceResult && result.InterfaceResult.CommonPrefixes) {
       result.InterfaceResult.CommonPrefixes.forEach(dir => {
         objects.push({
@@ -282,19 +296,22 @@ obsServicesApi.ListarObject = async function (prefix = '', options = {}) {
       })
     }
 
-    // Agregar archivos
+    // Agregar archivos. Gracias al Delimiter='/', Contents solo contiene archivos.
+    // Pero por si acaso, filtramos cualquier objeto que termine en '/' (folder marker residual).
     if (result.InterfaceResult && result.InterfaceResult.Contents) {
       result.InterfaceResult.Contents.forEach(obj => {
-        objects.push({
-          objectKey: obj.Key,
-          size: obj.Size,
-          lastModified: obj.LastModified,
-          etag: obj.ETag
-        })
+        if (!obj.Key.endsWith('/')) {
+          objects.push({
+            objectKey: obj.Key,
+            size: obj.Size,
+            lastModified: obj.LastModified,
+            etag: obj.ETag
+          })
+        }
       })
     }
 
-    console.log('[OBS ListarObject] ✓ SDK retornó', objects.length, 'objetos')
+    console.log('[OBS ListarObject] ✓ SDK retornio', objects.length, 'objetos')
     return objects
   } catch (error) {
     // Si falla con el SDK, cambiar a modo backend y reintentar
@@ -307,21 +324,19 @@ obsServicesApi.ListarObject = async function (prefix = '', options = {}) {
       const result = await api.get(`${OBS_CONFIG.BACKEND_PATH}/Listar`, { params })
       const data = result.data
       
-      console.log('[OBS ListarObject] ✓ Operación completada con API del backend')
-      
-      // Validar formato de respuesta
+      let rawObjects = []
       if (Array.isArray(data)) {
-        return data
+        rawObjects = data
+      } else if (data && Array.isArray(data.objects)) {
+        rawObjects = data.objects
       }
-      if (data && Array.isArray(data.objects)) {
-        return data.objects
-      }
-      
-      console.warn('[OBS ListarObject] ⚠ Formato de respuesta del backend no reconocido en retry')
-      return []
+
+      const objects = rawObjects.map(normalizeObjectKeys)
+      console.log('[OBS ListarObject] ✓ Retry backend -', objects.length, 'objetos normalizados')
+      return objects
       
     } catch (retryError) {
-      console.error('[OBS ListarObject] ✗ Error en retry con backend:', retryError)
+      console.error('[OBS ListarObject] TenError en retry con backend:', retryError)
       throw retryError
     }
   }

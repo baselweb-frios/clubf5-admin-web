@@ -82,11 +82,22 @@ export function useBatchProgramming() {
     return slots
   }
 
-  const generateBatchProgramaciones = (existingProgramaciones = []) => {
+  const generateBatchProgramaciones = (existingProgramaciones = [], selectedSpots = null) => {
     isGenerating.value = true
     const programaciones = []
 
+    // Usar los spots pasados explícitamente (fuente de verdad = prop del componente),
+    // con fallback a la copia interna por compatibilidad
+    const spotsToUse = selectedSpots && selectedSpots.length > 0
+      ? selectedSpots
+      : batchConfig.value.selectedSpots
+
     try {
+      if (!spotsToUse || spotsToUse.length === 0) {
+        console.warn('[BatchProgramming] No hay spots seleccionados, no se generan programaciones')
+        return []
+      }
+
       const timeSlots = generateTimeSlots()
       const MAX_SLOTS = 5
 
@@ -128,7 +139,7 @@ export function useBatchProgramming() {
             }
 
             // Seleccionar spot (rotar entre los spots seleccionados)
-            const spot = batchConfig.value.selectedSpots[i % batchConfig.value.selectedSpots.length]
+            const spot = spotsToUse[i % spotsToUse.length]
 
             programaciones.push({
               clprsp_numeroDia: day,

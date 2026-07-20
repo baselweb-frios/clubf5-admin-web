@@ -238,8 +238,12 @@ class="modal-backdrop"
           <div class="flex-start gap-3">
             <i class="fas fa-receipt text-lg text-info-400" />
             <div>
-              <h2 class="text-lg font-bold text-text-primary">Detalle de Recibo</h2>
-              <p class="text-xs text-text-secondary">{{ facturaDetalle?.fac_numero }}</p>
+              <h2 class="text-lg font-bold text-text-primary">
+Detalle de Recibo
+</h2>
+              <p class="text-xs text-text-secondary">
+{{ facturaDetalle?.fac_numero }}
+</p>
             </div>
           </div>
           <button
@@ -251,7 +255,10 @@ aria-label="Cerrar modal"
           </button>
         </div>
 
-        <div v-if="facturaDetalle" class="modal-body overflow-y-auto">
+        <div
+v-if="facturaDetalle"
+class="modal-body overflow-y-auto"
+>
           <!-- Información del Recibo -->
           <div class="mb-6">
             <h4 class="flex-start gap-2 text-sm font-semibold text-text-primary mb-4">
@@ -274,7 +281,10 @@ aria-label="Cerrar modal"
               <div>
                 <span class="text-xs text-text-secondary block mb-1">Estado:</span>
                 <span :class="['badge', 'badge-' + getBadgeVariant(facturaDetalle.fac_estado)]">
-                  <i class="fas" :class="getStatusIcon(facturaDetalle.fac_estado)" />
+                  <i
+class="fas"
+:class="getStatusIcon(facturaDetalle.fac_estado)"
+/>
                   {{ getStatusLabel(facturaDetalle.fac_estado) }}
                 </span>
               </div>
@@ -286,14 +296,23 @@ aria-label="Cerrar modal"
                 <span class="text-xs text-text-secondary block mb-1">Método de Pago:</span>
                 <span class="text-sm font-medium text-text-primary">{{ facturaDetalle.fac_metodo_pago }}</span>
               </div>
-              <div v-if="facturaDetalle.fac_pdf_factura" class="col-span-2">
+              <div
+v-if="facturaDetalle.fac_pdf_factura"
+class="col-span-2"
+>
                 <span class="text-xs text-text-secondary block mb-1">Factura Fiscal:</span>
-                <button class="btn btn-sm btn-secondary" @click="verPdfFactura(facturaDetalle)">
+                <button
+class="btn btn-sm btn-secondary"
+@click="verPdfFactura(facturaDetalle)"
+>
                   <i class="fas fa-file-pdf text-danger-400" />
                   Ver Factura PDF
                 </button>
               </div>
-              <div v-if="facturaDetalle.fac_observaciones" class="col-span-2">
+              <div
+v-if="facturaDetalle.fac_observaciones"
+class="col-span-2"
+>
                 <span class="text-xs text-text-secondary block mb-1">Observaciones:</span>
                 <span class="text-sm text-text-primary">{{ facturaDetalle.fac_observaciones }}</span>
               </div>

@@ -150,6 +150,14 @@ class="flex flex-wrap border-b border-dark-border"
               <i class="fas fa-globe mr-2" />
               URL del stream
             </button>
+            <button
+              class="flex-1 min-w-[120px] px-4 py-3 text-sm font-medium transition-all border-b-2"
+              :class="activeTab === 'obs' ? 'border-primary-500 text-primary-400 bg-primary-500/5' : 'border-transparent text-text-secondary hover:text-text-primary hover:bg-dark-hover'"
+              @click="abrirObsSelector"
+            >
+              <i class="fas fa-cloud-upload-alt mr-2" />
+              Desde OBS
+            </button>
           </div>
 
 
@@ -723,6 +731,13 @@ class="w-full"
         </div>
       </div>
 
+      <!-- OBS File Selector Modal -->
+      <ObsFileSelectorModal
+        v-model="showObsModal"
+        :prefix="obsPrefix"
+        @select="handleObsFileSelect"
+      />
+
       <!-- Actions -->
       <div
 class="card"
@@ -770,6 +785,7 @@ import VozElevenLabsServices from '@/services/VozElevenLabsServices'
 import { useAuthStore } from '@/stores/auth'
 import { useSignalRAuth } from '@/composables/useSignalRAuth'
 import { useDriverTour } from '@/composables/useDriverTour'
+import ObsFileSelectorModal from '@/components/spots/ObsFileSelectorModal.vue'
 import moment from 'moment'
 
 // Composables
@@ -808,6 +824,12 @@ const isValidStreamUrl = ref(false)
 const fileValidationError = ref('')
 const filePreviewUrl = ref(null)
 const filePreviewType = ref(null)
+const showObsModal = ref(false)
+const obsPrefix = computed(() => {
+  const clienteId = getClienteId()
+  const tipo = spot.spo_tipo || 'noti'
+  return `Music/online/Spots/${clienteId}/${tipo}/`
+})
 
 // Reactive objects
 const spot = reactive({
@@ -918,6 +940,43 @@ const filteredVoices = computed(() => {
 })
 
 // Methods
+const getClienteId = () => {
+  try {
+    const user = JSON.parse(localStorage.getItem('user') || '{}')
+    if (user.Cliente) {
+      const cliente = typeof user.Cliente === 'string' ? JSON.parse(user.Cliente) : user.Cliente
+      return cliente.cli_codigo || 1
+    }
+    return 1
+  } catch {
+    return 1
+  }
+}
+
+const abrirObsSelector = () => {
+  if (!spot.spo_tipo) {
+    toast('Selecciona primero el tipo de spot', 'warning')
+    return
+  }
+  showObsModal.value = true
+}
+
+const handleObsFileSelect = (fileData) => {
+  if (filePreviewUrl.value && filePreviewUrl.value.startsWith('blob:')) {
+    URL.revokeObjectURL(filePreviewUrl.value)
+  }
+  filePreviewUrl.value = fileData.url
+  filePreviewType.value = fileData.mediaType
+  spot.spo_mediaTipo = fileData.mediaType
+  spot.spo_source = fileData.source
+  srcAudio.value = fileData.url
+  srcAudioLabel.value = `Archivo desde OBS: ${fileData.name}`
+  file.value = null
+  fileValidationError.value = ''
+  activeTab.value = 'upload'
+  toast('Archivo seleccionado desde OBS Cloud', 'success')
+}
+
 const setMediaType = (section, type) => {
   activeTab.value = section
   spot.spo_mediaTipo = type
@@ -976,7 +1035,7 @@ const validateFields = () => {
   }
 
   if (spot.spo_mediaTipo === 'audio' || spot.spo_mediaTipo === 'video') {
-    if (!file.value && !srcAudio.value) {
+    if (!file.value && !srcAudio.value && !spot.spo_source) {
       return {
         valid: false,
         error: `Debe cargar o generar un archivo de ${spot.spo_mediaTipo}`
@@ -1426,7 +1485,11 @@ const submitAudioFile = () => {
   console.log('Datos del spot:', spot)
 
   const formdata = new FormData()
-  if (file.value != null) {
+  if (spot.spo_source && !file.value) {
+    // Archivo seleccionado desde OBS - no hay file binario, se envia source
+    formdata.append('spo_dursec', 0)
+    console.log('[altaSpot] Usando source OBS:', spot.spo_source)
+  } else if (file.value != null) {
     formdata.append('file', file.value, 'audio.mp3')
     // Get duration from the audio element if available
     if (audiofile.value && audiofile.value.duration) {

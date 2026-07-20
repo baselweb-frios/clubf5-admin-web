@@ -364,8 +364,15 @@ class="form-alert show"
           </div>
 
           <!-- DEV ONLY: Auto-fill button -->
-          <div v-if="isDev" class="dev-autofill">
-            <button type="button" class="btn-dev-fill" @click="fillWithFakeData">
+          <div
+v-if="isDev"
+class="dev-autofill"
+>
+            <button
+type="button"
+class="btn-dev-fill"
+@click="fillWithFakeData"
+>
               <i class="fas fa-magic" /> Rellenar con datos ficticios
             </button>
           </div>

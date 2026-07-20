@@ -156,6 +156,51 @@
               class="flex flex-wrap items-center gap-2"
               data-tour="music-filter"
             >
+              <div
+                class="flex items-center bg-dark-primary rounded-lg p-0.5 border border-dark-border"
+              >
+                <button
+                  class="px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-200"
+                  :class="viewMode === 'cards' ? 'bg-primary-500 text-white shadow-sm' : 'text-text-secondary hover:text-text-primary'"
+                  @click="viewMode = 'cards'"
+                >
+                  <svg
+class="w-3.5 h-3.5 inline-block mr-1"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                    <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+/>
+                  </svg>
+                  Tarjetas
+                </button>
+                <button
+                  class="px-2.5 py-1 rounded-md text-xs font-medium transition-all duration-200"
+                  :class="viewMode === 'timetable' ? 'bg-primary-500 text-white shadow-sm' : 'text-text-secondary hover:text-text-primary'"
+                  @click="viewMode = 'timetable'"
+                >
+                  <svg
+class="w-3.5 h-3.5 inline-block mr-1"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                    <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+/>
+                  </svg>
+                  Horario
+                </button>
+              </div>
+
               <button
                 class="btn btn-sm text-xs sm:text-sm"
                 :class="showFilters ? 'btn-primary' : 'btn-secondary'"
@@ -275,7 +320,9 @@
                       class="select select-sm w-full text-sm"
                       :disabled="modoSeleccion"
                     >
-                      <option :value="null">Todos</option>
+                      <option :value="null">
+Todos
+</option>
                       <option
                         v-for="genero in generosUnicos"
                         :key="'genero-'+genero"
@@ -294,7 +341,9 @@
                       class="select select-sm w-full text-sm"
                       :disabled="modoSeleccion"
                     >
-                      <option :value="null">Todos los días</option>
+                      <option :value="null">
+Todos los días
+</option>
                       <option
                         v-for="day in daysOfWeek"
                         :key="day.value"
@@ -512,9 +561,151 @@
           </div>
         </div>
 
-        <!-- Vista de Carpetas de Música - Grid Responsive -->
+        <!-- ===== VISTA HORARIO (TIMETABLE) ===== -->
         <div
-          v-if="filteredProgramacionesPorRadio.length > 0"
+          v-if="viewMode === 'timetable' && programaciones.length > 0"
+          class="timetable-wrapper"
+          data-tour="music-schedule"
+        >
+          <div class="overflow-x-auto rounded-xl border border-dark-border bg-dark-secondary shadow-lg">
+            <div class="min-w-[900px]">
+              <!-- Cabecera de días -->
+              <div class="grid timetable-grid sticky top-0 z-10">
+                <div class="timetable-header-corner flex items-center justify-center">
+                  <svg
+class="w-4 h-4 text-text-tertiary"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                    <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+/>
+                  </svg>
+                </div>
+                <div
+                  v-for="day in daysOfWeek"
+                  :key="'timetable-header-'+day.value"
+                  class="timetable-day-header"
+                  :class="{
+                    'bg-primary-500/10 border-primary-500/30': todayDayNumber === day.value,
+                    'border-dark-border': todayDayNumber !== day.value
+                  }"
+                >
+                  <span class="text-xs font-semibold uppercase tracking-wider text-text-secondary">{{ day.number }}</span>
+                  <span class="text-[10px] text-text-tertiary">{{ getDiaNombreCorto(day.value) }}</span>
+                  <span
+                    v-if="todayDayNumber === day.value"
+                    class="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary-500"
+                  />
+                </div>
+              </div>
+
+              <!-- Filas de horas -->
+              <div
+                v-for="(hourInfo, hourIdx) in timetableHours"
+                :key="'timetable-row-'+hourIdx"
+                class="grid timetable-grid timetable-row group"
+                :class="hourIdx % 2 === 0 ? 'bg-dark-secondary' : 'bg-dark-primary/60'"
+              >
+                <!-- Columna de hora -->
+                <div class="timetable-time-cell">
+                  <span class="text-xs font-mono text-text-secondary group-hover:text-primary-400 transition-colors">
+                    {{ hourInfo.label }}
+                  </span>
+                </div>
+
+                <!-- Celdas por día -->
+                <div
+                  v-for="day in daysOfWeek"
+                  :key="'timetable-cell-'+day.value+'-'+hourIdx"
+                  class="timetable-cell"
+                  :class="{
+                    'bg-primary-500/5 border-l-primary-500/20': todayDayNumber === day.value,
+                    'border-dark-border/40': todayDayNumber !== day.value
+                  }"
+                >
+                  <div
+                    v-for="prog in getProgsForTimetableSlot(day.value, hourInfo.hourStart)"
+                    :key="'timetable-prog-'+prog.cod"
+                    class="timetable-prog-block"
+                    :style="{ backgroundColor: getRadioColor(prog.codRadio, 0.18), borderLeftColor: getRadioColor(prog.codRadio, 1) }"
+                    :title="`${prog.radioNombre} · ${prog.horaInicio} - ${prog.horaFin}`"
+                    @click="eliminarProgramacion(prog)"
+                  >
+                    <div
+                      class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                      :style="{ backgroundColor: getRadioColor(prog.codRadio, 1) }"
+                    />
+                    <span class="text-[11px] font-medium truncate leading-tight">{{ prog.radioNombre }}</span>
+                    <span class="text-[10px] text-text-tertiary flex-shrink-0 ml-auto font-mono">
+                      {{ prog.horaInicio.slice(0,5) }}
+                    </span>
+                  </div>
+
+                  <!-- Estado vacío de la celda -->
+                  <div
+                    v-if="getProgsForTimetableSlot(day.value, hourInfo.hourStart).length === 0"
+                    class="w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <button
+                      class="w-4 h-4 rounded-full flex items-center justify-center text-text-tertiary hover:text-primary-400 hover:bg-primary-500/20 transition-all"
+                      title="Agregar programación"
+                      @click="abrirNuevoProgEnSlot(day.value, hourInfo.hourStart)"
+                    >
+                      <svg
+class="w-3 h-3"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+                        <path
+stroke-linecap="round"
+stroke-linejoin="round"
+stroke-width="2"
+d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Leyenda de colores -->
+          <div
+v-if="radiosConProgramacion.length > 0"
+class="flex flex-wrap items-center gap-2 mt-3 px-1"
+>
+            <span class="text-[11px] text-text-tertiary mr-1">Radios:</span>
+            <div
+              v-for="radio in radiosConProgramacion.slice(0, 12)"
+              :key="'legend-'+radio.codRadio"
+              class="flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px]"
+              :style="{ backgroundColor: getRadioColor(radio.codRadio, 0.12) }"
+            >
+              <div
+class="w-1.5 h-1.5 rounded-full"
+:style="{ backgroundColor: getRadioColor(radio.codRadio, 1) }"
+/>
+              <span class="text-text-primary font-medium">{{ radio.nombre }}</span>
+            </div>
+            <span
+v-if="radiosConProgramacion.length > 12"
+class="text-[11px] text-text-tertiary"
+>
+              +{{ radiosConProgramacion.length - 12 }} más
+            </span>
+          </div>
+        </div>
+
+        <!-- ===== VISTA TARJETAS (CARDS) ===== -->
+        <div
+          v-if="viewMode === 'cards' && filteredProgramacionesPorRadio.length > 0"
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
           data-tour="music-schedule"
         >
@@ -649,7 +840,9 @@
                 v-if="!radio.tieneProgramaciones"
                 class="text-center py-2"
               >
-                <p class="text-xs text-text-secondary mb-2">Carpeta sin programar</p>
+                <p class="text-xs text-text-secondary mb-2">
+Carpeta sin programar
+</p>
                 <button
                   class="btn btn-primary btn-xs w-full"
                   @click="abrirModalProgramacionParaRadio(radio)"
@@ -796,9 +989,9 @@
           </div>
         </div>
 
-        <!-- Estado vacío: No hay carpetas de música disponibles -->
+        <!-- Estado vacío compartido: sin datos -->
         <div
-          v-else
+          v-if="(viewMode === 'cards' && filteredProgramacionesPorRadio.length === 0) || (viewMode === 'timetable' && programaciones.length === 0)"
           class="flex flex-col items-center justify-center py-12 sm:py-16 text-center"
         >
           <div class="w-20 h-20 sm:w-24 sm:h-24 mb-4 rounded-full bg-dark-secondary flex items-center justify-center">
@@ -1312,7 +1505,7 @@ const programaciones = ref([])
 const searchQuery = ref('')
 const showDeleteModal = ref(false)
 const selectedProgramacion = ref(null)
-const viewMode = ref('card') // 'table' o 'cards'
+const viewMode = ref('cards') // 'cards' o 'timetable'
 // Inicializar filtros según el tamaño de pantalla
 const showFilters = ref(window.innerWidth > 1024) // Colapsado en móvil/tablet por defecto
 const selectedDayFilter = ref(null) // Filtro de día (null = todos)
@@ -1639,6 +1832,82 @@ const generosUnicos = computed(() => {
   })
   return Array.from(generos).sort()
 })
+
+// ===== TIMETABLE VIEW =====
+
+const TIMETABLE_COLORS = [
+  '#3b82f6', '#8b5cf6', '#ec4899', '#f97316', '#10b981', '#06b6d4',
+  '#6366f1', '#14b8a6', '#f59e0b', '#ef4444', '#22c55e', '#a855f7',
+  '#0891b2', '#d946ef', '#84cc16', '#0ea5e9'
+]
+
+const todayDayNumber = computed(() => new Date().getDay())
+
+const timetableHours = computed(() => {
+  const start = parseInt(horarioCliente.value.horaDesde.split(':')[0]) || 0
+  const end = parseInt(horarioCliente.value.horaHasta.split(':')[0]) || 23
+  const slots = []
+  for (let h = start; h <= end; h++) {
+    slots.push({
+      hourStart: `${String(h).padStart(2, '0')}:00`,
+      label: `${String(h).padStart(2, '0')}:00`
+    })
+  }
+  return slots
+})
+
+const getProgsForTimetableSlot = (dayValue, hourStart) => {
+  const hour = parseInt(hourStart.split(':')[0])
+  const slotEnd = `${String(Math.min(hour + 1, 23)).padStart(2, '0')}:00`
+  return programaciones.value.filter(prog => {
+    if (prog.numeroDia !== dayValue) return false
+    const progStart = prog.horaInicio?.substring(0, 5) || prog.horaInicio
+    const progEnd = prog.horaFin?.substring(0, 5) || prog.horaFin
+    return progStart < slotEnd && progEnd > hourStart
+  })
+}
+
+const getRadioColor = (codRadio, opacity = 1) => {
+  const idx = Math.abs(hashCode(String(codRadio))) % TIMETABLE_COLORS.length
+  const hex = TIMETABLE_COLORS[idx]
+  if (opacity >= 1) return hex
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `rgba(${r},${g},${b},${opacity})`
+}
+
+const radiosConProgramacion = computed(() => {
+  const seen = new Map()
+  programaciones.value.forEach(prog => {
+    if (!seen.has(prog.codRadio)) {
+      seen.set(prog.codRadio, { codRadio: prog.codRadio, nombre: prog.radioNombre })
+    }
+  })
+  return Array.from(seen.values()).sort((a, b) => a.nombre.localeCompare(b.nombre))
+})
+
+const abrirNuevoProgEnSlot = (dayValue, hourStart) => {
+  const hour = parseInt(hourStart.split(':')[0])
+  const slotEnd = `${String(Math.min(hour + 1, 23)).padStart(2, '0')}:00`
+  showNewProgForDay.value = dayValue
+  newProgForm.value = {
+    codRadio: radios.value[0]?.codRadio ?? null,
+    numeroDia: dayValue,
+    horaInicio: hourStart,
+    horaFin: slotEnd
+  }
+}
+
+function hashCode(str) {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const chr = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + chr
+    hash |= 0
+  }
+  return hash
+}
 
 // Computed: Verificar si hay filtros activos
 const hayFiltrosActivos = computed(() => {
@@ -2821,4 +3090,108 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleFiltersResize)
 })
 </script>
+
+<style scoped>
+/* ===== TIMETABLE GRID ===== */
+.timetable-grid {
+  grid-template-columns: 64px repeat(7, 1fr);
+}
+
+.timetable-header-corner {
+  height: 48px;
+  background: #0a0a0a;
+  border-bottom: 1px solid #2a2a2a;
+  border-right: 1px solid #2a2a2a;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.timetable-day-header {
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  border-bottom: 1px solid #2a2a2a;
+  border-right: 1px solid #2a2a2a;
+  position: relative;
+  background: #111111;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.timetable-day-header:last-child {
+  border-right: none;
+}
+
+.timetable-row:hover .timetable-time-cell,
+.timetable-row:hover .timetable-cell {
+  background: rgba(59, 130, 246, 0.03);
+}
+
+.timetable-time-cell {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(42, 42, 42, 0.4);
+  border-right: 1px solid #2a2a2a;
+  position: relative;
+}
+
+.timetable-cell {
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 3px 4px;
+  border-bottom: 1px solid rgba(42, 42, 42, 0.4);
+  border-right: 1px solid rgba(42, 42, 42, 0.4);
+  border-left: 2px solid transparent;
+  cursor: default;
+  transition: all 0.15s ease;
+}
+.timetable-cell:last-child {
+  border-right: none;
+}
+.timetable-cell:hover {
+  background: rgba(59, 130, 246, 0.06) !important;
+}
+
+.timetable-prog-block {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border-left: 2px solid;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  max-width: 100%;
+  overflow: hidden;
+}
+.timetable-prog-block:hover {
+  transform: translateX(2px);
+  filter: brightness(1.15);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .timetable-grid {
+    grid-template-columns: 56px repeat(7, 1fr);
+  }
+  .timetable-time-cell {
+    height: 44px;
+  }
+  .timetable-cell {
+    min-height: 44px;
+    padding: 2px;
+  }
+  .timetable-day-header {
+    height: 42px;
+  }
+}
+</style>
 
