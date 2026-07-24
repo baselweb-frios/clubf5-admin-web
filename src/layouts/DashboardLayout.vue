@@ -265,7 +265,8 @@ const iconMap = {
   'folder-tree': 'fa-solid fa-folder-tree',
   'lab-email': 'fa fa-flask',
   'log-bug': 'fa-solid fa-bug',
-  'gear': 'fa-solid fa-gear'
+  'gear': 'fa-solid fa-gear',
+  'credit-card': 'fa-solid fa-credit-card'
 }
 
 const getIconClass = (iconName) => iconMap[iconName] || 'fa-solid fa-file'
@@ -281,6 +282,7 @@ const sidebarLinks = computed(() => {
     links.push({ name: 'Mi Musica', icon: 'music', path: '/programaMusica' })
     links.push({ name: 'Mis Recibos', icon: 'file-invoice', path: '/facturas' })
     links.push({ name: 'Mis Spots', icon: 'bullhorn', path: '/bibliotecaSpot' })
+    links.push({ name: 'Mi Plan', icon: 'credit-card', path: '/mi-plan' })
   }
 
   if (userRole === 'Reproductor') {

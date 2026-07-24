@@ -95,6 +95,12 @@ export function useFocusTrap(elementRef, options = {}) {
   const handleClickOutside = (event) => {
     if (!isActive || allowOutsideClick) return
     if (elementRef.value && !elementRef.value.contains(event.target)) {
+      // Permitir interacciones con modales anidados (ej: SpotSelectorModal dentro de ProgrammingModal)
+      // Los modales anidados se teleportan a <body> como hermanos, no como hijos
+      const clickedInsideAnotherModal = event.target.closest('[role="dialog"][aria-modal="true"]')
+      if (clickedInsideAnotherModal && clickedInsideAnotherModal !== elementRef.value) {
+        return
+      }
       event.preventDefault()
       event.stopPropagation()
     }

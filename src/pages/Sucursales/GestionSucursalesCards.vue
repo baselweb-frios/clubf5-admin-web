@@ -1855,7 +1855,12 @@ const saveSucursal = async () => {
     await loadSucursales()
   } catch (error) {
     console.error('Error guardando sucursal:', error)
-    alert('Error al guardar la sucursal: ' + (error.response?.data?.errorMessage || error.message))
+    if (error.response?.status === 409) {
+      const limit = error.response.data
+      alert(limit.message || `Límite alcanzado: ${limit.current} de ${limit.max} equipos. Cambiá de plan para agregar más.`)
+    } else {
+      alert('Error al guardar la sucursal: ' + (error.response?.data?.errorMessage || error.message))
+    }
   } finally {
     isSaving.value = false
   }

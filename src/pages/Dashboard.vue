@@ -106,18 +106,14 @@
         </div>
       </div>
 
-      <!-- ===== CLIENTE: ESTADO DE SUCURSALES EN TIEMPO REAL ===== -->
+      <!-- ===== CLIENTE: ESTADO DE SUCURSALES ===== -->
       <div
         v-if="userRole === 'Cliente' && sucursalesList.length > 0"
-        data-tour="branches-status"
         class="card mb-8"
       >
         <div class="flex-between mb-4">
-          <h3 class="text-base font-semibold text-text-primary flex items-center gap-2">
-            <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-            Estado de Sucursales
+          <h3 class="text-base font-semibold text-text-primary">
+            <i class="fa fa-building text-primary-400 mr-2" /> Estado de Sucursales
           </h3>
           <span class="text-sm text-text-tertiary">
             {{ connectedCount }} de {{ sucursalesCount }} conectadas
@@ -130,26 +126,13 @@
             class="flex items-center gap-3 p-3 rounded-lg border transition-colors duration-200"
             :class="branch.statusClass"
           >
-            <!-- Status dot -->
             <div class="relative flex-shrink-0">
               <div class="w-3 h-3 rounded-full" :class="branch.dotClass" />
               <div v-if="branch.status === 'connected'" class="absolute inset-0 w-3 h-3 rounded-full animate-ping opacity-50" :class="branch.dotClass" />
             </div>
-
-            <!-- Branch info -->
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-text-primary truncate">{{ branch.name }}</p>
-              <p class="text-xs truncate" :class="branch.statusTextClass">
-                {{ branch.statusLabel }}
-              </p>
-            </div>
-
-            <!-- Playing indicator -->
-            <div v-if="branch.isPlaying" class="flex-shrink-0 flex items-center gap-1 text-xs text-success-400">
-              <svg class="w-3 h-3 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-              <span class="hidden sm:inline">{{ branch.currentItem || 'On air' }}</span>
+              <p class="text-xs truncate" :class="branch.statusTextClass">{{ branch.statusLabel }}</p>
             </div>
           </div>
         </div>
@@ -417,23 +400,15 @@ const sucursalesResumen = computed(() => {
   return sucursalesList.value.map(s => {
     const isConnected = connectionMonitor?.isConnectedByUsername(s.username) ||
                         connectionMonitor?.isConnected(s.clisuc_codigo)
-    const info = connectionMonitor?.getBranchInfo(s.username) || connectionMonitor?.getBranchInfo(s.clisuc_codigo)
-    const status = isConnected ? 'connected' : 'disconnected'
-    const isPlaying = info?.status?.isPlaying || info?.isPlaying
-
     return {
       id: s.clisuc_codigo || s.idSucursal || s.username,
       name: s.clisuc_nombre || s.nombreSucursal || s.username || 'Sin nombre',
-      status,
-      isPlaying: !!isPlaying,
-      currentItem: info?.status?.currentItem?.title || info?.currentSong || null,
-      statusLabel: isConnected
-        ? (isPlaying ? 'Reproduciendo' : 'En línea')
-        : 'Desconectada',
+      status: isConnected ? 'connected' : 'disconnected',
+      statusLabel: isConnected ? 'Conectada' : 'Desconectada',
       dotClass: isConnected ? 'bg-success-400' : 'bg-gray-500',
       statusClass: isConnected
-        ? 'border-success-500/30 bg-success-500/5 hover:bg-success-500/10'
-        : 'border-gray-700 bg-dark-secondary hover:bg-dark-hover',
+        ? 'border-success-500/30 bg-success-500/5'
+        : 'border-gray-700 bg-dark-secondary',
       statusTextClass: isConnected ? 'text-success-400' : 'text-text-quaternary'
     }
   })

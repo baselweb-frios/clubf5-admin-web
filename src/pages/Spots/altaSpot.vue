@@ -1537,7 +1537,12 @@ const submitAudioFile = () => {
     btnCancelar()
   }).catch(err => {
     isLoading.value = false
-    toast(err.message || 'Error al guardar el spot', 'error')
+    if (err.response?.status === 409) {
+      const limit = err.response.data
+      toast(limit.message || `Límite alcanzado: ${limit.current} de ${limit.max} spots. Cambiá de plan para agregar más.`, 'error', 6000)
+    } else {
+      toast(err.message || 'Error al guardar el spot', 'error')
+    }
   })
 }
 

@@ -104,15 +104,16 @@
 
       <!-- Calendario Principal -->
       <div class="card p-6">
-        <WeeklyCalendar
-          :programaciones="programaciones"
-          :week-days="weekDays"
-          :reproductores="reproductores"
-          @cell-click="handleCalendarCellClick"
-          @program-click="handleProgramClick"
-          @edit="handleEditProgramacion"
-          @delete="handleDeleteProgramaciones"
-        />
+      <WeeklyCalendar
+        :programaciones="programaciones"
+        :week-days="weekDays"
+        :reproductores="reproductores"
+        :spots="spots"
+        @cell-click="handleCalendarCellClick"
+        @program-click="handleProgramClick"
+        @edit="handleEditProgramacion"
+        @delete="handleDeleteProgramaciones"
+      />
       </div>
 
       <!-- Modales -->
@@ -268,6 +269,7 @@ class="btn btn-secondary"
         :initial-start-time="currentFilters.startTime"
         :initial-end-time="currentFilters.endTime"
         :initial-selected-days="currentFilters.selectedDays"
+        :initial-spot-code="currentFilters.initialSpotCode || null"
         @delete-programaciones="handleDeleteProgramaciones"
         @refresh-programaciones="handleRefreshProgramaciones"
         @filter-change="handleFilterChange"
@@ -612,20 +614,42 @@ const handleToggleExpiredSpots = () => {
   }
 }
 
-const handleCalendarCellClick = ({ day, hour }) => {
-  console.log('Cell clicked:', day, hour)
-  // Podría abrir el modal de programación con estos valores pre-seleccionados
+const handleCalendarCellClick = ({ day, hour, slot }) => {
+  currentFilters.value = {
+    ...currentFilters.value,
+    startTime: hour,
+    endTime: hour,
+    selectedDays: [day],
+    initialSpotCode: null
+  }
+  currentFilters.value._suggestedSlot = slot || 1
   showProgrammingModal.value = true
 }
 
 const handleProgramClick = (prog) => {
-  console.log('Program clicked:', prog)
-  // Mostrar detalles o editar
+  if (prog) {
+    currentFilters.value = {
+      ...currentFilters.value,
+      startTime: prog.clprsp_horaDesde?.substring(0, 5) || '',
+      selectedDays: prog.clprsp_numeroDia !== undefined ? [prog.clprsp_numeroDia] : [],
+      reproductor: prog.clprsp_codigoReproductor || '',
+      initialSpotCode: prog.clprsp_codigoSpot || null
+    }
+    showProgrammingModal.value = true
+  }
 }
 
 const handleEditProgramacion = (prog) => {
-  console.log('Edit program:', prog)
-  // Implementar lógica de edición
+  if (prog) {
+    currentFilters.value = {
+      ...currentFilters.value,
+      startTime: prog.clprsp_horaDesde?.substring(0, 5) || '',
+      selectedDays: prog.clprsp_numeroDia !== undefined ? [prog.clprsp_numeroDia] : [],
+      reproductor: prog.clprsp_codigoReproductor || '',
+      initialSpotCode: prog.clprsp_codigoSpot || null
+    }
+    showProgrammingModal.value = true
+  }
 }
 
 const getCurrentUser = () => {

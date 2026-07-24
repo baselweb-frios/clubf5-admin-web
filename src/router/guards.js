@@ -25,6 +25,8 @@ export const roleGuard = (allowedRoles) => {
     if (!authStore.isAuthenticated) {
       next({ name: 'Login', query: { redirect: to.fullPath } })
     } else if (!allowedRoles.includes(authStore.userRole)) {
+      // En vez de redirigir en silencio, se avisa al usuario por qué no pudo entrar.
+      window.$toast?.('No tenés permisos para esa sección', 'error')
       next({ name: 'Dashboard' })
     } else {
       next()

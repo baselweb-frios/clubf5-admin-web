@@ -134,10 +134,10 @@ VozElevenLabsServices.generarPreview = async function (codigoVariacion, texto) {
  */
 VozElevenLabsServices.getPreviewUrl = function (fileName) {
   if (!fileName) return null
-  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/'
+  const baseUrl = import.meta.env.VITE_PATH_OBS
   // Remover /api/ del final para obtener la URL base del servidor
   const serverUrl = baseUrl.replace(/\/api\/?$/, '')
-  return `${serverUrl}/Uploads/voces-previews/${fileName}`
+  return `${serverUrl}/${fileName}`
 }
 
 /**

@@ -30,6 +30,7 @@
         :initial-start-time="initialStartTime"
         :initial-end-time="initialEndTime"
         :initial-selected-days="initialSelectedDays"
+        :initial-spot-code="initialSpotCode"
         v-bind="$attrs"
         @delete-programaciones="$emit('delete-programaciones', $event)"
         @refresh-programaciones="$emit('refresh-programaciones')"
@@ -88,6 +89,10 @@ defineProps({
   initialSelectedDays: {
     type: Array,
     default: () => []
+  },
+  initialSpotCode: {
+    type: Number,
+    default: null
   }
 })
 

@@ -101,5 +101,10 @@ export default {
 
     // Also provide as simple toast function
     app.config.globalProperties.$toast = showToast
+
+    // También se expone en `window` para poder disparar toasts fuera de un componente
+    // (ej. navigation guards en router/index.js y guards.js, interceptors de axios, etc.)
+    // donde no hay `getCurrentInstance()`/`this` disponible para llegar a globalProperties.
+    window.$toast = showToast
   }
 }

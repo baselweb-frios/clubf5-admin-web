@@ -8,9 +8,6 @@ clienteService.getClienteAll = async function () {
 clienteService.getClienteByUsername = async function () {
   return api.get('/Cliente/consultarCliente').then(res => res.data)
 }
-clienteService.buscarClientePorId = async function (id) {
-  return api.get(`/Cliente/${id}`).then(res => res.data)
-}
 
 clienteService.setPrefijo = async function (nuevoPrefijo) {
   return api.post('/Cliente/nuevoPrefijo', {
@@ -32,8 +29,23 @@ clienteService.getClienteById = async function (id) {
   return api.get(`/Cliente/${id}`).then(res => res.data)
 }
 
-clienteService.update = async function (id, clienteData) {
-  return api.put(`/Cliente/${id}`, clienteData).then(res => res.data)
+// ========== SELF-SERVICE: CAMBIO DE PLAN (rol Cliente) ==========
+
+// Paquete/plan actual del cliente autenticado (incluye info de uso, ej. cant_pedidos vs paq_maxped).
+// El cliente se identifica en el backend vía JWT, no se manda ningún id acá.
+clienteService.getMiPaquete = async function () {
+  return api.get('/ClientePaquete').then(res => res.data)
+}
+
+// Catálogo completo de paquetes disponibles (para elegir un nuevo plan).
+clienteService.getPaquetes = async function () {
+  return api.get('/Paquete').then(res => res.data)
+}
+
+// Cambia el paquete del cliente autenticado. El backend identifica al cliente por JWT
+// (PUT /Cliente/miPlan, rol Cliente) - acá solo se manda el código del paquete destino.
+clienteService.cambiarMiPlan = async function (cliCodpaq) {
+  return api.put('/Cliente/miPlan', { cli_codpaq: cliCodpaq }).then(res => res.data)
 }
 
 // ========== NUEVOS MÉTODOS PARA GESTIÓN COMPLETA DE CLIENTES ==========

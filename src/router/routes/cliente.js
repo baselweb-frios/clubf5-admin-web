@@ -1,5 +1,13 @@
 // Routes for Cliente role
 export default [
+  // ===== MI PLAN (Solo Cliente) =====
+  {
+    path: 'mi-plan',
+    name: 'MiPlan',
+    component: () => import('@/pages/MiPlan/index.vue'),
+    meta: { requiresAuth: true, roles: ['Cliente'], title: 'Mi Plan' }
+  },
+
   // ===== CONFIGURACIÓN (Solo Cliente) =====
   {
     path: 'configuracion-cliente',

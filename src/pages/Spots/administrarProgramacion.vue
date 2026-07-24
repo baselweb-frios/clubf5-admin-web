@@ -1,253 +1,127 @@
 <template>
   <div>
-<b-form-group label="Sucursales">
-      <b-form-select
-v-model="datosProgSpot.usuario"
-class="mb-3"
->
-      <b-form-select-option :value="currentUserName">
-        <p v-if="datosProgSpot.usuario==currentUserName">
-Usuario elegido: {{ currentUserName }}
-</p>
-        <p v-if="datosProgSpot.usuario!=currentUserName">
-Programar para: {{ currentUserName }}
-</p>
-      </b-form-select-option>
+    <b-form-group label="Sucursales">
+      <b-form-select v-model="datosProgSpot.usuario" class="mb-3">
+        <b-form-select-option :value="currentUserName">
+          <p v-if="datosProgSpot.usuario == currentUserName">
+            Usuario elegido: {{ currentUserName }}
+          </p>
+          <p v-if="datosProgSpot.usuario != currentUserName">
+            Programar para: {{ currentUserName }}
+          </p>
+        </b-form-select-option>
 
-    <b-form-select-option
-v-for="(sucu,ix) in listaSucursales"
-:key="ix+1"
-:value="sucu.usuario"
->
-      <p v-if="datosProgSpot.usuario==sucu.usuario">
-Usuario elegido: {{ datosProgSpot.usuario }}
-</p>
-      <p v-if="datosProgSpot.usuario!=sucu.usuario">
-Programar para: {{ sucu.usuario }}
-</p>
-</b-form-select-option>
-    </b-form-select>
+        <b-form-select-option v-for="(sucu, ix) in listaSucursales" :key="ix + 1" :value="sucu.usuario">
+          <p v-if="datosProgSpot.usuario == sucu.usuario">
+            Usuario elegido: {{ datosProgSpot.usuario }}
+          </p>
+          <p v-if="datosProgSpot.usuario != sucu.usuario">
+            Programar para: {{ sucu.usuario }}
+          </p>
+        </b-form-select-option>
+      </b-form-select>
     </b-form-group>
     <b-card-group deck>
-     <b-card
-v-if="showFormPauta"
-title="Programación pautas publicitarias"
-class="p-2"
-style="width: 15px;"
->
-      <b-form-group
-label="Tipos de spot publicitario"
-class="p-2"
->
-      <b-form-radio-group
-        id="radio-tipo-spot"
-        v-model="tipoSelected"
-        :options="tipoSpot"
+      <b-card v-if="showFormPauta" title="Programación pautas publicitarias" class="p-2" style="width: 15px;">
+        <b-form-group label="Tipos de spot publicitario" class="p-2">
+          <b-form-radio-group id="radio-tipo-spot" v-model="tipoSelected" :options="tipoSpot"
+            name="spot-tipo-options" />
+        </b-form-group>
+        <b-form-group v-if="datosProgSpot.numeroDia.length > 0" label="Spots disponibles">
+          <TagSpot :options="getSpotDisponibles" :tipo-spot="tipoSelected" :horadesde="datosProgSpot.horasDesde"
+            @remove-codspot="removeCodSpot" @update-codspot="updateCodSpot" @set-spot="setSpot" />
+        </b-form-group>
+        <b-form-group v-if="programacion.length > 0" label="Días de la semana">
+          <b-form-checkbox-group id="dias-semana" v-model="datosProgSpot.numeroDia" label="Días de la semana"
+            :options="filtroSemana" :aria-describedby="ariaDescribedby" name="dias-semana" />
+        </b-form-group>
 
-        name="spot-tipo-options"
-      />
-    </b-form-group>
-    <b-form-group
-v-if="datosProgSpot.numeroDia.length>0"
-label="Spots disponibles"
->
-      <TagSpot
-:options="getSpotDisponibles"
-:tipo-spot="tipoSelected"
-:horadesde="datosProgSpot.horasDesde"
-@remove-codspot="removeCodSpot"
-@update-codspot="updateCodSpot"
-@set-spot="setSpot"
-/>
-    </b-form-group>
-      <b-form-group
-v-if="programacion.length>0"
-label="Días de la semana"
->
-        <b-form-checkbox-group
-          id="dias-semana"
-          v-model="datosProgSpot.numeroDia"
-          label="Días de la semana"
-          :options="filtroSemana"
-          :aria-describedby="ariaDescribedby"
-          name="dias-semana"
-        />
-      </b-form-group>
-
-    <b-form-group
-v-if="programacion.length>0"
-      label="Hora desde:"
-      label-class="font-weight-bold pt-0"
-      >
-     <b-form-input
-id="horadesde"
-v-model="datosProgSpot.horasDesde"
-class="form-control-sm bg-dark"
-type="time"
-min="00:00"
-max="23:55"
-step="2"
-@keypress.enter="setAddHoraDesde"
-/>
-    <b-button @click="addCadaXtime">
-<b-icon-clock /> Agregar cada 5 minutos
-</b-button>
-    </b-form-group>
-</b-card>
-        <b-card title="Detalle de la programación">
-          <b-card-header>
-            <b-row class="p-2">
-  <b-button-toolbar
-key-nav
-aria-label="acciones"
->
-                    <b-button-group
-v-if="progSpots.filter(prog=>prog.codPautaSpot==-1).length>0"
-class="mx-1"
->
-                      <b-button
-size="sm"
-title="Confirmar todos"
-@click="confirmar(progSpots)"
->
-                        <b-icon
-icon="cloud-upload"
-aria-hidden="true"
->
-Confirmar
-</b-icon>
-                      </b-button>
-                      <b-button
-size="sm"
-title="Eliminar todos"
-@click="progSpots=[]"
->
-                        <b-icon
-icon="trash-fill"
-aria-hidden="true"
->
-Eliminar
-</b-icon>
-                      </b-button>
-                    </b-button-group>
-                  </b-button-toolbar>
-                  <b-button-group class="mx-1">
-                      <b-button
-size="sm"
-title="Agregar"
-@click="showFormPauta=!showFormPauta"
->
-                        <b-icon
-icon="plus-circle"
-aria-hidden="true"
->
-Confirmar
-</b-icon>
-                      </b-button>
-                      <!-- <b-button size="sm" title="Eliminar todos" @click="">
+        <b-form-group v-if="programacion.length > 0" label="Hora desde:" label-class="font-weight-bold pt-0">
+          <b-form-input id="horadesde" v-model="datosProgSpot.horasDesde" class="form-control-sm bg-dark" type="time"
+            min="00:00" max="23:55" step="2" @keypress.enter="setAddHoraDesde" />
+          <b-button @click="addCadaXtime">
+            <b-icon-clock /> Agregar cada 5 minutos
+          </b-button>
+        </b-form-group>
+      </b-card>
+      <b-card title="Detalle de la programación">
+        <b-card-header>
+          <b-row class="p-2">
+            <b-button-toolbar key-nav aria-label="acciones">
+              <b-button-group v-if="progSpots.filter(prog => prog.codPautaSpot == -1).length > 0" class="mx-1">
+                <b-button size="sm" title="Confirmar todos" @click="confirmar(progSpots)">
+                  <b-icon icon="cloud-upload" aria-hidden="true">
+                    Confirmar
+                  </b-icon>
+                </b-button>
+                <b-button size="sm" title="Eliminar todos" @click="progSpots = []">
+                  <b-icon icon="trash-fill" aria-hidden="true">
+                    Eliminar
+                  </b-icon>
+                </b-button>
+              </b-button-group>
+            </b-button-toolbar>
+            <b-button-group class="mx-1">
+              <b-button size="sm" title="Agregar" @click="showFormPauta = !showFormPauta">
+                <b-icon icon="plus-circle" aria-hidden="true">
+                  Confirmar
+                </b-icon>
+              </b-button>
+              <!-- <b-button size="sm" title="Eliminar todos" @click="">
                         <b-icon icon="trash-fill" aria-hidden="true">Eliminar</b-icon>
                       </b-button> -->
-                    </b-button-group>
-</b-row>
-          </b-card-header>
-          <b-table-simple
-id="prog-spots"
-hover
-small
-head-variant="light"
-            caption-top
-responsive
-sticky-header="500px"
-class="table tablesorter table-bordered"
->
-            <b-thead>
-              <b-tr>
-<b-th
-scope="col"
-class="text-center"
-variant="dark"
->
-Horarios
-</b-th>
-                <b-th
-v-for="dia in filtroSemana"
-:key="dia.value"
-scope="col"
-class="text-center"
-variant="dark"
->
-{{ dia.text.substring(0,2) }}
-</b-th>
-                <b-th
-scope="col"
-class="text-center"
-variant="dark"
->
-Quitar
-</b-th>
-              </b-tr>
-            </b-thead>
-            <b-tbody>
-              <b-tr
-v-for="(detalle,hora) in generarDetalle"
-:key="hora"
-style="height: 10vh;"
->
-<b-td
-class="text-center bg-dark"
-:sticky-column="true"
->
-<h5 style="color: white;">
-{{ hora }}
-</h5>
-</b-td>
+            </b-button-group>
+          </b-row>
+        </b-card-header>
+        <b-table-simple id="prog-spots" hover small head-variant="light" caption-top responsive sticky-header="500px"
+          class="table tablesorter table-bordered">
+          <b-thead>
+            <b-tr>
+              <b-th scope="col" class="text-center" variant="dark">
+                Horarios
+              </b-th>
+              <b-th v-for="dia in filtroSemana" :key="dia.value" scope="col" class="text-center" variant="dark">
+                {{ dia.text.substring(0, 2) }}
+              </b-th>
+              <b-th scope="col" class="text-center" variant="dark">
+                Quitar
+              </b-th>
+            </b-tr>
+          </b-thead>
+          <b-tbody>
+            <b-tr v-for="(detalle, hora) in generarDetalle" :key="hora" style="height: 10vh;">
+              <b-td class="text-center bg-dark" :sticky-column="true">
+                <h5 style="color: white;">
+                  {{ hora }}
+                </h5>
+              </b-td>
 
-                      <b-td
-v-for="dia in filtroSemana"
-:key="dia.text"
->
-                        <div class="d-flex flex-row">
-                          <div
-v-for="spot in detalle[dia.value]"
-:key="spot.codSpot"
-class="p-2 m-2 border border-light"
-:class="spot.classTipo"
->
-                            <h5 style="color: white;">
-<strong>{{ spot.nombreSpot }}</strong>
-</h5>
-                          </div>
-                        </div>
-                      </b-td>
+              <b-td v-for="dia in filtroSemana" :key="dia.text">
+                <div class="d-flex flex-row">
+                  <div v-for="spot in detalle[dia.value]" :key="spot.codSpot" class="p-2 m-2 border border-light"
+                    :class="spot.classTipo">
+                    <h5 style="color: white;">
+                      <strong>{{ spot.nombreSpot }}</strong>
+                    </h5>
+                  </div>
+                </div>
+              </b-td>
 
 
-<b-td
-scope="col"
-class="text-center"
->
-  <b-button-toolbar
-key-nav
-aria-label="Acciones"
->
-    <b-button-group class="mx-1">
-      <b-button
-size="sm"
-title="Eliminar"
-@click="eliminarProgSpot()"
->
-        <b-icon
-icon="trash-fill"
-aria-hidden="true"
-/>
-      </b-button>
-    </b-button-group>
-  </b-button-toolbar>
-</b-td>
-</b-tr>
-            </b-tbody>
-            </b-table-simple>
-</b-card>
-      </b-card-group>
+              <b-td scope="col" class="text-center">
+                <b-button-toolbar key-nav aria-label="Acciones">
+                  <b-button-group class="mx-1">
+                    <b-button size="sm" title="Eliminar" @click="eliminarProgSpot()">
+                      <b-icon icon="trash-fill" aria-hidden="true" />
+                    </b-button>
+                  </b-button-group>
+                </b-button-toolbar>
+              </b-td>
+            </b-tr>
+          </b-tbody>
+        </b-table-simple>
+      </b-card>
+    </b-card-group>
 
 
 
@@ -259,13 +133,7 @@ aria-hidden="true"
 
 
 
-    <loading-overlay
-:show="isLoading"
-opacity="0.4"
-color="#1d8cf8"
-height="95px"
-text="Cargando programación..."
-/>
+    <loading-overlay :show="isLoading" opacity="0.4" color="#1d8cf8" height="95px" text="Cargando programación..." />
   </div>
 </template>
 
@@ -288,7 +156,7 @@ export default {
     return {
       repeated: false,
       showFormPauta: false,
-      copiaPautados:[],
+      copiaPautados: [],
       spotsPautados: [],
       spotsConflicto: [],
       spoSelected: {},
@@ -304,32 +172,32 @@ export default {
       codigoProgramacion: this.$route.params.codigoProgramacion,
       nombreProgramacion: this.$route.params.nombreProgramacion,
       filtroSemana: [
-        { text: "Domingo", value: 0},
-        { text: "Lunes", value: 1},
-        { text: "Martes", value: 2},
-        { text: "Miércoles", value: 3},
-        { text: "Jueves", value: 4},
-        { text: "Viernes", value: 5},
-        { text: "Sabado", value: 6}
+        { text: "Domingo", value: 0 },
+        { text: "Lunes", value: 1 },
+        { text: "Martes", value: 2 },
+        { text: "Miércoles", value: 3 },
+        { text: "Jueves", value: 4 },
+        { text: "Viernes", value: 5 },
+        { text: "Sabado", value: 6 }
       ],
       spotsDisponibles: [],
       progSpots: [],
-      programacion:[],
-      tableView:{},
+      programacion: [],
+      tableView: {},
       fields: [
         { key: "horaDesde", label: "Desde", sortable: true },
         { key: "slot", label: "Slot", sortable: true },
         { key: "sucursal", label: "Sucursal", sortable: true },
         { key: "nombreSpot", label: "Nombre", sortable: true },
       ],
-    datosProgSpot: {
-      codProgramacion: -1,
-      codSpot: [],
-      numeroDia: [moment().day()],
-      horasDesde: moment().format("HH:mm"),
-      totalminutos:0,
-      usuario: this.currentUserName
-    },
+      datosProgSpot: {
+        codProgramacion: -1,
+        codSpot: [],
+        numeroDia: [moment().day()],
+        horasDesde: moment().format("HH:mm"),
+        totalminutos: 0,
+        usuario: this.currentUserName
+      },
       horaInicial: "00:00",
       horaFinal: "00:05",
       horasOcupados: [],
@@ -375,49 +243,49 @@ export default {
   },
   computed: {
     generarDetalle() {
-      if(this.progSpots.length==0) return {};
+      if (this.progSpots.length == 0) return {};
 
-      const groupSpot = Object.groupBy(this.progSpots,({horaDesde})=>horaDesde)
+      const groupSpot = Object.groupBy(this.progSpots, ({ horaDesde }) => horaDesde)
       const horarios = Object.keys(groupSpot)
       let detalle = {}
       for (let hora of horarios) {
         const spots = groupSpot[hora]
         let result = []
-        for (const spotprog of spots){
-          const spot = this.spotsDisponibles.find(spo=>spo.codSpot==spotprog.codigoSpot)
-          if(spot==undefined){
+        for (const spotprog of spots) {
+          const spot = this.spotsDisponibles.find(spo => spo.codSpot == spotprog.codigoSpot)
+          if (spot == undefined) {
             console.warn(`Spot con código ${spotprog.codigoSpot} no encontrado en spotsDisponibles`)
             continue;
           }
-          const tipoSpotObj = this.tipoSpot.find(t=>t.value==spot.tipo)
-          if(!tipoSpotObj){
+          const tipoSpotObj = this.tipoSpot.find(t => t.value == spot.tipo)
+          if (!tipoSpotObj) {
             console.warn(`Tipo de spot ${spot.tipo} no encontrado`)
             continue;
           }
           result.push({
             ...spot,
             classTipo: tipoSpotObj.class,
-            dia:spotprog.numeroDia,
+            dia: spotprog.numeroDia,
             horarios: hora
           })
         }
-        detalle[hora]=Object.groupBy(result,({dia})=>dia)
+        detalle[hora] = Object.groupBy(result, ({ dia }) => dia)
       }
       return detalle
     },
-    getSpotDisponibles(){
+    getSpotDisponibles() {
 
-      return this.spotsDisponibles.filter(spot=>spot.tipo==this.tipoSelected)
+      return this.spotsDisponibles.filter(spot => spot.tipo == this.tipoSelected)
     },
     isValidForm() {
-      const isSelectedDiaSemana = this.datosProgSpot.numeroDia.length>0
-      const isSelectedHora = this.datosProgSpot.horasDesde.length>0
-      const isSelectedSpot = this.datosProgSpot.codSpot.length>0
-      return isSelectedDiaSemana&&isSelectedHora&&isSelectedSpot
+      const isSelectedDiaSemana = this.datosProgSpot.numeroDia.length > 0
+      const isSelectedHora = this.datosProgSpot.horasDesde.length > 0
+      const isSelectedSpot = this.datosProgSpot.codSpot.length > 0
+      return isSelectedDiaSemana && isSelectedHora && isSelectedSpot
     },
 
-    ExistCopy(){
-      return this.copiaPautados.filter(cp=>cp.clprsp_numeroDia!=this.datosProgSpot.numeroDia).length>0
+    ExistCopy() {
+      return this.copiaPautados.filter(cp => cp.clprsp_numeroDia != this.datosProgSpot.numeroDia).length > 0
     }
     ,
     filterSpots() {
@@ -427,28 +295,28 @@ export default {
   watch: {
 
 
-    'datosProgSpot.codSpot'(codeSpots){
-     if(codeSpots.length==0) return;
-     this.datosProgSpot.totalminutos=codeSpots.map(code=>this.spotsDisponibles.find(spo=>spo.codSpot==code).duracion).reduce((sum,valCurrent)=>sum+valCurrent,0)
+    'datosProgSpot.codSpot'(codeSpots) {
+      if (codeSpots.length == 0) return;
+      this.datosProgSpot.totalminutos = codeSpots.map(code => this.spotsDisponibles.find(spo => spo.codSpot == code).duracion).reduce((sum, valCurrent) => sum + valCurrent, 0)
 
     },
-    'datosProgSpot.totalminutos'(val){
-     const step = (val>5)?val:5
-     this.horaFinal = moment(this.horaInicial,'HH:mm').add(step,'minutes').format("HH:mm")
+    'datosProgSpot.totalminutos'(val) {
+      const step = (val > 5) ? val : 5
+      this.horaFinal = moment(this.horaInicial, 'HH:mm').add(step, 'minutes').format("HH:mm")
 
     },
-    'datosProgSpot.numeroDia'(val){
-     const step = (val>5)?val:5
-     this.updateCodSpot(this.programacion)
+    'datosProgSpot.numeroDia'(val) {
+      const step = (val > 5) ? val : 5
+      this.updateCodSpot(this.programacion)
 
     },
 
-    progSpots(){
-      this.tableView = Object.groupBy(this.progSpots,({horaDesde})=>horaDesde)
+    progSpots() {
+      this.tableView = Object.groupBy(this.progSpots, ({ horaDesde }) => horaDesde)
     },
-    horaInicial(){
-      const step = (this.datosProgSpot.totalminutos>5)?this.datosProgSpot.totalminutos:5
-     this.horaFinal = moment(this.horaInicial,'HH:mm').add(step,'minutes').format("HH:mm")
+    horaInicial() {
+      const step = (this.datosProgSpot.totalminutos > 5) ? this.datosProgSpot.totalminutos : 5
+      this.horaFinal = moment(this.horaInicial, 'HH:mm').add(step, 'minutes').format("HH:mm")
 
     }
 
@@ -473,26 +341,26 @@ export default {
     isDraggable(ev) {
       return (((this.currentUserName === ev.usuario && ev.admin == 0) || (this.currentCliente === this.currentUserName)))
     },
-    addCadaXtime(){
-      let ini = moment(this.datosProgSpot.horasDesde,"HH:mm:ss")
-      let iniMasTime = ini.add(5,'minutes')
+    addCadaXtime() {
+      let ini = moment(this.datosProgSpot.horasDesde, "HH:mm:ss")
+      let iniMasTime = ini.add(5, 'minutes')
       this.datosProgSpot.horasDesde = iniMasTime.format("HH:mm:ss")
       this.setAddHoraDesde()
     },
-    setAddHoraDesde(){
+    setAddHoraDesde() {
 
-let auxProg = this.datosProgSpot.codSpot.map((opt)=>{
-  console.log(opt)
-return{
-  ...opt,
-  horadesde:this.datosProgSpot.horasDesde
+      let auxProg = this.datosProgSpot.codSpot.map((opt) => {
+        console.log(opt)
+        return {
+          ...opt,
+          horadesde: this.datosProgSpot.horasDesde
 
-}
-})
-this.programacion.forEach(prog=>auxProg.push(prog))
-this.updateCodSpot(auxProg)
+        }
+      })
+      this.programacion.forEach(prog => auxProg.push(prog))
+      this.updateCodSpot(auxProg)
 
-},
+    },
     getCurrentUser() {
       // obtenemos el username del usuario logueado
       const ususarioLogueado = UserServices.current().unique_name
@@ -540,16 +408,16 @@ this.updateCodSpot(auxProg)
     },
     listarSpotsDisponibles() {
       return spotService.getSpotsBycodCliente().then(list => {
-        this.spotsDisponibles =  list
+        this.spotsDisponibles = list
       })
 
     },
     cleanData() {
-      this.datosProgSpot.codSpot= []
-      this.datosProgSpot.numeroDia= moment().day(),
-      this.datosProgSpot.numeroDia= moment().format("HH:mm"),
-      this.datosProgSpot.totalminutos=0,
-      this.datosProgSpot.usuario= this.currentUserName
+      this.datosProgSpot.codSpot = []
+      this.datosProgSpot.numeroDia = moment().day(),
+        this.datosProgSpot.numeroDia = moment().format("HH:mm"),
+        this.datosProgSpot.totalminutos = 0,
+        this.datosProgSpot.usuario = this.currentUserName
 
     },
 
@@ -559,8 +427,8 @@ this.updateCodSpot(auxProg)
       this.progSpots = []
 
       return cliProgramacionSpotServices.getProgramacionesByProg(this.datosProgSpot.codProgramacion, '00:00')
-        .then((result)=>{
-          if(!result || result.length === 0){
+        .then((result) => {
+          if (!result || result.length === 0) {
             this.progSpots = []
             console.warn('No hay programaciones cargadas')
           } else {
@@ -579,40 +447,40 @@ this.updateCodSpot(auxProg)
     llenarHorarios() {
       return this.calcularHsDisponibles.ocupados;
     },
-    setSpot(spot){
-      if(spot!=undefined){
+    setSpot(spot) {
+      if (spot != undefined) {
         this.datosProgSpot.codSpot.push(spot)
       }
     },
-    updateCodSpot(programacion){
-      this.progSpots=[]
+    updateCodSpot(programacion) {
+      this.progSpots = []
       this.programacion = programacion
 
-      let SetProgSpot = (prog,dia,slot,then)=>{
+      let SetProgSpot = (prog, dia, slot, then) => {
 
         this.progSpots.push({
-                  codPautaSpot: -1,
-                  codigoProgramacion: then.codigoProgramacion,
-                  nombreSpot:prog.nombreSpot,
-                  classTipo:then.tipoSpot.find(tipo=>tipo.value==prog.tipo).class,
-                  codigoSpot: prog.codSpot,
-                  numeroDia: dia,
-                  horaDesde: prog.horadesde,
-                  codigoProgSpotDestino: 0,
-                  slot: slot,
-                  for: then.datosProgSpot.usuario
-          })
+          codPautaSpot: -1,
+          codigoProgramacion: then.codigoProgramacion,
+          nombreSpot: prog.nombreSpot,
+          classTipo: then.tipoSpot.find(tipo => tipo.value == prog.tipo).class,
+          codigoSpot: prog.codSpot,
+          numeroDia: dia,
+          horaDesde: prog.horadesde,
+          codigoProgSpotDestino: 0,
+          slot: slot,
+          for: then.datosProgSpot.usuario
+        })
 
       }
-      this.datosProgSpot.numeroDia.forEach(dia=>{
-       programacion.forEach((prog,slot)=>{
-            SetProgSpot(prog,dia,slot,this)
-          })
-       })
+      this.datosProgSpot.numeroDia.forEach(dia => {
+        programacion.forEach((prog, slot) => {
+          SetProgSpot(prog, dia, slot, this)
+        })
+      })
 
     },
-    removeCodSpot(pos){
-      this.datosProgSpot.codSpot.splice(pos,1)
+    removeCodSpot(pos) {
+      this.datosProgSpot.codSpot.splice(pos, 1)
       this.progSpots = JSON.parse(localStorage.progSpots)
     },
     corregirHora() {
@@ -649,7 +517,7 @@ this.updateCodSpot(auxProg)
       fechaReturn = fecha + ' ' + hs + ':' + min + ':' + '00'
       return fechaReturn
     },
-    addHora(hora){
+    addHora(hora) {
       this.datosProgSpot.horasDesde.push(hora)
     },
     cambiaDia() {
@@ -813,8 +681,8 @@ this.updateCodSpot(auxProg)
     async confirmar(pautas) {
       this.isLoading = true
       let presult = await clienteProgramacionSpotService.guardarProgSpot(pautas)
-      if(presult){
-        this.progSpots=[]
+      if (presult) {
+        this.progSpots = []
         this.listarSpotProgramados()
         this.cleanData()
         this.isLoading = false
@@ -883,12 +751,12 @@ this.updateCodSpot(auxProg)
       })
     },
     inicializar() {
-        this.obtenerSucursales()
-        this.listarSpotsDisponibles().then(()=>{
-          this.listarSpotProgramados()
-        })
-        this.horaInicial = moment(new Date(),'HH:mm').format('HH:mm')
-        this.horaFinal = moment(this.horaInicial,'HH:mm').add(5,'HH:mm').format('HH:mm')
+      this.obtenerSucursales()
+      this.listarSpotsDisponibles().then(() => {
+        this.listarSpotProgramados()
+      })
+      this.horaInicial = moment(new Date(), 'HH:mm').format('HH:mm')
+      this.horaFinal = moment(this.horaInicial, 'HH:mm').add(5, 'HH:mm').format('HH:mm')
 
     },
 

@@ -162,6 +162,9 @@ router.beforeEach(async (to, from, next) => {
     if (routeRoles && !routeRoles.includes(userRole)) {
       console.warn(`Access denied to ${to.path} for role ${userRole}`)
 
+      // Antes esto redirigía en silencio; ahora se avisa al usuario por qué no pudo entrar.
+      window.$toast?.('No tenés permisos para esa sección', 'error')
+
       // Prevent infinite redirect loop - only redirect if not already at Dashboard
       if (to.name !== 'Dashboard') {
         return next({ name: 'Dashboard' })
@@ -185,7 +188,8 @@ router.beforeEach(async (to, from, next) => {
       '/programaSpot',
       '/altaProgramacionSpots',
       '/bibliotecaSpot',
-      '/altaSpot'
+      '/altaSpot',
+      '/mi-plan'
     ]
     const isAllowedPath = allowedPaths.some(path => to.path === path || to.path.startsWith(path + '/'))
 
